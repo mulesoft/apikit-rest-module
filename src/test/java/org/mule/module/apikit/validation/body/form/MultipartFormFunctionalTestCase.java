@@ -11,9 +11,10 @@ import org.junit.Test;
 import org.mule.module.apikit.AbstractMultiParserFunctionalTestCase;
 import org.mule.runtime.core.api.util.IOUtils;
 
+import java.io.InputStream;
 import java.util.Arrays;
 
-import static io.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 

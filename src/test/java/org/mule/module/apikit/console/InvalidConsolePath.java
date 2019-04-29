@@ -7,13 +7,13 @@
 
 package org.mule.module.apikit.console;
 
-import io.restassured.RestAssured;
+import com.jayway.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.module.apikit.AbstractMultiParserFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 
-import static io.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.given;
 
 public class InvalidConsolePath extends AbstractMultiParserFunctionalTestCase {
 

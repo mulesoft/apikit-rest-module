@@ -6,10 +6,10 @@
  */
 package org.mule.module.apikit;
 
-import org.junit.Test;
-
-import static io.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+
+import org.junit.Test;
 
 public class MultipleRouterTestCase extends AbstractMultiParserFunctionalTestCase {
 

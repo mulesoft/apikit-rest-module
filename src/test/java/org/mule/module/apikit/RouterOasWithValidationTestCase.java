@@ -6,15 +6,14 @@
  */
 package org.mule.module.apikit;
 
-import io.restassured.RestAssured;
-import org.junit.Ignore;
+import com.jayway.restassured.RestAssured;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
 
-import static io.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
 @ArtifactClassLoaderRunnerConfig
@@ -99,11 +98,7 @@ public class RouterOasWithValidationTestCase extends MuleArtifactFunctionalTestC
         .when().get("/api/amf/oas/pet/findByStatus");
   }
 
-  /*
-    No encuentra el metodo put. No esta cargado en el FlowFinder.
-    Falla en FlowFinder line 169 -> if (action.hasBody() && action.getBody().get(type) != null) 
-  */
-  @Ignore
+  @Test
   public void putPetByIdUsingJson() throws Exception {
     given().header("Content-Type", "application/json")
         .header("api_key", "ASDFGHJKL")
@@ -114,11 +109,7 @@ public class RouterOasWithValidationTestCase extends MuleArtifactFunctionalTestC
         .when().put("/api/amf/oas/pet/123");
   }
 
-  /*
-    No encuentra el metodo put. No esta cargado en el FlowFinder.
-    Falla en FlowFinder line 169 -> if (action.hasBody() && action.getBody().get(type) != null) 
-  */
-  @Ignore
+  @Test
   public void putPetByIdUsingXml() throws Exception {
     given().header("Content-Type", "application/xml")
         .header("api_key", API_KEY)
@@ -140,7 +131,7 @@ public class RouterOasWithValidationTestCase extends MuleArtifactFunctionalTestC
         .when().post("/api/amf/oas/pet");
   }
 
-  @Ignore
+  @Test
   public void postPetUsingXml() throws Exception {
     given().header("Content-Type", "application/xml")
         .body(PET_POST_XML)
@@ -194,7 +185,7 @@ public class RouterOasWithValidationTestCase extends MuleArtifactFunctionalTestC
         .when().put("/api/amf/oas/user/abc");
   }
 
-  @Ignore
+  @Test
   public void putUserByNameUsingXml() throws Exception {
     given().header("Content-Type", "application/xml")
         .body(USER_POST_XML)
@@ -217,14 +208,14 @@ public class RouterOasWithValidationTestCase extends MuleArtifactFunctionalTestC
         .when().post("/api/amf/oas/user");
   }
 
-  @Ignore
+  @Test
   public void postUserUsingXml() throws Exception {
     given().header("Content-Type", "application/xml")
         .body(USER_POST_XML)
         .expect()
         .response()
         .body(is(USER_POST_XML))
-        .statusCode(201)
+        .statusCode(200)
         .when().post("/api/amf/oas/user");
   }
 
@@ -251,7 +242,7 @@ public class RouterOasWithValidationTestCase extends MuleArtifactFunctionalTestC
       "<Pet>\n" +
       "   <name>A name</name>\n" +
       "   <photoUrls>\n" +
-      "      <element>http://a.ml</element>\n" +
+      "      <photoUrl>http://a.ml</photoUrl>\n" +
       "   </photoUrls>\n" +
       "</Pet>";
 
