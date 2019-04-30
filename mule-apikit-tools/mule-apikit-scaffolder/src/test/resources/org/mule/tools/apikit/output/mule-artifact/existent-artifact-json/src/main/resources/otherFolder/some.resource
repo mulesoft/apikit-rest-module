@@ -1,1 +1,0 @@
-Some resource added by mule application developer. APIKit Scaffolder should kept this file in the mule-artifact.json
