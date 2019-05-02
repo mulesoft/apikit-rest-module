@@ -86,7 +86,7 @@ public class RequestValidator {
 
       final String method = attributes.getMethod().toLowerCase();
       if (resource.getAction(method) == null) {
-        final String version = resolvedVariables.get("version").toString();
+        final String version = (String) resolvedVariables.get("version");
         throw new MethodNotAllowedException(resource.getResolvedUri(version) + " : " + method);
       }
 
