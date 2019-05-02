@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mule.module.apikit.AbstractMultiParserFunctionalTestCase;
 import org.mule.runtime.core.api.util.IOUtils;
 
+import java.io.InputStream;
 import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
@@ -123,7 +124,6 @@ public abstract class MultipartFormFunctionalTestCase extends AbstractMultiParse
         .statusCode(201)
         .when().post("/api/multipart");
   }
-
   @Test
   public void postTextFileResourceIntoMultiPartFormData() throws Exception {
     given().multiPart("document", "lorem.txt", this.getClass().getClassLoader()
@@ -137,35 +137,64 @@ public abstract class MultipartFormFunctionalTestCase extends AbstractMultiParse
 
 
   @Test
-  @Ignore // TODO investigate how to return encoded images using data weave
-  public void postImageResourceIntoMultiPartFormData() throws Exception {
-    byte[] imageInByteArray = IOUtils.toByteArray(this.getClass().getClassLoader()
-        .getResourceAsStream("org/mule/module/apikit/validation/formParameters/bbva.jpg"));
-    String result = Arrays.toString(imageInByteArray);
+  public void postJsonFileResourceIntoMultiPartFormData() throws Exception {
+    final String jsonFilePath = "org/mule/module/apikit/validation/formParameters/example.json";
 
-    given().multiPart("image", "bbva.jpg", this.getClass().getClassLoader()
-        .getResourceAsStream("org/mule/module/apikit/validation/formParameters/bbva.jpg"))
-        .expect()
-        .response()
-        .statusCode(200)
-        .body(is(result))
-        .when().post("/api/uploadImage");
+    final String jsonAsString = IOUtils.toString(getResourceAsStream(jsonFilePath));
+
+    String response = given().multiPart("document", "example.json", getResourceAsStream(jsonFilePath), "application/json")
+            .expect()
+            .response()
+            .statusCode(200)
+            .body(is(jsonAsString))
+            .when().post("/api/uploadJsonFile").then().extract().asString();
   }
+    @Test
+    public void postXMLFileResourceIntoMultiPartFormData() throws Exception {
+      final String xmlFilePath = "org/mule/module/apikit/validation/formParameters/example.xml";
 
-  @Test
-  public void answer201WhenOptionalFormParameterIsProvidedAsEmpty() throws Exception {
-    given().multiPart("first", "required")
-        .multiPart("third", "false")
-        .multiPart("fourth", "")
-        .expect()
-        .response()
-        .statusCode(201)
-        .body(is("{\n" +
-            "  \"first\": \"required\",\n" +
-            "  \"third\": \"false\",\n" +
-            "  \"fourth\": \"\",\n" +
-            "  \"second\": \"segundo\"\n" +
-            "}"))
-        .when().post("/api/multipart");
+      final String xmlAsString = IOUtils.toString(getResourceAsStream(xmlFilePath));
+
+      given().multiPart("document", "example.xml", getResourceAsStream(xmlFilePath), "application/xml")
+          .expect()
+          .response()
+          .statusCode(200)
+          .body(is(xmlAsString))
+          .when().post("/api/uploadXmlFile");
+    }
+
+
+      @Test
+      @Ignore
+      public void postImageResourceIntoMultiPartFormData() throws Exception {
+        byte[] imageInByteArray = IOUtils.toByteArray(getResourceAsStream("org/mule/module/apikit/validation/formParameters/bbva.jpg"));
+        String result = Arrays.toString(imageInByteArray);
+
+        given().multiPart("image", "bbva.jpg", this.getClass().getClassLoader()
+            .getResourceAsStream("org/mule/module/apikit/validation/formParameters/bbva.jpg"))
+            .expect()
+            .response()
+            .statusCode(200)
+            .body(is(result))
+            .when().post("/api/uploadImage");
+      }
+      @Test
+      public void answer201WhenOptionalFormParameterIsProvidedAsEmpty() throws Exception {
+        given().multiPart("first", "required")
+            .multiPart("third", "false")
+            .multiPart("fourth", "")
+            .expect()
+            .response()
+            .statusCode(201)
+            .body(is("{\n" +
+                "  \"first\": \"required\",\n" +
+                "  \"third\": \"false\",\n" +
+                "  \"fourth\": \"\",\n" +
+                "  \"second\": \"segundo\"\n" +
+                "}"))
+            .when().post("/api/multipart");
+      }
+  private InputStream getResourceAsStream(String resource) {
+    return this.getClass().getClassLoader().getResourceAsStream(resource);
   }
 }

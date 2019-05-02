@@ -77,6 +77,22 @@ title: Parameters API
           document:
             required: true
             type: file
+/uploadJsonFile:
+  post:
+    body:
+      multipart/form-data:
+        formParameters:
+          document:
+            required: true
+            type: file
+/uploadXmlFile:
+  post:
+    body:
+      multipart/form-data:
+        formParameters:
+          document:
+            required: true
+            type: file
 /users:
   post:
     body:

@@ -6,18 +6,26 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import org.apache.commons.fileupload.MultipartStream;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
-import org.mule.module.apikit.validation.body.form.transformation.DataWeaveDefaultsBuilder;
-import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
-import org.mule.module.apikit.validation.body.form.transformation.TextPlainPart;
+import org.mule.module.apikit.validation.body.form.transformation.*;
 import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.streaming.CursorProvider;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.MimeTypeUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MultipartFormValidator implements FormValidatorStrategy<TypedValue> {
 
@@ -33,8 +41,9 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
 
   @Override
   public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
-
-    Map<String, String> actualParameters = dataWeaveTransformer.getMultiMapFromPayload(originalPayload);
+    final InputStream inputStream = originalPayload.getValue() instanceof CursorProvider ? ((CursorStreamProvider) originalPayload.getValue()).openCursor() : ((InputStream) originalPayload.getValue());
+    final byte[] boundary = originalPayload.getDataType().getMediaType().getParameter("boundary").getBytes();
+    Map<String, MultipartFormDataParameter> actualParameters = new MultipartFormData(inputStream,boundary).getFormDataParameters();
     DataWeaveDefaultsBuilder defaultsBuilder = new DataWeaveDefaultsBuilder();
 
     for (String expectedKey : formParameters.keySet()) {
@@ -45,10 +54,8 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
 
       IParameter expected = formParameters.get(expectedKey).get(0);
       if (actualParameters.keySet().contains(expectedKey)) {
-        String value = actualParameters.get(expectedKey);
-        if (!expected.validate(value)) {
-          throw new InvalidFormParameterException("Value " + value + " for parameter " + expectedKey + " is invalid");
-        }
+        MultipartFormDataParameter multipartFormDataParameter = actualParameters.get(expectedKey);
+        multipartFormDataParameter.validate(expected);
       } else {
         if (expected.getDefaultValue() != null) {
           defaultsBuilder.addPart(new TextPlainPart().setName(expectedKey).setValue(expected.getDefaultValue()));
