@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mule.module.apikit.AbstractMultiParserFunctionalTestCase;
