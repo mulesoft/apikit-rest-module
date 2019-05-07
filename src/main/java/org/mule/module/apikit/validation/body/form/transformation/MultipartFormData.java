@@ -4,7 +4,6 @@ import org.apache.commons.fileupload.MultipartStream;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
-import org.mule.runtime.api.metadata.TypedValue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,17 +14,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 
 public class MultipartFormData {
-  private final MultipartStream multipartStream;
-  private static final int BUF_SIZE = 4096;
-  private static final Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
-  private static final Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
+  private static Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
+  private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
+  private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
   private Boolean defaultsAdded = false;
 
   public MultipartFormData(InputStream inputStream, byte[] boundary){
-    multipartStream = new MultipartStream(inputStream, boundary, BUF_SIZE,null);
+    multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
     multipartEntityBuilder = MultipartEntityBuilder.create();
   }
 
@@ -80,7 +79,7 @@ public class MultipartFormData {
     }
   }
 
-  public boolean areDefaultsAdedd(){
+  public boolean areDefaultsAdded(){
     return defaultsAdded;
   }
 }

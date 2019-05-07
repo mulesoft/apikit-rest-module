@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
-import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
 import org.mule.raml.interfaces.model.parameter.IParameter;
@@ -33,34 +33,40 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
 
   @Override
   public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
-    final InputStream inputStream = originalPayload.getValue() instanceof CursorProvider ? ((CursorStreamProvider) originalPayload.getValue()).openCursor() : ((InputStream) originalPayload.getValue());
-    final byte[] boundary = originalPayload.getDataType().getMediaType().getParameter("boundary").getBytes();
+    final InputStream inputStream = StreamUtils.getInputStream(originalPayload);
+    final byte[] boundary = getBoundary(originalPayload);
     MultipartFormData multipartFormData = new MultipartFormData(inputStream, boundary);
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormData.getFormDataParameters();
 
     for (String expectedKey : formParameters.keySet()) {
-      if (formParameters.get(expectedKey).size() != 1) {
-        //do not perform validation when multi-type parameters are used
-        continue;
-      }
-
-      IParameter expected = formParameters.get(expectedKey).get(0);
-      if (actualParameters.keySet().contains(expectedKey)) {
-        MultipartFormDataParameter multipartFormDataParameter = actualParameters.get(expectedKey);
-        multipartFormDataParameter.validate(expected);
-      } else {
-        if (expected.getDefaultValue() != null) {
-          multipartFormData.addDefault(expectedKey,expected.getDefaultValue());
-        } else if (expected.isRequired()) {
-          throw new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified");
+      List<IParameter> params = formParameters.get(expectedKey);
+      if (params != null && params.size() == 1){
+        IParameter expected = params.get(0);
+        if (actualParameters.containsKey(expectedKey)) {
+          MultipartFormDataParameter multipartFormDataParameter = actualParameters.get(expectedKey);
+          multipartFormDataParameter.validate(expected);
+        } else {
+          if (expected.getDefaultValue() != null) {
+            multipartFormData.addDefault(expectedKey,expected.getDefaultValue());
+          } else if (expected.isRequired()) {
+            throw new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified");
+          }
         }
       }
     }
-    if (multipartFormData.areDefaultsAdedd()) {
+    if (multipartFormData.areDefaultsAdded()) {
       return TypedValue.of(multipartFormData.build());
     } else {
       return originalPayload;
     }
+  }
+
+  private byte[] getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
+    String boundary = originalPayload.getDataType().getMediaType().getParameter("boundary");
+    if(boundary == null){
+      throw new InvalidFormParameterException("Required boundary parameter not found");
+    }
+    return boundary.getBytes();
   }
 
 }

@@ -25,8 +25,9 @@ public class MultipartFormDataParameter {
       } catch (IOException e) {
         throw new InvalidFormParameterException(e);
       }
-      if(!parameter.validate(value))
+      if(!parameter.validate(value)) {
         throw new InvalidFormParameterException("Value " + value + " for parameter " + parameter.getDisplayName() + " is invalid");
+      }
     }
   }
 
