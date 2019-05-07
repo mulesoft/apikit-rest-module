@@ -19,6 +19,7 @@ import javax.xml.validation.Schema;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.mule.apikit.ApiType;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.api.config.ValidationConfig;
@@ -29,7 +30,7 @@ import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoader;
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
-import org.mule.raml.interfaces.ParserType;
+import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -56,7 +57,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   protected LoadingCache<String, URIPattern> uriPatternCache;
 
   private boolean disableValidations;
-  private ParserType parserType;
+  private ApikitParserMode parserMode;
   private boolean queryParamsStrictValidation;
   private boolean headersStrictValidation;
   private String name;
@@ -94,9 +95,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   public void initialise() throws InitialisationException {
     this.routerService = findExtension();
     try {
-      ramlHandler = new RamlHandler(getApi(), isKeepApiBaseUri(),
-                                    errorRepositoryFrom(muleContext), getParser());
-
+      ramlHandler = new RamlHandler(getApi(), isKeepApiBaseUri(), errorRepositoryFrom(muleContext), parserMode.get());
       this.routerService.ifPresent(rs -> {
         try {
           rs.initialise(ramlHandler.getApi().getUri());
@@ -104,10 +103,6 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
           throw new ApikitRuntimeException("Couldn't load enabled extension", e);
         }
       });
-
-      // In case parser was originally set in AUTO, raml handler will decide if using AMF or RAML. In that case,
-      // we will keep the value defined during raml handler instantiation
-      parserType = ramlHandler.getParserType();
     } catch (final Exception e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
@@ -155,12 +150,8 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     this.disableValidations = disableValidations;
   }
 
-  public ParserType getParser() {
-    return parserType;
-  }
-
-  public void setParser(ParserType parserType) {
-    this.parserType = parserType;
+  public void setParser(ApikitParserMode parserType) {
+    this.parserMode = parserType;
   }
 
   @Override
@@ -303,6 +294,11 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   @Override
   public RamlHandler getRamlHandler() {
     return this.ramlHandler;
+  }
+
+  @Override
+  public ApiType getType() {
+    return ramlHandler.getApi().getType() ;
   }
 
   @Override

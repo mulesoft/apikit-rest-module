@@ -114,7 +114,7 @@ abstract class TokenBase implements Token {
    *
    * @param exp An expression containing a comma separated list of variables.
    * @return A list of variables.
-   * @throws URITemplateSyntaxException If thrown by the Variable parse method.
+   * @throws URITemplateSyntaxException If thrown by the Variable get method.
    */
   protected static final List<Variable> toVariables(String exp) throws URITemplateSyntaxException {
     String[] exps = exp.split(",");

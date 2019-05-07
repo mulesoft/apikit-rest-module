@@ -7,13 +7,12 @@
 package org.mule.module.apikit;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static java.util.Arrays.asList;
-import static org.mule.module.apikit.api.RamlHandler.MULE_APIKIT_PARSER_AMF;
+import static org.mule.module.apikit.api.RamlHandler.MULE_APIKIT_PARSER_PROPERTY;
 
 /**
  * Use this class when Test are not FunctionTests
@@ -38,11 +37,11 @@ public abstract class AbstractMultiParserTestCase {
   @Before
   public void beforeTest() {
     final Boolean value = AMF_PARSER.equals(parser);
-    System.setProperty(MULE_APIKIT_PARSER_AMF, value.toString());
+    System.setProperty(MULE_APIKIT_PARSER_PROPERTY, value.toString());
   }
 
   @After
   public static void afterTest() {
-    System.clearProperty(MULE_APIKIT_PARSER_AMF);
+    System.clearProperty(MULE_APIKIT_PARSER_PROPERTY);
   }
 }

@@ -27,7 +27,7 @@ public class Console0000Replacement08TestCase extends AbstractMultiParserFunctio
   }
 
   @Test
-  public void getConsoleIndex() throws Exception {
+  public void getConsoleIndex() {
     Map<String, String> headers = new HashMap<>();
     headers.put("Access-Control-Allow-Origin", "*");
     headers.put("Expires", "-1");

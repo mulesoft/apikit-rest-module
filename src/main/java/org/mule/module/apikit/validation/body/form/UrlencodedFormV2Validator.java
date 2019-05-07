@@ -6,11 +6,11 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
-import org.mule.raml.interfaces.model.IMimeType;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.MimeType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -26,11 +26,11 @@ import static java.util.stream.Collectors.joining;
 public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedValue> {
 
   protected static final Logger logger = LoggerFactory.getLogger(UrlencodedFormV2Validator.class);
-  Map<String, List<IParameter>> formParameters;
-  IMimeType actionMimeType;
+  Map<String, List<Parameter>> formParameters;
+  MimeType actionMimeType;
   DataWeaveTransformer dataWeaveTransformer;
 
-  public UrlencodedFormV2Validator(IMimeType actionMimeType, ExpressionManager expressionManager) {
+  public UrlencodedFormV2Validator(MimeType actionMimeType, ExpressionManager expressionManager) {
     this.formParameters = actionMimeType.getFormParameters();
     this.actionMimeType = actionMimeType;
     this.dataWeaveTransformer = new DataWeaveTransformer(expressionManager);
@@ -47,12 +47,12 @@ public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedVal
   }
 
   private void validateAndAddDefaults(MultiMap<String, String> requestMap) throws InvalidFormParameterException {
-    final Map<String, List<IParameter>> formParameters = actionMimeType.getFormParameters();
+    final Map<String, List<Parameter>> formParameters = actionMimeType.getFormParameters();
 
     final Set<String> expectedKeys = formParameters.keySet();
 
     for (String expectedKey : expectedKeys) {
-      final IParameter parameter = formParameters.get(expectedKey).get(0);
+      final Parameter parameter = formParameters.get(expectedKey).get(0);
       final List<String> values = requestMap.getAll(expectedKey);
       if (values.isEmpty()) {
         final String defaultValue = parameter.getDefaultValue();
@@ -73,12 +73,12 @@ public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedVal
     }
   }
 
-  private void validate(String expectedKey, IParameter parameter, String value) throws InvalidFormParameterException {
+  private void validate(String expectedKey, Parameter parameter, String value) throws InvalidFormParameterException {
     if (!parameter.validate(value))
       throw new InvalidFormParameterException("Invalid value '" + value + "' for parameter " + expectedKey);
   }
 
-  private void validateAsArray(String expectedKey, IParameter parameter, List<String> values)
+  private void validateAsArray(String expectedKey, Parameter parameter, List<String> values)
       throws InvalidFormParameterException {
     final String valueToValidate = values.stream().map(v -> "- " + v).collect(joining("\n"));
     if (!parameter.validate(valueToValidate)) {

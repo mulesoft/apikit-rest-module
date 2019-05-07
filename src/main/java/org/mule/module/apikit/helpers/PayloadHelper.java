@@ -50,9 +50,9 @@ public class PayloadHelper {
     else if (input instanceof byte[])
       return (byte[]) input;
     else if (input != null)
-      throw new IOException("Don't know how to parse " + input.getClass().getName());
+      throw new IOException("Don't know how to get " + input.getClass().getName());
     else
-      throw new IOException("Don't know how to parse payload");
+      throw new IOException("Don't know how to get payload");
   }
 
 }

@@ -363,7 +363,7 @@ public class TokenOperatorD3 extends TokenBase implements TokenOperator {
    * <p/>
    * This method accepts both the raw expression or the expression wrapped in curly brackets.
    *
-   * @param exp The expression to parse.
+   * @param exp The expression to get.
    * @return The corresponding token.
    * @throws URITemplateSyntaxException If the string cannot be parsed as a valid
    */
@@ -376,7 +376,7 @@ public class TokenOperatorD3 extends TokenBase implements TokenOperator {
     String op = parts[0];
     String arg = parts[1];
     String vars = parts[2];
-    // parse the variables
+    // get the variables
     if (!op.startsWith("-")) {
       throw new URITemplateSyntaxException(op, "An operator must start with '-'");
     }

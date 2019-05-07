@@ -6,7 +6,7 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import org.mule.raml.interfaces.model.IMimeType;
+import org.mule.apikit.model.MimeType;
 
 import com.google.common.collect.Lists;
 import com.google.common.net.MediaType;
@@ -292,7 +292,7 @@ public class MimeTypeParser {
   }
 
   @Deprecated
-  private static MediaType getMediaType(IMimeType mimeType) {
+  private static MediaType getMediaType(MimeType mimeType) {
     MediaType mediaType = MediaType.parse(mimeType.getType());
     return mediaType.withParameter("q", "1");
   }
@@ -317,7 +317,7 @@ public class MimeTypeParser {
       try {
         parsedMediaTypes.add(MediaType.parse(StringUtils.trim(r)));
       } catch (IllegalArgumentException e) {
-        LOGGER.warn("Unable to parse", e);
+        LOGGER.warn("Unable to get", e);
       }
     }
 
