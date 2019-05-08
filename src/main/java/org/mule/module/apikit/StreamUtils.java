@@ -16,7 +16,7 @@ import java.io.OutputStream;
 
 public class StreamUtils {
 
-  public static Integer BUFFER_SIZE = 4096;//System.getProperty("mule.streaming.bufferSize") == null? Integer.parseInt(System.getProperty("mule.streaming.bufferSize")): 4096;
+  public static Integer BUFFER_SIZE = 4096;
 
   public static long copyLarge(InputStream input, OutputStream output) throws IOException {
     byte[] buffer = new byte[BUFFER_SIZE];
@@ -30,7 +30,7 @@ public class StreamUtils {
     return count;
   }
 
-  public static InputStream getInputStream(TypedValue typedValue){
-    return typedValue.getValue() instanceof CursorProvider ? ((CursorStreamProvider) typedValue.getValue()).openCursor() : ((InputStream) typedValue.getValue());
+  public static InputStream unwrapCursorStream(Object object){
+    return object instanceof CursorProvider ? ((CursorStreamProvider) object).openCursor() : ((InputStream) object);
   }
 }

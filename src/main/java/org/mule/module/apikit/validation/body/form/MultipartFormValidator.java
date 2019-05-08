@@ -12,8 +12,6 @@ import org.mule.module.apikit.validation.body.form.transformation.MultipartFormD
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
 import org.mule.raml.interfaces.model.parameter.IParameter;
 import org.mule.runtime.api.metadata.TypedValue;
-import org.mule.runtime.api.streaming.CursorProvider;
-import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +31,7 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
 
   @Override
   public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
-    final InputStream inputStream = StreamUtils.getInputStream(originalPayload);
+    final InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
     final byte[] boundary = getBoundary(originalPayload);
     MultipartFormData multipartFormData = new MultipartFormData(inputStream, boundary);
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormData.getFormDataParameters();
