@@ -8,8 +8,19 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.runtime.api.metadata.MediaType;
 
-public interface MultipartFormDataParameter {
+public class MultipartFormDataBinaryParameter implements MultipartFormDataParameter{
+  private final MediaType mediaType;
+  private final byte[] byteArray;
 
-  void validate(IParameter parameter) throws InvalidFormParameterException ;
+  public MultipartFormDataBinaryParameter(byte[] inputStream, MediaType mediaType) {
+    this.byteArray = inputStream;
+    this.mediaType = mediaType;
+  }
+
+  @Override
+  public void validate(IParameter parameter) throws InvalidFormParameterException {
+  }
+
 }

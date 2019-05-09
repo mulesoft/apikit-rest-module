@@ -7,7 +7,11 @@
 package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.apache.commons.fileupload.MultipartStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
 
@@ -24,10 +28,10 @@ import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 
 public class MultipartFormData {
   private static Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
+  private static Pattern FILE_NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sfilename=([^\\n;]*?)[;\\n\\s]");
   private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
-  private Boolean defaultsAdded = false;
 
   public MultipartFormData(InputStream inputStream, byte[] boundary){
     multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
@@ -41,12 +45,19 @@ public class MultipartFormData {
       while (nextPart) {
         String headers = multipartStream.readHeaders();
         String name = getName(headers);
-        MediaType mediaType = getContentType(headers);
+        String fileName = getFileName(headers);
+        String contentType = getContentType(headers);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         multipartStream.readBodyData(baos);
         byte[] buf = baos.toByteArray();
-        multipartEntityBuilder.addBinaryBody(name,buf);
-        multiMapParameters.put(name,new MultipartFormDataParameter( new ByteArrayInputStream(buf),mediaType));
+        multipartEntityBuilder.addPart(name, new ByteArrayBody(buf,ContentType.parse(contentType),fileName));
+        MediaType mediaType = MediaType.parse(contentType);
+        if(mediaType.matches(MediaType.TEXT)) {
+          String body = IOUtils.toString(new ByteArrayInputStream(buf));
+          multiMapParameters.put(name,new MultipartFormDataTextParameter(body, mediaType));
+        }else{
+          multiMapParameters.put(name,new MultipartFormDataBinaryParameter(buf, mediaType));
+        }
         nextPart = multipartStream.readBoundary();
       }
 
@@ -54,6 +65,15 @@ public class MultipartFormData {
       throw new InvalidFormParameterException(e);
     }
     return multiMapParameters;
+  }
+
+  private String getFileName(String headers) throws InvalidFormParameterException {
+    Matcher matcher = FILE_NAME_PATTERN.matcher(headers);
+    if (!matcher.find()){
+      return null;
+    }
+
+    return matcher.group(1).replace("\"","").replace("'","");
   }
 
   private String getName(String headers) throws InvalidFormParameterException {
@@ -65,15 +85,14 @@ public class MultipartFormData {
     return matcher.group(1).replace("\"","").replace("'","");
   }
 
-  private MediaType getContentType(String headers){
+  private String getContentType(String headers){
     Matcher matcher = CONTENT_TYPE_PATTERN.matcher(headers);
     if (!matcher.find()){
-      return MediaType.TEXT;
+      return MediaType.TEXT.toString();
     }
-    return MediaType.parse(matcher.group(1));
+    return matcher.group(1);
   }
   public void addDefault(String key,String value){
-    defaultsAdded = true;
     multipartEntityBuilder.addTextBody(key,value);
   }
 
@@ -83,9 +102,5 @@ public class MultipartFormData {
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
     }
-  }
-
-  public boolean areDefaultsAdded(){
-    return defaultsAdded;
   }
 }
