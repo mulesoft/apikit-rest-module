@@ -9,7 +9,11 @@ package org.mule.module.apikit.validation.body.form.transformation;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.raml.interfaces.model.parameter.IParameter;
 import org.mule.runtime.api.metadata.MediaType;
-
+/**
+ * This class is intended to validate multipart form-data
+ * binary parameters against the expected specification
+ *
+ */
 public class MultipartFormDataBinaryParameter implements MultipartFormDataParameter{
   private final MediaType mediaType;
   private final byte[] byteArray;
@@ -21,6 +25,6 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
 
   @Override
   public void validate(IParameter parameter) throws InvalidFormParameterException {
+    //Parsers currently doesn't validate files
   }
-
 }
