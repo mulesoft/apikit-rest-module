@@ -52,11 +52,8 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
         }
       }
     }
-    if (multipartFormData.areDefaultsAdded()) {
-      return TypedValue.of(multipartFormData.build());
-    } else {
-      return originalPayload;
-    }
+
+    return TypedValue.of(multipartFormData.build());
   }
 
   private byte[] getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
