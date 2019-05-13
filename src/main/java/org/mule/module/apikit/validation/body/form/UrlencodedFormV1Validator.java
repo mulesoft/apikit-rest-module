@@ -12,10 +12,10 @@ package org.mule.module.apikit.validation.body.form;
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
-import org.mule.raml.interfaces.model.parameter.IParameter;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -25,10 +25,10 @@ import java.util.Map;
 
 public class UrlencodedFormV1Validator implements FormValidatorStrategy<TypedValue> {
 
-  Map<String, List<IParameter>> formParameters;
+  Map<String, List<Parameter>> formParameters;
   DataWeaveTransformer dataWeaveTransformer;
 
-  public UrlencodedFormV1Validator(Map<String, List<IParameter>> formParameters, ExpressionManager expressionManager) {
+  public UrlencodedFormV1Validator(Map<String, List<Parameter>> formParameters, ExpressionManager expressionManager) {
     this.formParameters = formParameters;
     this.dataWeaveTransformer = new DataWeaveTransformer(expressionManager);
   }
@@ -43,7 +43,7 @@ public class UrlencodedFormV1Validator implements FormValidatorStrategy<TypedVal
         continue;
       }
 
-      IParameter expected = formParameters.get(expectedKey).get(0);
+      Parameter expected = formParameters.get(expectedKey).get(0);
 
       Object actual = requestMap.get(expectedKey);
 

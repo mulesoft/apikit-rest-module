@@ -4,15 +4,20 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.api.config;
+package org.mule.module.apikit;
 
-import org.mule.apikit.ApiType;
-import org.mule.module.apikit.api.RamlHandler;
 import org.mule.parser.service.ParserMode;
 
-public interface ConsoleConfig {
+public enum ApikitParserMode {
+  AUTO(ParserMode.AUTO), AMF(ParserMode.AMF), RAML(ParserMode.RAML);
 
-  RamlHandler getRamlHandler();
+  private final ParserMode mode;
 
-  ApiType getType();
+  ApikitParserMode(ParserMode mode) {
+    this.mode = mode;
+  }
+
+  public ParserMode get() {
+    return mode;
+  }
 }

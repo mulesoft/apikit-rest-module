@@ -15,13 +15,13 @@ import org.mule.module.apikit.validation.attributes.HeadersValidator;
 import org.mule.module.apikit.validation.attributes.QueryParameterValidator;
 import org.mule.module.apikit.validation.attributes.QueryStringValidator;
 import org.mule.module.apikit.validation.attributes.UriParametersValidator;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IResource;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.Resource;
 import org.mule.runtime.api.util.MultiMap;
 
 public class AttributesValidator {
 
-  public static HttpRequestAttributes validateAndAddDefaults(HttpRequestAttributes attributes, IResource resource,
+  public static HttpRequestAttributes validateAndAddDefaults(HttpRequestAttributes attributes, Resource resource,
                                                              ResolvedVariables resolvedVariables, ValidationConfig config)
       throws MuleRestException {
 
@@ -30,7 +30,7 @@ public class AttributesValidator {
     String queryString;
     MultiMap<String, String> uriParams;
 
-    final IAction action = resource.getAction(attributes.getMethod().toLowerCase());
+    final Action action = resource.getAction(attributes.getMethod().toLowerCase());
 
     // uriparams
     UriParametersValidator uriParametersValidator = new UriParametersValidator(action, resolvedVariables);

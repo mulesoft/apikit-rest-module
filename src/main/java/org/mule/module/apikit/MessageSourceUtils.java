@@ -17,7 +17,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import static com.sun.jmx.mbeanserver.Util.cast;
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 
@@ -28,8 +27,6 @@ public class MessageSourceUtils {
   /**
    * Extracts the configured HTTP URI from a flow. It only works for flows that uses the HTTP extension.
    *
-  //     * @param flow where to extract the URI
-   * @return the URI
    */
   public static URI getUriFromFlow(Component source) {
     if (source != null && isHttpExtensionSource(source)) {
@@ -45,15 +42,15 @@ public class MessageSourceUtils {
   }
 
   private static String getListenerPath(Component source) {
-    final ParameterizedSource parameterizedSource = cast(source);
-    String listenerPath = cast(parameterizedSource.getInitialisationParameters().get("path"));
-    final String basePath = cast(getConfigState(source).getConfigParameters().get("basePath"));
+    ParameterizedSource parameterizedSource = ((ParameterizedSource) source);
+    String listenerPath = ((String) parameterizedSource.getInitialisationParameters().get("path"));
+    String basePath = ((String) getConfigState(source).getConfigParameters().get("basePath"));
     listenerPath = prependIfMissing(listenerPath, "/");
     return basePath == null ? listenerPath : prependIfMissing(basePath, "/") + listenerPath;
   }
 
   private static ConfigurationState getConfigState(Component source) {
-    final ConfiguredComponent configuredComponent = cast(source);
+    ConfiguredComponent configuredComponent = ((ConfiguredComponent) source);
     return configuredComponent.getConfigurationInstance()
         .orElseThrow(() -> new RuntimeException("Source does not contain a configuration instance"))
         .getState();

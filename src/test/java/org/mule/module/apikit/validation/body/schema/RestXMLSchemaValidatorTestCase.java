@@ -21,13 +21,12 @@ import org.mule.module.apikit.Configuration;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.validation.body.schema.v1.RestXmlSchemaValidator;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IMimeType;
-import org.mule.raml.interfaces.model.IRaml;
-import org.mule.raml.interfaces.model.IResource;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.Resource;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.TypedException;
-import org.mule.runtime.core.api.MuleContext;
 
 public class RestXMLSchemaValidatorTestCase {
 
@@ -44,11 +43,11 @@ public class RestXMLSchemaValidatorTestCase {
       "  </xs:complexType>" +
       "</xs:element>" +
       "</xs:schema>";
-  private static IRaml api;
+  private static ApiSpecification api;
 
   @BeforeClass
   public static void mockApi() {
-    api = Mockito.mock(IRaml.class);
+    api = Mockito.mock(ApiSpecification.class);
 
     Map<String, Object> compiledSchemaMap = new HashMap<>();
     Schema compiledSchema = org.raml.parser.visitor.SchemaCompiler.getInstance().compile(xmlSchema);
@@ -59,14 +58,14 @@ public class RestXMLSchemaValidatorTestCase {
     schemaMap.put("scheme-xml", xmlSchema);
     when(api.getConsolidatedSchemas()).thenReturn(schemaMap);
 
-    Map<String, IMimeType> body = new HashMap<>();
-    IMimeType mimeType = Mockito.mock(IMimeType.class);
+    Map<String, MimeType> body = new HashMap<>();
+    MimeType mimeType = Mockito.mock(MimeType.class);
     when(mimeType.getType()).thenReturn("application/xml");
     when(mimeType.getSchema()).thenReturn("scheme-xml");
     body.put("application/xml", mimeType);
-    IAction mockedAction = Mockito.mock(IAction.class);
+    Action mockedAction = Mockito.mock(Action.class);
     when(mockedAction.getBody()).thenReturn(body);
-    IResource mockedResource = Mockito.mock(IResource.class);
+    Resource mockedResource = Mockito.mock(Resource.class);
     when(mockedResource.getAction("POST")).thenReturn(mockedAction);
     when(api.getResource("/leagues")).thenReturn(mockedResource);
   }

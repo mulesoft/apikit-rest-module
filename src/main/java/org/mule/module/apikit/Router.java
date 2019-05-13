@@ -38,8 +38,8 @@ import org.mule.module.apikit.api.validation.RequestValidator;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.module.apikit.helpers.EventHelper;
-import org.mule.raml.interfaces.model.IRaml;
-import org.mule.raml.interfaces.model.IResource;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.Resource;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
@@ -95,7 +95,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
     LOGGER.info(StringMessageUtils
         .getBoilerPlate("APIKit Router for config '" + configurationName + "' started using Parser: "
-            + configuration.getParser().name()));
+            + configuration.getType().name()));
   }
 
   @Override
@@ -113,7 +113,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   }
 
   @Override
-  public IRaml getRaml() {
+  public ApiSpecification getRaml() {
     return this.getRamlHandler().getApi();
   }
 
@@ -153,7 +153,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     URIResolver uriResolver = findInCache(path, config.getUriResolverCache());
     ResolvedVariables resolvedVariables = uriResolver.resolve(uriPattern);
 
-    IResource resource = config.getFlowFinder().getResource(uriPattern);
+    Resource resource = config.getFlowFinder().getResource(uriPattern);
     eventBuilder = validateRequest(event, eventBuilder, config, resource, attributes, resolvedVariables);
     String contentType = getMediaType(attributes);
     Flow flow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(), contentType);
@@ -199,7 +199,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   }
 
   public CoreEvent.Builder validateRequest(CoreEvent event, CoreEvent.Builder eventBuilder, ValidationConfig config,
-                                           IResource resource, HttpRequestAttributes attributes,
+                                           Resource resource, HttpRequestAttributes attributes,
                                            ResolvedVariables resolvedVariables)
       throws MuleRestException {
 

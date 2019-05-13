@@ -7,10 +7,11 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.collect.Maps;
+
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidQueryStringException;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IQueryString;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.QueryString;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.HashMap;
@@ -20,14 +21,14 @@ import java.util.Map.Entry;
 
 public class QueryStringValidator {
 
-  private IAction action;
+  private Action action;
 
-  public QueryStringValidator(IAction action) {
+  public QueryStringValidator(Action action) {
     this.action = action;
   }
 
   public void validate(MultiMap<String, String> queryParams) throws InvalidQueryStringException {
-    IQueryString expected = action.queryString();
+    QueryString expected = action.queryString();
     if (!shouldProcessQueryString(expected))
       return;
 
@@ -38,14 +39,14 @@ public class QueryStringValidator {
     }
   }
 
-  private boolean shouldProcessQueryString(IQueryString queryString) {
+  private boolean shouldProcessQueryString(QueryString queryString) {
     return queryString != null && !queryString.isArray() && !queryString.isScalar();
   }
 
-  private String buildQueryString(IQueryString expected, MultiMap<String, String> queryParams) {
+  private String buildQueryString(QueryString expected, MultiMap<String, String> queryParams) {
     StringBuilder result = new StringBuilder();
 
-    Map<String, IParameter> facetsWithDefault = getFacetsWithDefaultValue(expected.facets());
+    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(expected.facets());
 
     for (Object property : queryParams.keySet()) {
       facetsWithDefault.remove(property.toString());
@@ -65,7 +66,7 @@ public class QueryStringValidator {
       }
     }
 
-    for (Entry<String, IParameter> entry : facetsWithDefault.entrySet())
+    for (Entry<String, Parameter> entry : facetsWithDefault.entrySet())
       result.append(entry.getKey()).append(": ").append(entry.getValue().getDefaultValue()).append("\n");
 
     if (result.length() > 0)
@@ -76,9 +77,9 @@ public class QueryStringValidator {
     return "{}";
   }
 
-  private Map<String, IParameter> getFacetsWithDefaultValue(Map<String, IParameter> facets) {
-    HashMap<String, IParameter> result = Maps.newHashMap();
-    for (Entry<String, IParameter> entry : facets.entrySet()) {
+  private Map<String, Parameter> getFacetsWithDefaultValue(Map<String, Parameter> facets) {
+    HashMap<String, Parameter> result = Maps.newHashMap();
+    for (Entry<String, Parameter> entry : facets.entrySet()) {
       if (entry.getValue().getDefaultValue() != null)
         result.put(entry.getKey(), entry.getValue());
     }

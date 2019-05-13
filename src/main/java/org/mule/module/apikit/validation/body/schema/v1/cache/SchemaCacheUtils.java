@@ -7,9 +7,9 @@
 package org.mule.module.apikit.validation.body.schema.v1.cache;
 
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IMimeType;
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.ApiSpecification;
 
 import com.github.fge.jackson.JsonLoader;
 
@@ -22,7 +22,7 @@ public class SchemaCacheUtils {
 
   private static final String SEPARATOR = ",";
 
-  public static String getSchemaCacheKey(IAction action, String mimeTypeName) {
+  public static String getSchemaCacheKey(Action action, String mimeTypeName) {
     StringBuilder key = new StringBuilder(action.getResource().getUri());
     key.append(SEPARATOR).append(action.getType());
     key.append(SEPARATOR).append(mimeTypeName);
@@ -32,11 +32,11 @@ public class SchemaCacheUtils {
   /**
    * Returns the compiled representation of an XML schema.
    */
-  public static Schema resolveXmlSchema(String schemaCacheKey, IRaml api) {
-    IMimeType mimeType = getMimeType(schemaCacheKey, api);
+  public static Schema resolveXmlSchema(String schemaCacheKey, ApiSpecification api) {
+    MimeType mimeType = getMimeType(schemaCacheKey, api);
 
     Object compiledSchema = mimeType.getCompiledSchema();
-    if (compiledSchema != null && compiledSchema instanceof Schema) {
+    if (compiledSchema instanceof Schema) {
       return (Schema) compiledSchema;
     }
 
@@ -45,16 +45,16 @@ public class SchemaCacheUtils {
     //check global schemas
     if (api.getConsolidatedSchemas().containsKey(schema)) {
       compiledSchema = api.getCompiledSchemas().get(schema);
-      if (compiledSchema != null && compiledSchema instanceof Schema) {
+      if (compiledSchema instanceof Schema) {
         return (Schema) compiledSchema;
       }
     }
     throw new ApikitRuntimeException("XML Schema could not be resolved for key: " + schemaCacheKey);
   }
 
-  private static IMimeType getMimeType(String schemaCacheKey, IRaml api) {
+  private static MimeType getMimeType(String schemaCacheKey, ApiSpecification api) {
     String[] path = schemaCacheKey.split(SEPARATOR);
-    IAction action = api.getResource(path[0]).getAction(path[1]);
+    Action action = api.getResource(path[0]).getAction(path[1]);
     return action.getBody().get(path[2]);
   }
 
@@ -63,8 +63,8 @@ public class SchemaCacheUtils {
    * or a JsonNode for inline schema definitions
    */
   @Nullable
-  public static Object resolveJsonSchema(String schemaCacheKey, IRaml api) {
-    IMimeType mimeType = getMimeType(schemaCacheKey, api);
+  public static Object resolveJsonSchema(String schemaCacheKey, ApiSpecification api) {
+    MimeType mimeType = getMimeType(schemaCacheKey, api);
     String path = (String) mimeType.getCompiledSchema();
     String schemaOrGlobalReference = mimeType.getSchema();
 

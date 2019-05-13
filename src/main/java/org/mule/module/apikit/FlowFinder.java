@@ -24,9 +24,9 @@ import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.exception.NotImplementedException;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.module.apikit.helpers.FlowName;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IRaml;
-import org.mule.raml.interfaces.model.IResource;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.Resource;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.core.api.construct.Flow;
@@ -38,7 +38,7 @@ public class FlowFinder {
 
   protected static final Logger logger = LoggerFactory.getLogger(FlowFinder.class);
 
-  private Map<String, IResource> flatResourceTree = new HashMap<>();
+  private Map<String, Resource> flatResourceTree = new HashMap<>();
   private Map<String, Flow> restFlowMap;
   private Map<String, Flow> restFlowMapUnwrapped;
 
@@ -67,7 +67,7 @@ public class FlowFinder {
   }
 
   protected void initializeRestFlowMap() {
-    final IRaml api = ramlHandler.getApi();
+    final ApiSpecification api = ramlHandler.getApi();
     flattenResourceTree(api.getResources(), api.getVersion());
 
     if (restFlowMap == null) {
@@ -103,8 +103,8 @@ public class FlowFinder {
     return getFlowsList(locator);
   }
 
-  private void flattenResourceTree(Map<String, IResource> resources, String version) {
-    for (IResource resource : resources.values()) {
+  private void flattenResourceTree(Map<String, Resource> resources, String version) {
+    for (Resource resource : resources.values()) {
       flatResourceTree.put(resource.getResolvedUri(version), resource);
       if (resource.getResources() != null) {
         flattenResourceTree(resource.getResources(), version);
@@ -168,9 +168,9 @@ public class FlowFinder {
       key = key + ":" + type;
     }
 
-    IResource apiResource = flatResourceTree.get(resource);
+    Resource apiResource = flatResourceTree.get(resource);
     if (apiResource != null) {
-      IAction action = apiResource.getAction(method);
+      Action action = apiResource.getAction(method);
       if (action != null) {
         if (type == null)
           return key;
@@ -185,9 +185,9 @@ public class FlowFinder {
   }
 
   private void logMissingMappings(String version) {
-    for (IResource resource : flatResourceTree.values()) {
+    for (Resource resource : flatResourceTree.values()) {
       String fullResource = resource.getResolvedUri(version);
-      for (IAction action : resource.getActions().values()) {
+      for (Action action : resource.getActions().values()) {
         String method = action.getType().name().toLowerCase();
         String key = method + ":" + fullResource;
         if (restFlowMap.get(key) != null) {
@@ -223,7 +223,7 @@ public class FlowFinder {
   }
 
 
-  public Flow getFlow(IResource resource, String method, String contentType) throws UnsupportedMediaTypeException {
+  public Flow getFlow(Resource resource, String method, String contentType) throws UnsupportedMediaTypeException {
     String baseKey = method + ":" + resource.getResolvedUri(ramlHandler.getApi().getVersion());
     Map<String, Flow> rawRestFlowMap = getRawRestFlowMap();
     Flow flow = rawRestFlowMap.get(baseKey + ":" + contentType);
@@ -240,7 +240,7 @@ public class FlowFinder {
     return flow;
   }
 
-  public IResource getResource(URIPattern uriPattern) {
+  public Resource getResource(URIPattern uriPattern) {
     return routingTable.getResource(uriPattern);
   }
 

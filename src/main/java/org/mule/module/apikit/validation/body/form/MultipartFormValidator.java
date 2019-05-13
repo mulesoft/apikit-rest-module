@@ -6,11 +6,11 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveDefaultsBuilder;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
 import org.mule.module.apikit.validation.body.form.transformation.TextPlainPart;
-import org.mule.raml.interfaces.model.parameter.IParameter;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.slf4j.Logger;
@@ -22,10 +22,10 @@ import java.util.Map;
 public class MultipartFormValidator implements FormValidatorStrategy<TypedValue> {
 
   protected static final Logger logger = LoggerFactory.getLogger(MultipartFormValidator.class);
-  Map<String, List<IParameter>> formParameters;
+  Map<String, List<Parameter>> formParameters;
   DataWeaveTransformer dataWeaveTransformer;
 
-  public MultipartFormValidator(Map<String, List<IParameter>> formParameters, ExpressionManager expressionManager) {
+  public MultipartFormValidator(Map<String, List<Parameter>> formParameters, ExpressionManager expressionManager) {
     this.formParameters = formParameters;
     this.dataWeaveTransformer = new DataWeaveTransformer(expressionManager);
 
@@ -43,7 +43,7 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
         continue;
       }
 
-      IParameter expected = formParameters.get(expectedKey).get(0);
+      Parameter expected = formParameters.get(expectedKey).get(0);
       if (actualParameters.keySet().contains(expectedKey)) {
         String value = actualParameters.get(expectedKey);
         if (!expected.validate(value)) {
