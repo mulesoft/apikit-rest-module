@@ -6,16 +6,20 @@
  */
 package org.mule.module.apikit;
 
+import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.streaming.CursorProvider;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public class StreamUtils {
 
-  protected static Integer bufferSize = 4096;//System.getProperty("mule.streaming.bufferSize") == null? Integer.parseInt(System.getProperty("mule.streaming.bufferSize")): 4096;
+  public static Integer BUFFER_SIZE = 4096;
 
   public static long copyLarge(InputStream input, OutputStream output) throws IOException {
-    byte[] buffer = new byte[bufferSize];
+    byte[] buffer = new byte[BUFFER_SIZE];
     long count = 0L;
 
     int n1;
@@ -24,5 +28,9 @@ public class StreamUtils {
     }
 
     return count;
+  }
+
+  public static InputStream unwrapCursorStream(Object object){
+    return object instanceof CursorProvider ? ((CursorStreamProvider) object).openCursor() : ((InputStream) object);
   }
 }
