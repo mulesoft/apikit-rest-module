@@ -416,7 +416,7 @@ public class Variable {
   /**
    * Parses the given expression and returns the corresponding instance.
    *
-   * @param exp The expression to parse.
+   * @param exp The expression to get.
    * @return the corresponding variable.
    * @throws URITemplateSyntaxException If the expression cannot be parsed
    */
@@ -449,7 +449,7 @@ public class Variable {
   /**
    * Parses the given expression and returns the corresponding instance.
    *
-   * @param exp The expression to parse.
+   * @param exp The expression to get.
    * @return the corresponding variable.
    * @throws URITemplateSyntaxException If the expression cannot be parsed
    */

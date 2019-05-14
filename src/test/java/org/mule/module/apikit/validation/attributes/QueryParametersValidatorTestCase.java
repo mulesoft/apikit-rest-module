@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mule.module.apikit.api.exception.InvalidQueryParameterException;
-import org.mule.raml.implv1.model.ActionImpl;
+import org.mule.apikit.implv1.model.ActionImpl;
 import org.mule.runtime.api.util.MultiMap;
 import org.raml.model.Action;
 import org.raml.model.ParamType;

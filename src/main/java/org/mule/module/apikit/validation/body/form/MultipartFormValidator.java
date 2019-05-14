@@ -6,11 +6,12 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.el.ExpressionManager;
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ import java.util.Map;
 public class MultipartFormValidator implements FormValidatorStrategy<TypedValue> {
 
   protected static final Logger logger = LoggerFactory.getLogger(MultipartFormValidator.class);
-  Map<String, List<IParameter>> formParameters;
+  Map<String, List<Parameter>> formParameters;
 
-  public MultipartFormValidator(Map<String, List<IParameter>> formParameters, ExpressionManager expressionManager) {
+  public MultipartFormValidator(Map<String, List<Parameter>> formParameters, ExpressionManager expressionManager) {
     this.formParameters = formParameters;
   }
 
@@ -37,9 +38,9 @@ public class MultipartFormValidator implements FormValidatorStrategy<TypedValue>
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormData.getFormDataParameters();
 
     for (String expectedKey : formParameters.keySet()) {
-      List<IParameter> params = formParameters.get(expectedKey);
+      List<Parameter> params = formParameters.get(expectedKey);
       if (params != null && params.size() == 1){
-        IParameter expected = params.get(0);
+        Parameter expected = params.get(0);
         if (actualParameters.containsKey(expectedKey)) {
           MultipartFormDataParameter multipartFormDataParameter = actualParameters.get(expectedKey);
           multipartFormDataParameter.validate(expected);

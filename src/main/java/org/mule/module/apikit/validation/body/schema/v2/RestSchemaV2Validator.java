@@ -8,8 +8,8 @@ package org.mule.module.apikit.validation.body.schema.v2;
 
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
-import org.mule.raml.interfaces.model.IMimeType;
-import org.mule.raml.interfaces.parser.rule.IValidationResult;
+import org.mule.apikit.model.MimeType;
+import org.mule.apikit.validation.ApiValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +18,14 @@ import java.util.List;
 public class RestSchemaV2Validator implements IRestSchemaValidatorStrategy {
 
   protected static final Logger logger = LoggerFactory.getLogger(RestSchemaV2Validator.class);
-  private IMimeType mimeType;
+  private MimeType mimeType;
 
-  public RestSchemaV2Validator(IMimeType mimeType) {
+  public RestSchemaV2Validator(MimeType mimeType) {
     this.mimeType = mimeType;
   }
 
   public void validate(String payload) throws BadRequestException {
-    final List<IValidationResult> validationResults = mimeType.validate(payload);
+    final List<ApiValidationResult> validationResults = mimeType.validate(payload);
 
     if (!validationResults.isEmpty()) {
       String logMessage = validationResults.get(0).getMessage();

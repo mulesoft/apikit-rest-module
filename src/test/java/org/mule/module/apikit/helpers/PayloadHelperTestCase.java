@@ -6,7 +6,9 @@
  */
 package org.mule.module.apikit.helpers;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsString;
 
 import org.mule.module.apikit.api.exception.BadRequestException;
@@ -75,6 +77,6 @@ public class PayloadHelperTestCase {
     final String utf8BOM = "\uFEFF";
     final String payload = "<league xmlns=\"http://mulesoft.com/schemas/soccer\"><greeting>hello</greeting></league>";
 
-    assertEquals(payload, getPayloadAsString(utf8BOM + payload, "UTF-8"));
+    assertThat(payload, is(getPayloadAsString(utf8BOM + payload, "UTF-8")));
   }
 }

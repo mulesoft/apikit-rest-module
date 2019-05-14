@@ -11,11 +11,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.UrlUtils;
+import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.core.api.MuleContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mule.parser.service.ParserMode.AUTO;
 
 public class BaseUriReplacementTestCase {
 
@@ -31,8 +34,8 @@ public class BaseUriReplacementTestCase {
 
   @Test
   public void baseUriReplacementTest() throws Exception {
-    RamlHandler ramlHandler =
-        new RamlHandler("org/mule/module/apikit/console/simple-with-baseuri10.raml", false, muleContext.getErrorTypeRepository());
+    ErrorTypeRepository errorRepo = muleContext.getErrorTypeRepository();
+    RamlHandler ramlHandler = new RamlHandler("org/mule/module/apikit/console/simple-with-baseuri10.raml", false, errorRepo, AUTO);
     assertEquals("http://localhost:8081/api", ramlHandler.getBaseUriReplacement("http://localhost:8081/api"));
     assertEquals("http://localhost:8081/api", ramlHandler.getBaseUriReplacement("http://0.0.0.0:8081/api"));
 

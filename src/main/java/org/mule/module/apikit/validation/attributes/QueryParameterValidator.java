@@ -7,10 +7,11 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.base.Joiner;
+
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidQueryParameterException;
 import org.mule.module.apikit.helpers.AttributesHelper;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.Action;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.Collection;
@@ -23,9 +24,9 @@ public class QueryParameterValidator {
 
   private MultiMap<String, String> queryParams;
   private String queryString;
-  private IAction action;
+  private Action action;
 
-  public QueryParameterValidator(IAction action) {
+  public QueryParameterValidator(Action action) {
     this.action = action;
   }
 
@@ -37,7 +38,7 @@ public class QueryParameterValidator {
       validateQueryParametersStrictly(queryParams);
 
     for (String expectedKey : action.getQueryParameters().keySet()) {
-      IParameter expected = action.getQueryParameters().get(expectedKey);
+      Parameter expected = action.getQueryParameters().get(expectedKey);
       List<String> actual = queryParams.getAll(expectedKey);
 
       if (actual.isEmpty()) {
@@ -91,7 +92,7 @@ public class QueryParameterValidator {
   }
 
   //only for raml 1.0
-  private void validateQueryParamArray(String paramKey, IParameter expected, Collection<?> paramValues)
+  private void validateQueryParamArray(String paramKey, Parameter expected, Collection<?> paramValues)
       throws InvalidQueryParameterException {
     StringBuilder builder = new StringBuilder();
 
@@ -105,7 +106,7 @@ public class QueryParameterValidator {
     validateQueryParam(paramKey, expected, builder.toString());
   }
 
-  private void validateQueryParam(String paramKey, IParameter expected, String paramValue) throws InvalidQueryParameterException {
+  private void validateQueryParam(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
       String msg = String.format("Invalid value '%s' for query parameter %s. %s",
                                  paramValue, paramKey, expected.message(paramValue));

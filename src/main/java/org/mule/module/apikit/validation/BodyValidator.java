@@ -27,8 +27,8 @@ import org.mule.module.apikit.validation.body.schema.v1.RestJsonSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.RestXmlSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.cache.SchemaCacheUtils;
 import org.mule.module.apikit.validation.body.schema.v2.RestSchemaV2Validator;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IMimeType;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.MimeType;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.slf4j.Logger;
@@ -40,13 +40,13 @@ public class BodyValidator {
 
   protected final static Logger logger = LoggerFactory.getLogger(BodyValidator.class);
 
-  public static ValidBody validate(IAction action, HttpRequestAttributes attributes, Object payload,
+  public static ValidBody validate(Action action, HttpRequestAttributes attributes, Object payload,
                                    ValidationConfig config, String charset)
       throws BadRequestException, UnsupportedMediaTypeException {
     return validate(action, attributes, payload, config, charset, null);
   }
 
-  public static ValidBody validate(IAction action, HttpRequestAttributes attributes, Object payload,
+  public static ValidBody validate(Action action, HttpRequestAttributes attributes, Object payload,
                                    ValidationConfig config, String charset, ErrorTypeRepository errorTypeRepository)
       throws BadRequestException, UnsupportedMediaTypeException {
 
@@ -59,7 +59,7 @@ public class BodyValidator {
 
     final String requestMimeTypeName = getMediaType(attributes);
 
-    final Entry<String, IMimeType> foundMimeType = action.getBody().entrySet().stream()
+    final Entry<String, MimeType> foundMimeType = action.getBody().entrySet().stream()
         .peek(entry -> {
           if (logger.isDebugEnabled())
             logger.debug(format("comparing request media type %s with expected %s\n", requestMimeTypeName, entry.getKey()));
@@ -69,7 +69,7 @@ public class BodyValidator {
         .orElseThrow(UnsupportedMediaTypeException::new);
 
 
-    final IMimeType mimeType = foundMimeType.getValue();
+    final MimeType mimeType = foundMimeType.getValue();
 
     if (requestMimeTypeName.contains("json") || requestMimeTypeName.contains("xml")) {
 
@@ -85,14 +85,14 @@ public class BodyValidator {
     return validBody;
   }
 
-  private static ValidBody validateAsString(ValidationConfig config, IMimeType mimeType, IAction action,
+  private static ValidBody validateAsString(ValidationConfig config, MimeType mimeType, Action action,
                                             String requestMimeTypeName,
                                             Object payload, String charset)
       throws BadRequestException {
     return validateAsString(config, mimeType, action, requestMimeTypeName, payload, charset, null);
   }
 
-  private static ValidBody validateAsString(ValidationConfig config, IMimeType mimeType, IAction action,
+  private static ValidBody validateAsString(ValidationConfig config, MimeType mimeType, Action action,
                                             String requestMimeTypeName,
                                             Object payload, String charset, ErrorTypeRepository errorTypeRepository)
       throws BadRequestException {
@@ -126,7 +126,7 @@ public class BodyValidator {
     return validBody;
   }
 
-  private static ValidBody validateAsMultiPart(ValidationConfig config, IMimeType mimeType, String requestMimeTypeName,
+  private static ValidBody validateAsMultiPart(ValidationConfig config, MimeType mimeType, String requestMimeTypeName,
                                                Object payload)
       throws BadRequestException {
 

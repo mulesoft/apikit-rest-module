@@ -7,7 +7,7 @@
 package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
-import org.mule.raml.interfaces.model.parameter.IParameter;
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.runtime.api.metadata.MediaType;
 /**
  * This class is intended to validate multipart form-data
@@ -24,7 +24,7 @@ public class MultipartFormDataTextParameter implements MultipartFormDataParamete
   }
 
   @Override
-  public void validate(IParameter expected) throws InvalidFormParameterException {
+  public void validate(Parameter expected) throws InvalidFormParameterException {
     if(!expected.validate(body)){
       throw new InvalidFormParameterException("Value " + body + " for parameter " + expected.getDisplayName() + " is invalid");
     }

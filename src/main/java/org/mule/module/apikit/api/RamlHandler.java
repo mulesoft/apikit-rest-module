@@ -6,56 +6,58 @@
  */
 package org.mule.module.apikit.api;
 
+import static org.mule.apikit.ApiType.AMF;
+import static org.mule.apikit.ApiType.RAML;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.raml.interfaces.ParserType.AMF;
-import static org.mule.raml.interfaces.ParserType.RAML;
-import static org.mule.raml.interfaces.common.APISyncUtils.isSyncProtocol;
-import static org.mule.raml.interfaces.model.ApiVendor.RAML_08;
-import static org.mule.raml.interfaces.model.ApiVendor.RAML_10;
+import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
+import static org.mule.apikit.model.ApiVendor.RAML_08;
+import static org.mule.apikit.model.ApiVendor.RAML_10;
+import static org.mule.parser.service.ParserMode.AUTO;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
-import org.mule.amf.impl.ParserWrapperAmf;
+
+import org.mule.amf.impl.AMFParser;
+import org.mule.amf.impl.model.AMFImpl;
+import org.mule.apikit.ApiType;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.exception.NotFoundException;
+import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
-import org.mule.raml.interfaces.ParserType;
-import org.mule.raml.interfaces.ParserWrapper;
-import org.mule.raml.interfaces.loader.ApiSyncResourceLoader;
-import org.mule.raml.interfaces.loader.ClassPathResourceLoader;
-import org.mule.raml.interfaces.model.ApiVendor;
-import org.mule.raml.interfaces.model.IAction;
-import org.mule.raml.interfaces.model.IRaml;
-import org.mule.raml.interfaces.model.api.ApiRef;
+import org.mule.apikit.loader.ApiSyncResourceLoader;
+import org.mule.apikit.loader.ClassPathResourceLoader;
+import org.mule.apikit.model.ApiVendor;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.api.ApiReference;
+import org.mule.parser.service.result.ParseResult;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.TypedException;
+
 import org.raml.model.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RamlHandler {
 
+  public static final String MULE_APIKIT_PARSER_PROPERTY = "mule.apikit.parser";
   public static final String APPLICATION_RAML = "application/raml+yaml";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RamlHandler.class);
   private static final String RAML_QUERY_STRING = "raml";
+  private static final ParserService parserService = new ParserService();
+  private String apiResourcesRelativePath = "";
 
   private boolean keepApiBaseUri;
   private String apiServer;
-  private IRaml api;
-  private ParserWrapper parserWrapper;
-
-  private String apiResourcesRelativePath = "";
-
-  private ParserType parser;
-
-  protected static final Logger logger = LoggerFactory.getLogger(RamlHandler.class);
-
-  public static final String MULE_APIKIT_PARSER_AMF = "mule.apikit.parser";
-
+  private ApiSpecification api;
+  private ParseResult result;
   private ErrorTypeRepository errorTypeRepository;
 
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri) throws IOException {
@@ -67,37 +69,38 @@ public class RamlHandler {
     this(ramlLocation, keepApiBaseUri, errorTypeRepository, null);
   }
 
-  public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ParserType parserType)
-      throws IOException {
+  public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ParserMode parserType)
+    throws IOException {
     this(ramlLocation, keepApiBaseUri, null, parserType);
   }
 
-  public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ErrorTypeRepository errorTypeRepository, ParserType parserType)
-      throws IOException {
+  public RamlHandler(String ramlLocation,
+                     boolean keepApiBaseUri,
+                     ErrorTypeRepository errorTypeRepository,
+                     ParserMode parserMode) throws IOException {
     this.keepApiBaseUri = keepApiBaseUri;
-
     String rootRamlLocation = findRootRaml(ramlLocation);
+
     if (rootRamlLocation == null) {
       throw new IOException("Raml not found at: " + ramlLocation);
     }
-    parserWrapper = new ParserService().getParser(ApiRef.create(rootRamlLocation), parserType);
-    parserWrapper.validate();
-    this.api = parserWrapper.build();
-    parser = parserWrapper.getParserType();
 
-    int idx = rootRamlLocation.lastIndexOf("/");
-    if (idx > 0) {
-      this.apiResourcesRelativePath = rootRamlLocation.substring(0, idx + 1);
-      this.apiResourcesRelativePath = sanitarizeResourceRelativePath(apiResourcesRelativePath);
-    } else if (isSyncProtocol(rootRamlLocation)) {
-      this.apiResourcesRelativePath = rootRamlLocation;
+    result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode == null ? AUTO : parserMode);
+    if (result.success()) {
+      this.api = result.get();
+      int idx = rootRamlLocation.lastIndexOf("/");
+      if (idx > 0) {
+        this.apiResourcesRelativePath = rootRamlLocation.substring(0, idx + 1);
+        this.apiResourcesRelativePath = sanitarizeResourceRelativePath(apiResourcesRelativePath);
+      } else if (isSyncProtocol(rootRamlLocation)) {
+        this.apiResourcesRelativePath = rootRamlLocation;
+      }
+      this.errorTypeRepository = errorTypeRepository;
+    } else {
+      String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
+      throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
     }
 
-    this.errorTypeRepository = errorTypeRepository;
-  }
-
-  public ParserType getParserType() {
-    return parser;
   }
 
   /**
@@ -105,24 +108,24 @@ public class RamlHandler {
    */
   @Deprecated
   public boolean isParserV2() {
-    final ParserType parser = getParserType();
+    ApiType parser = api.getType();
     return parser == AMF || (parser == RAML && ApiVendor.RAML_10 == getApiVendor());
   }
 
   public ApiVendor getApiVendor() {
-    return parserWrapper.getApiVendor();
+    return api.getApiVendor();
   }
 
-  public IRaml getApi() {
+  public ApiSpecification getApi() {
     return api;
   }
 
-  public void setApi(IRaml api) {
+  public void setApi(ApiSpecification api) {
     this.api = api;
   }
 
   public String dumpRaml() {
-    return parserWrapper.dump(api, null);
+    return api.dump(null);
   }
 
   public String getRamlV1() {
@@ -130,7 +133,7 @@ public class RamlHandler {
       return dumpRaml();
     } else {
       String baseUriReplacement = getBaseUriReplacement(apiServer);
-      return parserWrapper.dump(api, baseUriReplacement);
+      return api.dump(baseUriReplacement);
     }
   }
 
@@ -174,28 +177,27 @@ public class RamlHandler {
         baos = new ByteArrayOutputStream();
         StreamUtils.copyLarge(apiResource, baos);
       } catch (IOException e) {
-        logger.debug(e.getMessage());
+        LOGGER.debug(e.getMessage());
         throw throwErrorType(new NotFoundException(resourceRelativePath),
                              errorTypeRepository);
       } finally {
         IOUtils.closeQuietly(apiResource);
         IOUtils.closeQuietly(baos);
       }
-      if (baos != null) {
-        return baos.toString();
-      }
-      return null;
+      return baos.toString();
     }
   }
 
+  // TODO: why is an exception for AMF? this should dumping AMF should be the same as dumping a raml
   public String getAMFModel() {
-    if (parserWrapper instanceof ParserWrapperAmf) {
-      ParserWrapperAmf parserWrapperAmf = ((ParserWrapperAmf) parserWrapper);
+    ApiSpecification specification = result.get();
+    if (specification.getType().equals(AMF)) {
+      AMFImpl parse = ((AMFImpl) specification);
       if (!keepApiBaseUri) {
         String baseUriReplacement = getBaseUriReplacement(apiServer);
-        parserWrapperAmf.updateBaseUri(api, baseUriReplacement);
+        parse.updateBaseUri(baseUriReplacement);
       }
-      return parserWrapperAmf.getAmfModel();
+      return parse.dumpAmf();
     }
     return "";
   }
@@ -209,10 +211,10 @@ public class RamlHandler {
     String postalistenerPath = UrlUtils.getListenerPath(listenerPath, requestPath);
 
     return (getApiVendor().equals(RAML_08) &&
-        (postalistenerPath.equals(requestPath) || (postalistenerPath + "/").equals(requestPath)) &&
-        ActionType.GET.toString().equals(method.toUpperCase()) &&
-        (APPLICATION_RAML.equals(acceptHeader)
-            || queryString.equals(RAML_QUERY_STRING)));
+      (postalistenerPath.equals(requestPath) || (postalistenerPath + "/").equals(requestPath)) &&
+      ActionType.GET.toString().equals(method.toUpperCase()) &&
+      (APPLICATION_RAML.equals(acceptHeader)
+        || queryString.equals(RAML_QUERY_STRING)));
   }
 
   public boolean isRequestingRamlV2(String listenerPath, String requestPath, String queryString, String method) {
@@ -229,8 +231,8 @@ public class RamlHandler {
       }
     }
     return getApiVendor().equals(RAML_10) && queryString.equals(RAML_QUERY_STRING)
-        && ActionType.GET.toString().equals(method.toUpperCase())
-        && requestPath.startsWith(resourcesFullPath);
+      && ActionType.GET.toString().equals(method.toUpperCase())
+      && requestPath.startsWith(resourcesFullPath);
   }
 
   private String sanitarizeResourceRelativePath(String resourceRelativePath) {
@@ -273,7 +275,7 @@ public class RamlHandler {
     return "this.location.href" + " + '" + "?" + RAML_QUERY_STRING + "'";
   }
 
-  public String getSuccessStatusCode(IAction action) {
+  public String getSuccessStatusCode(Action action) {
 
     for (String status : action.getResponses().keySet()) {
       if ("default".equalsIgnoreCase(status))

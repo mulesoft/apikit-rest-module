@@ -6,9 +6,9 @@
  */
 package org.mule.module.apikit.api.console;
 
+import static org.mule.apikit.ApiType.AMF;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
 import static org.mule.module.apikit.api.UrlUtils.getCompletePathFromBasePathAndPath;
-import static org.mule.raml.interfaces.ParserType.AMF;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,7 +18,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.exception.NotFoundException;
-import org.mule.raml.interfaces.model.ApiVendor;
+import org.mule.apikit.model.ApiVendor;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 
 public class ConsoleResources {
@@ -45,7 +45,7 @@ public class ConsoleResources {
 
   public ConsoleResources(ConsoleConfig config, String listenerPath, String requestPath, String queryString, String method,
                           String aceptHeader, ErrorTypeRepository errorTypeRepository) {
-    CONSOLE_RESOURCES_BASE = AMF == config.getParser() ? "/console-resources-amf" : "/console-resources";
+    CONSOLE_RESOURCES_BASE = AMF.equals(config.getType()) ? "/console-resources-amf" : "/console-resources";
 
     this.config = config;
     this.listenerPath = listenerPath;
@@ -152,7 +152,7 @@ public class ConsoleResources {
       return config.getRamlHandler().getRamlV2(resourceRelativePath);
     }
 
-    if (AMF == config.getParser() && queryString.equals("amf")) {
+    if (AMF == config.getType() && queryString.equals("amf")) {
       return config.getRamlHandler().getAMFModel();
     }
 

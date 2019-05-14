@@ -6,7 +6,7 @@
  */
 package org.mule.module.apikit.api.spi;
 
-import org.mule.raml.interfaces.model.IRaml;
+import org.mule.apikit.model.ApiSpecification;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.event.CoreEvent;
 
@@ -16,5 +16,5 @@ public interface AbstractRouter {
 
   Publisher<CoreEvent> processEvent(CoreEvent event) throws MuleException;
 
-  IRaml getRaml();
+  ApiSpecification getRaml();
 }

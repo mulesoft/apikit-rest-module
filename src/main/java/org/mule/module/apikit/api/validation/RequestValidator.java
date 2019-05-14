@@ -24,7 +24,7 @@ import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.module.apikit.input.stream.RewindableInputStream;
 import org.mule.module.apikit.validation.AttributesValidator;
 import org.mule.module.apikit.validation.BodyValidator;
-import org.mule.raml.interfaces.model.IResource;
+import org.mule.apikit.model.Resource;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -36,7 +36,7 @@ public class RequestValidator {
 
   private static Logger LOGGER = LoggerFactory.getLogger(RequestValidator.class);
 
-  public static ValidRequest validate(ValidationConfig config, IResource resource, HttpRequestAttributes attributes,
+  public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
                                       ResolvedVariables resolvedVariables, Object payload)
       throws MuleRestException {
 
@@ -44,7 +44,7 @@ public class RequestValidator {
 
   }
 
-  public static ValidRequest validate(ValidationConfig config, IResource resource, HttpRequestAttributes attributes,
+  public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
                                       ResolvedVariables resolvedVariables, Object payload,
                                       ErrorTypeRepository errorTypeRepository)
       throws MuleRestException {
@@ -53,13 +53,13 @@ public class RequestValidator {
 
   }
 
-  public static ValidRequest validate(ValidationConfig config, IResource resource, HttpRequestAttributes attributes,
+  public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
                                       ResolvedVariables resolvedVariables, Object payload, String charset)
       throws MuleRestException {
     return validate(config, resource, attributes, resolvedVariables, payload, charset, null);
   }
 
-  public static ValidRequest validate(ValidationConfig config, IResource resource, HttpRequestAttributes attributes,
+  public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
                                       ResolvedVariables resolvedVariables, Object payload, String charset,
                                       ErrorTypeRepository errorTypeRepository)
       throws MuleRestException {

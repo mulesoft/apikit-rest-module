@@ -595,7 +595,7 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
    * <p/>
    * This method accepts both the raw expression or the expression wrapped in curly brackets.
    *
-   * @param exp The expression to parse.
+   * @param exp The expression to get.
    * @return The corresponding token.
    * @throws URITemplateSyntaxException If the string cannot be parsed as a valid
    */

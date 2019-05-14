@@ -11,21 +11,21 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mule.module.apikit.api.uri.URIPattern;
-import org.mule.raml.interfaces.model.IRaml;
-import org.mule.raml.interfaces.model.IResource;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.Resource;
 
 public class RoutingTable {
 
-  protected Map<URIPattern, IResource> routingTable = new HashMap<>();
+  protected Map<URIPattern, Resource> routingTable = new HashMap<>();
 
-  public RoutingTable(IRaml api) {
+  public RoutingTable(ApiSpecification api) {
 
     buildRoutingTable(api.getResources(), api.getVersion());
   }
 
-  private void buildRoutingTable(Map<String, IResource> resources, String version) {
+  private void buildRoutingTable(Map<String, Resource> resources, String version) {
 
-    for (IResource resource : resources.values()) {
+    for (Resource resource : resources.values()) {
 
       String parentUri = resource.getParentUri();
 
@@ -40,11 +40,11 @@ public class RoutingTable {
     }
   }
 
-  public IResource getResource(String uri) {
+  public Resource getResource(String uri) {
     return routingTable.get(new URIPattern(uri));
   }
 
-  public IResource getResource(URIPattern uriPattern) {
+  public Resource getResource(URIPattern uriPattern) {
     return routingTable.get(uriPattern);
   }
 

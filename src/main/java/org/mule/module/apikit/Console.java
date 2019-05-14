@@ -57,7 +57,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
   }
 
   @Override
-  public void initialise() throws InitialisationException {
+  public void initialise() {
     final String name = getLocation().getRootContainerName();
     final Optional<URI> url = getSourceLocation(locator, name);
 
