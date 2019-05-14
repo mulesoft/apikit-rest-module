@@ -9,9 +9,9 @@
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-  <apikit:config name="api-routing-config" api="munit/api-routing.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+  <apikit:config name="api-errors-config" api="munit/api-errors.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
-  <flow name="api-routing-main">
+  <flow name="api-errors-main">
     <http:listener config-ref="http-listener-simple" path="/api/*">
       <http:response statusCode="#[vars.httpStatus default 200]">
       </http:response>
@@ -19,11 +19,11 @@
         <http:body>#[payload]</http:body>
       </http:error-response>
     </http:listener>
-    <apikit:router config-ref="api-routing-config"/>
+    <apikit:router config-ref="api-errors-config"/>
   </flow>
 
-  <flow name="put:\apply-with-charset:application\json:api-routing-config">
-    <logger level="INFO" message="put:\apply-with-charset:application\json:api-routing-config" />
+  <flow name="get:\somethings:api-errors-config">
+    <raise-error type="API:ERROR"/>
   </flow>
 
 </mule>

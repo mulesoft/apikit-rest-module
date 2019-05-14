@@ -10,22 +10,17 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="api-routing-test-suite"/>
+  <munit:config name="api-error-test-suite"/>
 
-  <munit:test name="api-with-charset-routing-test" description="Test">
+  <munit:test name="error-response-without-timeout" description="Test" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR" expectedException="org.mule.runtime.api.exception.MuleRuntimeException">
     <munit:enable-flow-sources >
-      <munit:enable-flow-source value="api-routing-main" />
-      <munit:enable-flow-source value="put:\apply-with-charset:application\json:api-routing-config"/>
+      <munit:enable-flow-source value="api-errors-main" />
+      <munit:enable-flow-source value="get:\somethings:api-errors-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="PUT" config-ref="http-requester-simple" path="/api/apply-with-charset">
-        <http:body >#[output application/json ---{"effectiveDate": "2006-03-03"}]</http:body>
-        <http:headers>#[output application/java --- { "Content-Type" : "application/json; charset=utf-8", "accept" : "application/json; charset=utf-8" }]</http:headers>
+      <http:request method="GET" config-ref="http-requester-simple" path="/api/somethings">
       </http:request>
     </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[payload.effectiveDate]" is="#[MunitTools::equalTo('2006-03-03')]"/>
-    </munit:validation>
   </munit:test>
 
 </mule>
