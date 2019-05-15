@@ -15,8 +15,8 @@ import static org.mule.runtime.core.api.event.CoreEvent.builder;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processWithChildContext;
-import static reactor.core.publisher.Flux.from;
 import static reactor.core.publisher.Mono.error;
+import static reactor.core.publisher.Mono.from;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -51,10 +51,12 @@ import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.util.StringMessageUtils;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.cache.LoadingCache;
+import reactor.core.publisher.Mono;
 
 
 public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter
@@ -162,12 +164,20 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
         processWithChildContext(eventBuilder.build(), flow, ofNullable(getLocation()), flow.getExceptionListener());
 
     return from(flowResult)
+        .doOnSuccess(result -> {
+          if (result == null) {
+            ((BaseEventContext) event.getContext()).success();
+          }
+        })
+        .doOnError(e -> ((BaseEventContext) event.getContext()).error(e))
         .map(result -> {
           if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
             // If status code is missing, a default one is added
             final String successStatusCode =
-                config.getRamlHandler().getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
-            return builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
+                config.getRamlHandler()
+                    .getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
+            return builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode)
+                .build();
           }
           return result;
         });
