@@ -28,4 +28,20 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="api-with-colons-routing-test" description="Test">
+    <munit:enable-flow-sources >
+      <munit:enable-flow-source value="api-routing-main" />
+      <munit:enable-flow-source value="put:\apply-with-charset:application\json:api-routing-config"/>
+      <munit:enable-flow-source value="get:\(resourceType):(id):api-routing-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-request-config-localhost-8081" path="/api/test:100" target="notEncoded"/>
+      <http:request method="GET" config-ref="http-request-config-localhost-8081" path="/api/test%3A100" target="encoded"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.notEncoded.name]" is="#[MunitTools::equalTo('testType')]"/>
+      <munit-tools:assert-that expression="#[vars.encoded.name]" is="#[MunitTools::equalTo('testType')]"/>
+    </munit:validation>
+  </munit:test>
+
 </mule>
