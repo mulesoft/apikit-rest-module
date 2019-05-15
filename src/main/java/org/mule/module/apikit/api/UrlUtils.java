@@ -7,13 +7,12 @@
 package org.mule.module.apikit.api;
 
 import org.apache.commons.lang3.StringUtils;
+import org.mule.module.apikit.uri.URICoder;
 
 import java.net.URL;
-
-
-//import org.mule.runtime.api.message.Message;
-//import org.mule.runtime.core.api.InternalEvent;
-//import org.mule.runtime.core.util.StringUtils;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UrlUtils {
 
@@ -23,56 +22,9 @@ public class UrlUtils {
   public static final String FULL_DOMAIN = "fullDomain";
   private static final String HTTP = "http://";
   private static final String HTTPS = "https://";
-
+  private static final Set<Character> ESCAPE_CHARS = new HashSet<Character>(Arrays.asList('/', '{', '}'));
 
   private UrlUtils() {}
-
-  //public static String getBaseSchemeHostPort(Event event) {
-  //  String host = ((HttpRequestAttributes) event.getMessage().getAttributes()).getHeaders().get("host");
-  //  String chHost = System.getProperty("fullDomain");
-  //  if (chHost != null) {
-  //    host = chHost;
-  //  }
-  //  return getScheme(event.getMessage()) + "://" + host;
-  //}
-  //
-  //public static String getScheme(Message message) {
-  //  String scheme = ((HttpRequestAttributes) message.getAttributes()).getScheme();
-  //  if (scheme == null) {
-  //    String endpoint = ((HttpRequestAttributes) message.getAttributes()).getRequestUri(); //TODO CHECK IF THIS IS THE CORRECT PROPERTY//.getInboundProperty("http.context.uri");
-  //    if (endpoint == null) {
-  //      throw new ApikitRuntimeException("Cannot figure out the request scheme");
-  //    }
-  //    if (endpoint.startsWith("http:")) {
-  //      scheme = "http";
-  //    } else if (endpoint.startsWith("https:")) {
-  //      scheme = "https";
-  //    } else {
-  //      throw new ApikitRuntimeException("Unsupported scheme: " + endpoint);
-  //    }
-  //  }
-  //  return scheme;
-  //}
-
-  //public static String getBaseSchemeHostPort(String baseUri) {
-  //  URL url;
-  //  try {
-  //    url = new URL(baseUri);
-  //  } catch (MalformedURLException e) {
-  //    return "http://localhost";
-  //  }
-  //  return url.getProtocol() + "://" + url.getAuthority();
-  //}
-
-  //public static String getResourceRelativePath(Message message) {
-  //  String path = ((HttpRequestAttributes) message.getAttributes()).getRequestPath();
-  //  //String basePath = getBasePath(message);
-  //  //path = path.substring(basePath.length());
-  //  if (!path.startsWith("/") && !path.isEmpty()) {
-  //    path = "/" + path;
-  //  }
-  //  return path;
-  //}
 
   private static int getEndOfBasePathIndex(String baseAndApiPath, String requestPath) {
     int amountOfSlashesInBasePath = 0;
@@ -90,6 +42,10 @@ public class UrlUtils {
     }
 
     return character;
+  }
+
+  public static String encode(String url) {
+    return URICoder.encode(url, ESCAPE_CHARS);
   }
 
   public static String getRelativePath(String baseAndApiPath, String requestPath) {

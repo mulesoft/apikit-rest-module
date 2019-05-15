@@ -22,4 +22,9 @@ types:
     body:
       application/json; charset=utf-8:
         type: ApplyCreditMemoType
-
+/{resourceType}:{id}:
+  get:
+    responses:
+      200:
+        body:
+          application/json: !!null
