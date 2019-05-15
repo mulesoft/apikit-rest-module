@@ -81,9 +81,15 @@
         <set-payload value="#[output text/plain --- payload.parts.content.content default 'content-not-provided']" />
     </flow>
     <flow name="post:\uploadImage:multipart\form-data:router-config">
-        <set-payload value="#[output text/plain import java!java::util::Arrays import java!org::mule::runtime::core::api::util::IOUtils --- Arrays::toString(IOUtils::toByteArray(payload.parts.image.content as String))]"/>
+        <set-payload value="#[output text/plain  --- sizeOf(payload.parts.image.content) == sizeOf(readUrl('classpath://org/mule/module/apikit/validation/formParameters/bbva.jpg', 'application/octet-stream')) ]"/>
     </flow>
     <flow name="post:\uploadFile:multipart\form-data:router-config">
         <set-payload value="#[output text/plain --- payload.parts.document.content]"/>
+    </flow>
+    <flow name="post:\uploadXmlFile:multipart\form-data:router-config">
+        <set-payload value="#[output application/xml --- payload.parts.document.content]"/>
+    </flow>
+    <flow name="post:\uploadJsonFile:multipart\form-data:router-config">
+        <set-payload value="#[output application/json --- payload.parts.document.content]"/>
     </flow>
 </mule>
