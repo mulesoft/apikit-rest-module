@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://www.mulesoft.org/schema/mule/core"
   xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+    http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <http:listener-config name="http-listener-config-localhost-8081">
-    <http:listener-connection host="0.0.0.0" port="8081"/>
+  <munit:dynamic-port propertyName="free.port.simple.http" min="1024" max="64000"/>
+
+  <http:listener-config name="http-listener-simple">
+    <http:listener-connection host="0.0.0.0" port="${free.port.simple.http}"/>
   </http:listener-config>
 
-  <http:request-config name="http-request-config-localhost-8081">
-    <http:request-connection host="localhost" port="8081"/>
+  <http:request-config name="http-requester-simple">
+    <http:request-connection host="localhost" port="${free.port.simple.http}"/>
   </http:request-config>
 
 </mule>

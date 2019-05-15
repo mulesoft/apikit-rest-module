@@ -12,20 +12,10 @@ types:
         type: date-only
         required: false
 
-/apply-with-charset:
-  put:
-    responses:
-      200:
-        body:
-            application/json; charset=utf-8:
-              type: ApplyCreditMemoType
-    body:
-      application/json; charset=utf-8:
-        type: ApplyCreditMemoType
-
-/{resourceType}:{id}:
+/somethings:
   get:
     responses:
       200:
         body:
-          application/json: !!null
+            application/json:
+              type:  ApplyCreditMemoType
