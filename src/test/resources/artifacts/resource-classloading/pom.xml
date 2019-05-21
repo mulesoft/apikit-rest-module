@@ -14,7 +14,7 @@
     <properties>
         <httpConnectorVersion>1.5.3</httpConnectorVersion>
         <socketsConnectorVersion>1.1.1</socketsConnectorVersion>
-        <apikitVersion>1.4.0-SNAPSHOT</apikitVersion>
+        <apikitVersion>2.0.0-SNAPSHOT</apikitVersion>
     </properties>
 
     <dependencies>
