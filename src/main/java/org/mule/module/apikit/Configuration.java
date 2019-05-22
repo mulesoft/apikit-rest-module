@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit;
 
+import static java.util.ServiceLoader.load;
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 import org.mule.module.apikit.api.spi.RouterService;
+import org.mule.module.apikit.api.spi.RouterServiceAdapter;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
@@ -73,7 +75,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
 
   private RamlHandler ramlHandler;
   private FlowFinder flowFinder;
-  private Optional<RouterService> routerService;
+  private Optional<RouterServiceAdapter> routerService;
 
   // DO NOT USE: does nothing just keeping it for Backwards compatibility, the routerService optional does the jobs for this.
   private boolean extensionEnabled;
@@ -92,7 +94,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
 
   @Override
   public void initialise() throws InitialisationException {
-    this.routerService = findExtension();
+    this.routerService = getRouterServiceAdapter();
     try {
       ramlHandler = new RamlHandler(getApi(), isKeepApiBaseUri(),
                                     errorRepositoryFrom(muleContext), getParser());
@@ -115,6 +117,14 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
                                 errorRepositoryFrom(muleContext));
     buildResourcePatternCaches();
     registry.registerConfiguration(this);
+  }
+
+  private Optional<RouterServiceAdapter> getRouterServiceAdapter() {
+    Optional<RouterServiceAdapter> adapter = findExtension(RouterService.class).map(RouterServiceAdapter::new);
+    if (adapter.isPresent()) {
+      return adapter;
+    }
+    return findExtension(org.mule.module.apikit.spi.RouterService.class).map(RouterServiceAdapter::new);
   }
 
   @Deprecated // TODO USE NEW API
@@ -333,14 +343,14 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     return expressionManager;
   }
 
-  private Optional<RouterService> findExtension() {
-    ClassLoader executionClassLoader = muleContext.getExecutionClassLoader();
-    ServiceLoader<RouterService> routerServices = ServiceLoader.load(RouterService.class, executionClassLoader);
-    Iterator<RouterService> iterator = routerServices.iterator();
+  private <T> Optional<T> findExtension(Class<T> clazz) {
+    ClassLoader classLoader = muleContext.getExecutionClassLoader();
+    ServiceLoader<T> routerServices = load(clazz, classLoader);
+    Iterator<T> iterator = routerServices.iterator();
     return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
   }
 
-  public Optional<RouterService> getExtension() {
+  public Optional<RouterServiceAdapter> getExtension() {
     return this.routerService;
   }
 

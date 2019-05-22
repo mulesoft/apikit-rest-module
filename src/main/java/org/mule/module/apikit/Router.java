@@ -31,6 +31,7 @@ import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.spi.AbstractRouter;
 import org.mule.module.apikit.api.spi.RouterService;
+import org.mule.module.apikit.api.spi.RouterServiceAdapter;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
@@ -59,8 +60,7 @@ import com.google.common.cache.LoadingCache;
 import reactor.core.publisher.Mono;
 
 
-public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter
-
+public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter, org.mule.module.apikit.spi.AbstractRouter
 {
 
   private final ApikitRegistry registry;
@@ -121,9 +121,9 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
   private Publisher<CoreEvent> processWithExtension(CoreEvent event) {
     try {
-      Optional<RouterService> extension = configuration.getExtension();
+      Optional<RouterServiceAdapter> extension = configuration.getExtension();
       if (extension.isPresent()) {
-        return extension.get().process(event, this);
+        return extension.get().process(event, this, this.configuration.getApi());
       } else {
         return processEvent(event);
       }
