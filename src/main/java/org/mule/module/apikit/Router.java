@@ -31,6 +31,7 @@ import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 import static java.util.Optional.ofNullable;
 import static org.mule.module.apikit.CharsetUtils.getEncoding;
@@ -126,7 +128,13 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     final Publisher<CoreEvent> flowResult =
         processWithChildContext(eventBuilder.build(), flow, ofNullable(getLocation()), flow.getExceptionListener());
 
-    return from(flowResult)
+    return Mono.from(flowResult)
+        .doOnSuccess(result -> {
+          if (result == null) {
+            ((BaseEventContext) event.getContext()).success();
+          }
+        })
+        .doOnError(e -> ((BaseEventContext) event.getContext()).error(e))
         .map(result -> {
           if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
             // If status code is missing, a default one is added
