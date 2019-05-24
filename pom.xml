@@ -30,12 +30,6 @@
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <httpmime.version>4.5.8</httpmime.version>
 
-        <!-- PARSERS -->
-        <amfVersion>3.1.10</amfVersion>
-        <amfXmlExtensionVersion>1.2.1</amfXmlExtensionVersion>
-        <ramlParserV1Version>0.8.29</ramlParserV1Version>
-        <ramlParserV2Version>1.0.33</ramlParserV2Version>
-
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
