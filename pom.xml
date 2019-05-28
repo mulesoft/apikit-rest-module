@@ -31,6 +31,9 @@
         <httpmime.version>4.5.8</httpmime.version>
 
         <commons.io.version>2.6</commons.io.version>
+        <guava.version>27.1-jre</guava.version>
+        <jackson.version>2.9.9</jackson.version>
+        <libthrift.version>0.12.0</libthrift.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -57,10 +60,31 @@
             <groupId>org.mule.apikit</groupId>
             <artifactId>parser-service</artifactId>
             <version>1.3.1</version>
+            <!--TODO : remove this with new parsers versions-->
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.thrift</groupId>
+                    <artifactId>libthrift</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -175,11 +199,39 @@
             </exclusions>
         </dependency>
         <!--SE-11881 : Black Duck Scan Issues (2.4 version), replace 2.2 in commons-fileupload-->
+        <!--TODO : remove this with new parsers versions-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${libthrift.version}</version>
+        </dependency>
+        <!--finish TODO-->
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
