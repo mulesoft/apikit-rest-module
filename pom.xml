@@ -39,6 +39,7 @@
         <munit.extensions.maven.plugin.version>1.0.0-SNAPSHOT</munit.extensions.maven.plugin.version>
         <munit.version>2.2.0-SNAPSHOT</munit.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
+        <mockServerVersion>5.5.1</mockServerVersion>
     </properties>
 
     <dependencies>
@@ -242,6 +243,12 @@
             <artifactId>mule-tests-component-plugin</artifactId>
             <version>${mule.version}</version>
             <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-netty</artifactId>
+            <version>${mockServerVersion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
