@@ -8,6 +8,8 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.ContentTooLongException;
+import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
@@ -98,9 +100,17 @@ public class MultipartFormData {
 
   public InputStream build() throws InvalidFormParameterException{
     try {
-      return multipartEntityBuilder.build().getContent();
+      return getInputStream(multipartEntityBuilder.build());
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
     }
+  }
+
+  //TODO: Enhance performance using piped streams
+  private InputStream getInputStream(HttpEntity httpEntity) throws IOException {
+    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+    httpEntity.writeTo(outStream);
+    outStream.flush();
+    return new ByteArrayInputStream(outStream.toByteArray());
   }
 }
