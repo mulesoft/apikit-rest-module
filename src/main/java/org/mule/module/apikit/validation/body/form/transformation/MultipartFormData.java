@@ -8,6 +8,8 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.ContentTooLongException;
+import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
@@ -32,6 +34,7 @@ public class MultipartFormData {
   private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
+  private HttpEntity httpEntity;
 
   public MultipartFormData(InputStream inputStream, byte[] boundary){
     multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
@@ -96,11 +99,27 @@ public class MultipartFormData {
     multipartEntityBuilder.addTextBody(key,value);
   }
 
-  public InputStream build() throws InvalidFormParameterException{
-    try {
-      return multipartEntityBuilder.build().getContent();
-    } catch (IOException e) {
-      throw new InvalidFormParameterException(e);
+  public MultipartFormData build(){
+    this.httpEntity = multipartEntityBuilder.build();
+    return this;
+  }
+
+  public InputStream getContent() throws InvalidFormParameterException{
+    if (httpEntity == null || httpEntity.getContentLength() < 0L) {
+      throw new InvalidFormParameterException("Content length is unknown");
+    } else {
+      try {
+        return getInputStream();
+      } catch (IOException e) {
+        throw new InvalidFormParameterException(e);
+      }
     }
+  }
+
+  private InputStream getInputStream() throws IOException {
+    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+    httpEntity.writeTo(outStream);
+    outStream.flush();
+    return new ByteArrayInputStream(outStream.toByteArray());
   }
 }
