@@ -41,12 +41,6 @@
     </properties>
 
     <dependencies>
-        <!--SE-11881 : Black Duck Scan Issues (2.4 version)-->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
-        </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
@@ -179,6 +173,12 @@
                     <artifactId>commons-io</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!--SE-11881 : Black Duck Scan Issues (2.4 version), replace 2.2 in commons-fileupload-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
