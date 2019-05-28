@@ -34,7 +34,6 @@ public class MultipartFormData {
   private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
-  private HttpEntity httpEntity;
 
   public MultipartFormData(InputStream inputStream, byte[] boundary){
     multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
@@ -99,24 +98,16 @@ public class MultipartFormData {
     multipartEntityBuilder.addTextBody(key,value);
   }
 
-  public MultipartFormData build(){
-    this.httpEntity = multipartEntityBuilder.build();
-    return this;
-  }
-
-  public InputStream getContent() throws InvalidFormParameterException{
-    if (httpEntity == null || httpEntity.getContentLength() < 0L) {
-      throw new InvalidFormParameterException("Content length is unknown");
-    } else {
-      try {
-        return getInputStream();
-      } catch (IOException e) {
-        throw new InvalidFormParameterException(e);
-      }
+  public InputStream build() throws InvalidFormParameterException{
+    try {
+      return getInputStream(multipartEntityBuilder.build());
+    } catch (IOException e) {
+      throw new InvalidFormParameterException(e);
     }
   }
 
-  private InputStream getInputStream() throws IOException {
+  //TODO: Enhance performance using piped streams
+  private InputStream getInputStream(HttpEntity httpEntity) throws IOException {
     ByteArrayOutputStream outStream = new ByteArrayOutputStream();
     httpEntity.writeTo(outStream);
     outStream.flush();
