@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd       http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+    <apikit:config name="uri-params-config" raml="munit/parameters/uri-parameters.raml" parser="${parser.type}"
+                   outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+
+    <flow name="uri-params-main">
+        <http:listener config-ref="http-listener-simple" path="/uri-params/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="uri-params-config"/>
+        <error-handler ref="global-server-error-handler"/>
+    </flow>
+
+    <flow name="get:\resource\v1:uri-params-config">
+        <set-payload value="ok"/>
+    </flow>
+
+    <flow name="get:\constrains\(id):uri-params-config">
+        <set-payload value="#[output application/json --- attributes.uriParams.id]"/>
+    </flow>
+
+    <flow name="get:\constrains\(id)\(id2):uri-params-config">
+        <set-payload value="#[output application/json ---
+            {
+                id: attributes.uriParams.id,
+                id2: attributes.uriParams.id2
+            }]"/>
+    </flow>
+
+</mule>

@@ -130,7 +130,7 @@ public class HeadersValidator {
 
   private void validateType(String name, String value, Parameter type) throws InvalidHeaderException {
     if (!type.validate(value)) {
-      throw new InvalidHeaderException(format("Invalid value '%s' for header %s. %s", value, name, type.message(value)));
+      throw new InvalidHeaderException(format("\"Invalid value '%s' for header %s. %s\"", value, name, type.message(value)));
     }
   }
 

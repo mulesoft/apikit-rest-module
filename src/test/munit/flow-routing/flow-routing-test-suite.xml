@@ -10,7 +10,20 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="api-routing-test-suite"/>
+  <munit:config name="api-routing-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
 
   <munit:test name="api-with-charset-routing-test">
     <munit:enable-flow-sources>
@@ -20,9 +33,14 @@
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="PUT" config-ref="http-requester-simple" path="/api/apply-with-charset">
-        <http:body>#[output application/json ---{"effectiveDate": "2006-03-03"}]</http:body>
-        <http:headers>#[output application/java --- { "Content-Type" : "application/json;
-          charset=utf-8", "accept" : "application/json; charset=utf-8" }]
+        <http:body>#[output application/json --- {"effectiveDate": "2006-03-03"}]</http:body>
+        <http:headers>
+          #[output application/java
+            ---
+            {
+              "Content-Type" : "application/json; charset=utf-8", "accept" : "application/json; charset=utf-8"
+            }
+          ]
         </http:headers>
       </http:request>
     </munit:execution>

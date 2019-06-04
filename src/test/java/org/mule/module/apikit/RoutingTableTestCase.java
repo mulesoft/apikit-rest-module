@@ -36,9 +36,7 @@ public class RoutingTableTestCase {
 
   @Test
   public void testResourceFlattenedTree() {
-
     RoutingTable routingTable = new RoutingTable(ramlHandler.getApi());
-
 
     Assert.assertThat(routingTable.keySet(), hasItems(new URIPattern("/single-resource"),
                                                       new URIPattern("/api"),
