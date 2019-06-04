@@ -9,7 +9,7 @@
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-  <apikit:config name="api-errors-config" api="munit/api-errors.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+  <apikit:config name="api-errors-config" api="munit/errors/api-errors.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
   <flow name="api-errors-main">
     <http:listener config-ref="http-listener-simple" path="/api/*">

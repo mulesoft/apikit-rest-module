@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="scalar-types-validation-test-suite">
+	<munit:parameterizations>
+	  <munit:parameterization name="RAML">
+		<munit:parameters>
+		  <munit:parameter propertyName="parser.type" value="RAML"/>
+		</munit:parameters>
+	  </munit:parameterization>
+	  <munit:parameterization name="AMF">
+		<munit:parameters>
+		  <munit:parameter propertyName="parser.type" value="AMF"/>
+		</munit:parameters>
+	  </munit:parameterization>
+	</munit:parameterizations>
+  </munit:config>
+
+  <!-- SUCCESS CASES -->
+
+  <munit:test name="alphanumeric-for-string-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['str']"/>
+	  <set-variable variableName="value" value="#['abc123']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="number-as-string-for-string-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['str']"/>
+	  <set-variable variableName="value" value="#['111123']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="number-for-string-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['str']"/>
+	  <set-variable variableName="value" value="#[111123]"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="boolean-for-string-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['str']"/>
+	  <set-variable variableName="value" value="#[true]"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="number-string-for-numer-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['num']"/>
+	  <set-variable variableName="value" value="#['123']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="number-string-for-int-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['int']"/>
+	  <set-variable variableName="value" value="#['123']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="boolean-string-for-boolean-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['bool']"/>
+	  <set-variable variableName="value" value="#['true']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="date-only-string-for-date-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['dateOnly']"/>
+	  <set-variable variableName="value" value="#['2015-02-01']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="time-string-for-time-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['time']"/>
+	  <set-variable variableName="value" value="#['21:00:11']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="datetime-string-for-time-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['datetimeOnly']"/>
+	  <set-variable variableName="value" value="#['2015-02-01T21:00:11']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-number-string-for-integer-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['int']"/>
+	  <set-variable variableName="value" value="#['123-INVALID-123']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-failure"/>
+	</munit:validation>
+  </munit:test>
+
+  <!-- FAILURE CASES -->
+
+  <munit:test name="invalid-datetime-string-for-time-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['datetimeOnly']"/>
+	  <set-variable variableName="value" value="#['asb2015-02-01T21:00:11']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-failure"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-boolean-string-for-boolean-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['bool']"/>
+	  <set-variable variableName="value" value="#['INVALID']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-failure"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-number-string-for-number-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['num']"/>
+	  <set-variable variableName="value" value="#['123-INVALID-123']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-failure"/>
+	</munit:validation>
+  </munit:test>
+
+  <!-- Util Flows -->
+
+  <flow name="scalar-types-validation\do-request">
+	<http:request method="GET" config-ref="http-requester-simple" path="/validation/scalar/types/resource">
+	  <http:query-params>
+		#[output application/java
+		---
+		{
+		"$(vars.param)": vars.value
+		}]
+	  </http:query-params>
+	  <http:response-validator>
+		<http:success-status-code-validator values="1..500"/>
+	  </http:response-validator>
+	</http:request>
+  </flow>
+
+  <flow name="scalar-types-validation\do-assert-success">
+	<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	<munit-tools:assert>
+	  <munit-tools:that>
+		#[ import * from dw::test::Asserts
+		---
+		payload.'$(vars.param)' must equalTo(vars.value as String) ]
+	  </munit-tools:that>
+	</munit-tools:assert>
+  </flow>
+
+  <flow name="scalar-types-validation\do-assert-failure">
+	<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+  </flow>
+</mule>
+
