@@ -42,7 +42,7 @@ public class QueryParameterValidator {
 
       if (actual.isEmpty()) {
         if (expected.isRequired()) {
-          throw new InvalidQueryParameterException("Required query parameter " + expectedKey + " not specified");
+          throw new InvalidQueryParameterException("\"Required query parameter " + expectedKey + " not specified\"");
         }
 
         if (expected.getDefaultValue() != null) {
@@ -107,7 +107,7 @@ public class QueryParameterValidator {
 
   private void validateQueryParam(String paramKey, IParameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
-      String msg = String.format("Invalid value '%s' for query parameter %s. %s",
+      String msg = String.format("\"Invalid value '%s' for query parameter %s. %s\"",
                                  paramValue, paramKey, expected.message(paramValue));
 
       throw new InvalidQueryParameterException(msg);

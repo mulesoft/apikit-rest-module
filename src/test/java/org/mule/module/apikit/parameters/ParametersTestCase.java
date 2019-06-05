@@ -41,7 +41,6 @@ public class ParametersTestCase extends AbstractMultiParserFunctionalTestCase {
   }
 
   @Test
-
   public void invalidHeaderPlaceholderProvided() throws Exception {
     given().header("mule-special", "dough").header("one", "foo")
         .expect().response().statusCode(400)
@@ -57,96 +56,10 @@ public class ParametersTestCase extends AbstractMultiParserFunctionalTestCase {
   }
 
   @Test
-  public void requiredQueryParamNotProvided() throws Exception {
-    given()
-        .expect().response().statusCode(400)
-        .body(is("Required query parameter first not specified"))
-        .when().get("/api/resources");
-  }
-
-  @Test
   public void requiredQueryParamAndHeaderProvided() throws Exception {
     given().header("one", "foo")
         .expect().response().statusCode(200)
         .when().get("/api/resources?first=fi");
-  }
-
-  @Test
-  public void invalidQueryParamMinLength() throws Exception {
-    given().header("one", "foo").queryParam("first", "f")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value 'f' for query parameter first"))
-        .when().get("/api/resources");
-  }
-
-  @Test
-  public void invalidQueryParamMaxLength() throws Exception {
-    given().header("one", "foo").queryParam("first", "first")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value 'first' for query parameter first"))
-        .when().get("/api/resources");
-  }
-
-  @Test
-  public void invalidQueryParamPattern() throws Exception {
-    given().header("one", "foo").queryParam("first", "1st")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value '1st' for query parameter first"))
-        .when().get("/api/resources");
-  }
-
-  @Test
-  public void validSingleUriParamType() throws Exception {
-    given().header("one", "foo").queryParam("first", "fi")
-        .expect().response().statusCode(200)
-        .when().get("/api/resources/4");
-  }
-
-  @Test
-  public void validMultipleUriParamType() throws Exception {
-    given().header("one", "foo").queryParam("first", "fi")
-        .expect().response().statusCode(200)
-        .when().get("/api/resources/4/one");
-  }
-
-  @Test
-  public void invalidParentUriParamType() throws Exception {
-    given().header("one", "foo").queryParam("first", "fi")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value '0' for uri parameter id"))
-        .when().get("/api/resources/0/one");
-  }
-
-  @Test
-  public void invalidUriParamType() throws Exception {
-    given().header("one", "foo").queryParam("first", "fi")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value 'a' for uri parameter id"))
-        .when().get("/api/resources/a");
-  }
-
-  @Test
-  public void invalidUriParamMinimum() throws Exception {
-    given().header("one", "foo").queryParam("first", "fi")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value '0' for uri parameter id"))
-        .when().get("/api/resources/0");
-  }
-
-  @Test
-  public void invalidUriParamMaximum() throws Exception {
-    given().header("one", "foo").queryParam("first", "fi")
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value '10' for uri parameter id"))
-        .when().get("/api/resources/10");
-  }
-
-  @Test
-  public void invalidBooleanQueryParamProvided() throws Exception {
-    given()
-        .expect().response().statusCode(400)
-        .body(startsWith("Invalid value 'yes' for query parameter third"))
-        .when().get("/api/resources?first=fi&third=yes");
   }
 
   @Test
@@ -156,25 +69,6 @@ public class ParametersTestCase extends AbstractMultiParserFunctionalTestCase {
         .body(is("default"))
         .when().get("/api/default");
   }
-
-  @Test
-  public void repeatableQueryParam() {
-    given().queryParam("status", "a", "b")
-        .expect().response().statusCode(200)
-        .when().get("/api/repeat");
-  }
-
-
-  @Test
-  public void nonRepeatableQueryParamRepeated() {
-
-    given().queryParam("orderId", "1234")
-        .queryParam("orderId", "2345")
-        .queryParam("email", "s@cisco.com")
-        .expect().response().statusCode(400)
-        .when().get("/api/trackOrder");
-  }
-
 
   @Test
   public void raml() throws Exception {

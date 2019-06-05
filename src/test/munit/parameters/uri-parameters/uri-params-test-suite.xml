@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="uri-params-test-suite">
+	<munit:parameterizations>
+	  <munit:parameterization name="RAML">
+		<munit:parameters>
+		  <munit:parameter propertyName="parser.type" value="RAML"/>
+		</munit:parameters>
+	  </munit:parameterization>
+	  <munit:parameterization name="AMF">
+		<munit:parameters>
+		  <munit:parameter propertyName="parser.type" value="AMF"/>
+		</munit:parameters>
+	  </munit:parameterization>
+	</munit:parameterizations>
+  </munit:config>
+
+  <munit:test name="resolve-version-uri-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\resource\v1:uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/resource/v1"/>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-version-uri-param-resolution">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\resource\v1:uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/resource/INVALID_VERSION_URI_PARAM">
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(404)]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="single-uri-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains\(id):uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/4"/>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::equalTo('4')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="nested-uri-params">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains\(id)\(id2):uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/2/one"/>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	  <munit-tools:assert-that expression="#[payload.id as String]" is="#[MunitTools::equalTo('2')]"/>
+	  <munit-tools:assert-that expression="#[payload.id2 as String]" is="#[MunitTools::equalTo('one')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-uri-param-min-value">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains\(id):uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/0">
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('Invalid value \'0\' for uri parameter id')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-uri-param-max-value">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains\(id):uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/1110">
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('Invalid value \'1110\' for uri parameter id')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-uri-param-types">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains\(id):uri-params-config"/>
+	  <munit:enable-flow-source value="get:\constrains\(id)\(id2):uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/word" targetValue="#[message]"
+					target="numberResult">
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/3/ten" targetValue="#[message]"
+					target="enumResult">
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[vars.numberResult.attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[vars.numberResult.payload]"
+							   is="#[MunitTools::containsString('Invalid value \'word\' for uri parameter id')]"/>
+	  <munit-tools:assert-that expression="#[vars.enumResult.attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[vars.enumResult.payload]"
+							   is="#[MunitTools::containsString('Invalid value \'ten\' for uri parameter id2')]"/>
+	</munit:validation>
+  </munit:test>
+
+</mule>
+
