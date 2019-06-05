@@ -155,8 +155,7 @@ public class RamlHandler {
     } else {
       // the resource should be in a subfolder, otherwise it could be requesting the properties file
       if (!resourceRelativePath.contains("/")) {
-        throw throwErrorType(new NotFoundException("Requested resources should be in a subfolder"),
-                             errorTypeRepository);
+        throw throwErrorType(new NotFoundException("Requested resources should be in a subfolder"), errorTypeRepository);
       }
       // resource
       InputStream apiResource = null;
