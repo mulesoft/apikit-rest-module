@@ -87,7 +87,7 @@
 	</munit:validation>
   </munit:test>
 
-  <munit:test name="number-string-for-numer-param">
+  <munit:test name="number-string-for-number-param">
 	<munit:enable-flow-sources>
 	  <munit:enable-flow-source value="scalar-types-validation-main"/>
 	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>

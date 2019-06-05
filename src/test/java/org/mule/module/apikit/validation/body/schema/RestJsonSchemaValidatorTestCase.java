@@ -103,7 +103,7 @@ public class RestJsonSchemaValidatorTestCase {
     JsonSchemavalidator.validate(payload);
   }
 
-//  @Test(expected = BadRequestException.class)
+  @Test(expected = BadRequestException.class)
   public void invalidStringPayloadUsingParser() throws TypedException, BadRequestException, ExecutionException {
     String payload = "{ \"naazame\": \"Major League Soccer\" }";
     Configuration config = new Configuration();
@@ -119,7 +119,7 @@ public class RestJsonSchemaValidatorTestCase {
 
   @Test
   public void showAllSchemaValidationErrors() throws TypedException, BadRequestException, ExecutionException {
-//    expectedException.expect(BadRequestException.class);
+    expectedException.expect(BadRequestException.class);
     expectedException.expectMessage(VALIDATION_ERRORS_EXPECTED_MESSAGE);
 
     String payload = "{ \"id\": 1 }";
