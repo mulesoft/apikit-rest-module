@@ -35,7 +35,7 @@ public class QueryStringValidator {
     String queryString = buildQueryString(expected, queryParams);
 
     if (!expected.validate(queryString)) {
-      throw new InvalidQueryStringException("Invalid value for query string ");
+      throw new InvalidQueryStringException("\"Invalid value for query string\"");
     }
   }
 

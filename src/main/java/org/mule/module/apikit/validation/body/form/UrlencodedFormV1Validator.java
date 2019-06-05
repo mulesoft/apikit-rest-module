@@ -57,7 +57,7 @@ public class UrlencodedFormV1Validator implements FormValidatorStrategy<TypedVal
 
       if (actual != null && actual instanceof String) {
         if (!expected.validate((String) actual)) {
-          String msg = String.format("Invalid value '%s' for form parameter %s. %s",
+          String msg = String.format("\"Invalid value '%s' for form parameter %s. %s\"",
                                      actual, expectedKey, expected.message((String) actual));
           throw new InvalidFormParameterException(msg);
         }

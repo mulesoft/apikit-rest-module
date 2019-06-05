@@ -75,7 +75,7 @@ public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedVal
 
   private void validate(String expectedKey, Parameter parameter, String value) throws InvalidFormParameterException {
     if (!parameter.validate(value))
-      throw new InvalidFormParameterException("Invalid value '" + value + "' for parameter " + expectedKey);
+      throw new InvalidFormParameterException("\"Invalid value '" + value + "' for parameter\"" + expectedKey);
   }
 
   private void validateAsArray(String expectedKey, Parameter parameter, List<String> values)
@@ -84,7 +84,7 @@ public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedVal
     if (!parameter.validate(valueToValidate)) {
       // Numeric values are always parsed as number, this is a workaround to validate them as string
       if (!parameter.validate(values.stream().map(v -> "- '" + v + "'").collect(joining("\n")))) {
-        throw new InvalidFormParameterException("Invalid value '" + valueToValidate + "' for parameter " + expectedKey);
+        throw new InvalidFormParameterException("\"Invalid value '" + valueToValidate + "' for parameter\"" + expectedKey);
       }
     }
   }

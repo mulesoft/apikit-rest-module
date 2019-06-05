@@ -8,22 +8,25 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
+  <apikit:config name="body-validation-disabled-config" raml="munit/parameters/validation-disabled.raml" disableValidations="true"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 
-  <apikit:config name="api-errors-config" api="munit/errors/api-errors.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
-
-  <flow name="api-errors-main">
-    <http:listener config-ref="http-listener-simple" path="/api/*">
+  <flow name="body-validation-disabled-main">
+    <http:listener config-ref="http-listener-simple" path="/body/validation/disabled/*">
       <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:response>
       <http:error-response statusCode="#[vars.httpStatus default 500]">
         <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:error-response>
     </http:listener>
-    <apikit:router config-ref="api-errors-config"/>
+    <apikit:router config-ref="body-validation-disabled-config"/>
+    <error-handler ref="global-server-error-handler"/>
   </flow>
 
-  <flow name="get:\somethings:api-errors-config">
-    <raise-error type="API:ERROR"/>
+  <flow name="post:\resource\(param):body-validation-disabled-config">
+    <set-payload value="#[payload]"/>
   </flow>
 
 </mule>

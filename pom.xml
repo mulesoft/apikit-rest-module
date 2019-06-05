@@ -43,7 +43,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>

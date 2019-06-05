@@ -8,7 +8,7 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="api-routing-config" raml="munit/api-routing.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
+  <apikit:config name="api-routing-config" raml="munit/flow-routing/api-routing.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
     <apikit:flow-mappings>
       <apikit:flow-mapping resource="/apply-with-charset" action="put" content-type="application/json" flow-ref="put:\apply-with-charset:application\json:api-routing-config" />
       <apikit:flow-mapping resource="/{resourceType}:{id}" action="get" flow-ref="get:\(resourceType):(id):api-routing-config" />

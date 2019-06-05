@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="query-params-test-suite">
+	<munit:parameterizations>
+	  <munit:parameterization name="RAML">
+		<munit:parameters>
+		  <munit:parameter propertyName="parser.type" value="RAML"/>
+		</munit:parameters>
+	  </munit:parameterization>
+	  <munit:parameterization name="AMF">
+		<munit:parameters>
+		  <munit:parameter propertyName="parser.type" value="AMF"/>
+		</munit:parameters>
+	  </munit:parameterization>
+	</munit:parameterizations>
+  </munit:config>
+
+  <munit:test name="string-array-query-param-with-asterisk">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\resource:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/resource">
+		<http:query-params>
+		  #[output application/java
+		  ---
+		  {
+		  "string" : "*a",
+		  "string" : "b"
+		  }]
+		</http:query-params>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	  <munit-tools:assert-that expression="#[payload[0]]" is="#[MunitTools::equalTo('*a')]"/>
+	  <munit-tools:assert-that expression="#[payload[1]]" is="#[MunitTools::equalTo('b')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="string-number-array-query-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\resource:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/resource">
+		<http:query-params>
+		  #[output application/java
+		  ---
+		  {
+		  "string" : "12",
+		  "string" : "12"
+		  }]
+		</http:query-params>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	  <munit-tools:assert-that expression="#[payload[0]]" is="#[MunitTools::equalTo('12')]"/>
+	  <munit-tools:assert-that expression="#[payload[1]]" is="#[MunitTools::equalTo('12')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-query-param-min-length">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains">
+		<http:query-params>
+		  #[output application/java
+		  ---
+		  {
+		  "sized" : "1"
+		  }]
+		</http:query-params>
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]"
+							   is="#[MunitTools::containsString('expected minLength: 2, actual: 1')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-query-param-max-length">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains">
+		<http:query-params>
+		  #[output application/java
+		  ---
+		  {
+		  "sized" : "more-than-3-chars"
+		  }]
+		</http:query-params>
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]"
+							   is="#[MunitTools::containsString('expected maxLength: 3, actual: 17')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-query-param-pattern">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains">
+		<http:query-params>
+		  #[output application/java
+		  ---
+		  {
+		  "sized" : "1st"
+		  }]
+		</http:query-params>
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]"
+							   is="#[MunitTools::containsString('string [1st] does not match pattern ^[^0-9]')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-boolean-query-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains">
+		<http:query-params>
+		  #[output application/java
+		  ---
+		  {
+		  "sized" : "fi",
+		  "optionalBoolean": 'yes'
+		  }]
+		</http:query-params>
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]"
+							   is="#[MunitTools::containsString('expected type: Boolean, found: String')]"/>
+	</munit:validation>
+  </munit:test>
+
+  <munit:test name="missing-required-query-params">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="query-params-main"/>
+	  <munit:enable-flow-source value="get:\resource:query-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains">
+		<http:response-validator>
+		  <http:success-status-code-validator values="1..500"/>
+		</http:response-validator>
+	  </http:request>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::containsString('Required query parameter sized not specified')]"/>
+	</munit:validation>
+  </munit:test>
+</mule>
+

@@ -11,6 +11,7 @@ import org.mule.module.apikit.AbstractMultiParserFunctionalTestCase;
 
 import static io.restassured.RestAssured.given;
 
+// TODO UNIT TEST
 public class SpacesInPathTestCase extends AbstractMultiParserFunctionalTestCase {
 
   @Override

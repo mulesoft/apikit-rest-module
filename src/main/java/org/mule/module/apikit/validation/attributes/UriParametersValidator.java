@@ -33,7 +33,7 @@ public class UriParametersValidator {
       String value = (String) resolvedVariables.get(entry.getKey());
       Parameter uriParameter = entry.getValue();
       if (!uriParameter.validate(value)) {
-        String msg = String.format("Invalid value '%s' for uri parameter %s. %s",
+        String msg = String.format("\"Invalid value '%s' for uri parameter %s. %s\"",
                                    value, entry.getKey(), uriParameter.message(value));
 
         throw new InvalidUriParameterException(msg);
