@@ -187,8 +187,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     try {
       return cache.get(key);
     } catch (Exception e) {
-      throw throwErrorType(new NotFoundException(key),
-                           errorRepositoryFrom(muleContext));
+      throw throwErrorType(new NotFoundException(key), errorRepositoryFrom(muleContext));
     }
   }
 

@@ -60,10 +60,13 @@ public class EventWrapper {
     return this;
   }
 
-
-
   public EventWrapper setPayload(Object payload, MediaType mediaType) {
     outputBuilder.message(MessageHelper.setPayload(inputEvent.getMessage(), payload, mediaType));
+    return this;
+  }
+
+  public EventWrapper setHttpStatus(String status) {
+    this.httpStatus = status;
     return this;
   }
 }

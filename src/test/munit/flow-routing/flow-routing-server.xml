@@ -26,6 +26,7 @@
       </http:error-response>
     </http:listener>
     <apikit:router config-ref="api-routing-config"/>
+    <error-handler ref="global-server-error-handler"/>
   </flow>
 
   <flow name="put:\apply-with-charset:application\json:api-routing-config">

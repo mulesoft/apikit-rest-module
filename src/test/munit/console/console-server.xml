@@ -12,8 +12,17 @@
                  outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
   <flow name="console">
-    <http:listener config-ref="http-listener-simple" path="/console/*"/>
+    <http:listener config-ref="http-listener-simple" path="/console/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
     <apikit:console config-ref="console-config"/>
+    <error-handler ref="global-server-error-handler"/>
   </flow>
 
 </mule>
