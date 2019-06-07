@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.api;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.mule.apikit.ApiType.AMF;
 import static org.mule.apikit.ApiType.RAML;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
@@ -21,8 +23,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.IOUtils;
 
 import org.mule.amf.impl.model.AMFImpl;
@@ -46,6 +52,8 @@ import org.slf4j.LoggerFactory;
 
 public class RamlHandler {
 
+  private Pattern CONSOLE_RESOURCE_PATTERN = Pattern.compile(".*console-resources.*(html|json|js)");
+
   public static final String MULE_APIKIT_PARSER_PROPERTY = "mule.apikit.parser";
   public static final String APPLICATION_RAML = "application/raml+yaml";
 
@@ -59,6 +67,7 @@ public class RamlHandler {
   private ApiSpecification api;
   private ParseResult result;
   private ErrorTypeRepository errorTypeRepository;
+  private List<String> acceptedClasspathResources;
 
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri) throws IOException {
     this(ramlLocation, keepApiBaseUri, null, null);
@@ -95,12 +104,16 @@ public class RamlHandler {
       } else if (isSyncProtocol(rootRamlLocation)) {
         this.apiResourcesRelativePath = rootRamlLocation;
       }
+      this.acceptedClasspathResources = getAcceptedClasspathResources(api, apiResourcesRelativePath);
       this.errorTypeRepository = errorTypeRepository;
     } else {
       String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
       throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
     }
+  }
 
+  private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
+    return api.getAllReferences().stream().map(ref -> ref.substring(ref.indexOf(apiResourcesRelativePath))).collect(toList());
   }
 
   /**
@@ -160,7 +173,16 @@ public class RamlHandler {
             apiResource = loader.getResourceAsStream(normalized.substring(apiResourcesRelativePath.length()));
           } else {
             // this normalized path should be controlled carefully since can scan all the classpath.
-            apiResource = Thread.currentThread().getContextClassLoader().getResourceAsStream(normalized);
+            URL classpathResouce = Thread.currentThread().getContextClassLoader().getResource(normalized);
+            if (classpathResouce != null) {
+              String path = classpathResouce.getPath();
+              // if is a console resource, the API raml or a resource of that raml
+              if (CONSOLE_RESOURCE_PATTERN.asPredicate().test(path) ||
+                acceptedClasspathResources.stream().anyMatch(path::endsWith) ||
+                path.endsWith(api.getLocation())) {
+                apiResource = classpathResouce.openStream();
+              }
+            }
           }
 
           if (apiResource != null) {
@@ -233,7 +255,7 @@ public class RamlHandler {
     }
     // delete querystring
     if (resourceRelativePath.contains("?raml")) {
-      resourceRelativePath = resourceRelativePath.substring(0, resourceRelativePath.indexOf('?'));
+      resourceRelativePath = resourceRelativePath.substring(0, resourceRelativePath.lastIndexOf('?'));
     }
     // delete last slash
     if (resourceRelativePath.endsWith("/") && resourceRelativePath.length() > 1) {
