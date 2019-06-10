@@ -26,7 +26,7 @@ public class UriParametersValidator {
     this.resolvedVariables = resolvedVariables;
   }
 
-  public MultiMap<String, String> validateAndAddDefaults(Map<String, String> uriParams)
+  public void validate(Map<String, String> uriParams)
       throws InvalidUriParameterException {
     this.uriParams = new MultiMap<>(uriParams);
     for (Map.Entry<String, Parameter> entry : action.getResolvedUriParameters().entrySet()) {
@@ -39,12 +39,6 @@ public class UriParametersValidator {
         throw new InvalidUriParameterException(msg);
       }
     }
-
-    for (String name : resolvedVariables.names()) {
-      String value = String.valueOf(resolvedVariables.get(name));
-      this.uriParams = AttributesHelper.addParam(this.uriParams, name, value);
-    }
-    return this.uriParams;
   }
 
 }
