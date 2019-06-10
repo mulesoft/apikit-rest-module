@@ -60,8 +60,6 @@ public class EventWrapper {
     return this;
   }
 
-
-
   public EventWrapper setPayload(Object payload, MediaType mediaType) {
     outputBuilder.message(MessageHelper.setPayload(inputEvent.getMessage(), payload, mediaType));
     return this;

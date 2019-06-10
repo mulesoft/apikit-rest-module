@@ -97,15 +97,6 @@ public class UrlUtils {
     int character = getEndOfBasePathIndex(baseAndApiPath, requestPath);
     return requestPath.substring(0, character);
   }
-  //
-  //public static String getQueryString(Message message) {
-  //  String queryString = ((HttpRequestAttributes) message.getAttributes()).getQueryString();
-  //  return queryString == null ? "" : queryString;
-  //}
-
-  //public static String rewriteBaseUri(String raml, String baseSchemeHostPort) {
-  //  return replaceBaseUri(raml, "https?://[^/]*", baseSchemeHostPort);
-  //}
 
   public static String replaceBaseUri(String raml, String newBaseUri) {
     if (newBaseUri != null) {
