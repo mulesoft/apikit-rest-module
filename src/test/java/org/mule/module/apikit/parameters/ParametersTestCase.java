@@ -36,7 +36,7 @@ public class ParametersTestCase extends AbstractMultiParserFunctionalTestCase {
   public void invalidEnumHeaderProvided() throws Exception {
     given().header("one", "invalid")
         .expect().response().statusCode(400)
-        .body(startsWith("Invalid value 'invalid' for header one"))
+        .body(containsString("Invalid value 'invalid' for header one"))
         .when().get("/api/resources?first=fi");
   }
 
@@ -44,7 +44,7 @@ public class ParametersTestCase extends AbstractMultiParserFunctionalTestCase {
   public void invalidHeaderPlaceholderProvided() throws Exception {
     given().header("mule-special", "dough").header("one", "foo")
         .expect().response().statusCode(400)
-        .body(startsWith("Invalid value 'dough' for header mule-{?}"))
+        .body(containsString("Invalid value 'dough' for header mule-{?}"))
         .when().get("/api/resources?first=fi");
   }
 

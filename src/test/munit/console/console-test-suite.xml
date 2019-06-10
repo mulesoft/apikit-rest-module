@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="console-test-suite"/>
+
+  <munit:test name="off-by-slash-path-transversal-fetch">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="console"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/./log4j2-test.xml" target="rootOfBySlash" targetValue="#[attributes.statusCode]">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/log4j2-test.xml" target="rootToClasspath" targetValue="#[attributes.statusCode]">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/../../log4j2-test.xml" target="rootParentOfBySlashes" targetValue="#[attributes.statusCode]">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/" target="console" targetValue="#[message]"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.rootOfBySlash]" is="#[MunitTools::equalTo(404)]"/>
+      <munit-tools:assert-that expression="#[vars.rootToClasspath]" is="#[MunitTools::equalTo(404)]"/>
+      <munit-tools:assert-that expression="#[vars.rootParentOfBySlashes]" is="#[MunitTools::equalTo(404)]"/>
+      <!-- SUCCESS HITTING /console/-->
+      <munit-tools:assert-that expression="#[vars.console.attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[vars.console.payload.^mimeType]" is="#[MunitTools::equalTo('text/html')]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>

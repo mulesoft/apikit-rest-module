@@ -21,12 +21,12 @@ import static org.mule.module.apikit.api.RamlHandler.MULE_APIKIT_PARSER_AMF;
 import static org.mule.raml.interfaces.ParserType.AMF;
 import static org.mule.raml.interfaces.ParserType.RAML;
 
-@RunnerDelegateTo(Parameterized.class)
+//@RunnerDelegateTo(Parameterized.class)
 @ArtifactClassLoaderRunnerConfig
 public abstract class AbstractMultiParserFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
   @Parameterized.Parameter(value = 0)
-  public ParserType parser;
+  public ParserType parser = AMF;
 
   @Parameterized.Parameters(name = "{0}")
   public static Iterable<Object[]> data() {

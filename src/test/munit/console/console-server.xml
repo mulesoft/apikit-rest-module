@@ -8,15 +8,11 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="api-routing-config" raml="munit/flow-routing/api-routing.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
-    <apikit:flow-mappings>
-      <apikit:flow-mapping resource="/apply-with-charset" action="put" content-type="application/json" flow-ref="put:\apply-with-charset:application\json:api-routing-config" />
-      <apikit:flow-mapping resource="/{resourceType}:{id}" action="get" flow-ref="get:\(resourceType):(id):api-routing-config" />
-    </apikit:flow-mappings>
-  </apikit:config>
+  <apikit:config name="console-config" raml="munit/console/console-api.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
-  <flow name="api-routing-main">
-    <http:listener config-ref="http-listener-simple" path="/api/*">
+  <flow name="console">
+    <http:listener config-ref="http-listener-simple" path="/console/*">
       <http:response statusCode="#[vars.httpStatus default 200]">
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:response>
@@ -25,16 +21,8 @@
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:error-response>
     </http:listener>
-    <apikit:router config-ref="api-routing-config"/>
+    <apikit:console config-ref="console-config"/>
     <error-handler ref="global-server-error-handler"/>
-  </flow>
-
-  <flow name="put:\apply-with-charset:application\json:api-routing-config">
-    <logger level="INFO" message="put:\apply-with-charset:application\json:api-routing-config" />
-  </flow>
-
-  <flow name="get:\(resourceType):(id):api-routing-config">
-    <set-payload value="#[output application/json --- {&quot;name&quot;: &quot;testType&quot;}]" />
   </flow>
 
 </mule>
