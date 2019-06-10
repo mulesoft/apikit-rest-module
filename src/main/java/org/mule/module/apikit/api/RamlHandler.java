@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.api;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.mule.apikit.ApiType.AMF;
 import static org.mule.apikit.ApiType.RAML;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
@@ -19,11 +21,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.IOUtils;
 
-import org.mule.amf.impl.AMFParser;
 import org.mule.amf.impl.model.AMFImpl;
 import org.mule.apikit.ApiType;
 import org.mule.module.apikit.StreamUtils;
@@ -31,7 +38,6 @@ import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
 import org.mule.apikit.loader.ApiSyncResourceLoader;
-import org.mule.apikit.loader.ClassPathResourceLoader;
 import org.mule.apikit.model.ApiVendor;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.ApiSpecification;
@@ -46,6 +52,8 @@ import org.slf4j.LoggerFactory;
 
 public class RamlHandler {
 
+  private Pattern CONSOLE_RESOURCE_PATTERN = Pattern.compile(".*console-resources.*(html|json|js)");
+
   public static final String MULE_APIKIT_PARSER_PROPERTY = "mule.apikit.parser";
   public static final String APPLICATION_RAML = "application/raml+yaml";
 
@@ -59,6 +67,7 @@ public class RamlHandler {
   private ApiSpecification api;
   private ParseResult result;
   private ErrorTypeRepository errorTypeRepository;
+  private List<String> acceptedClasspathResources;
 
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri) throws IOException {
     this(ramlLocation, keepApiBaseUri, null, null);
@@ -91,16 +100,20 @@ public class RamlHandler {
       int idx = rootRamlLocation.lastIndexOf("/");
       if (idx > 0) {
         this.apiResourcesRelativePath = rootRamlLocation.substring(0, idx + 1);
-        this.apiResourcesRelativePath = sanitarizeResourceRelativePath(apiResourcesRelativePath);
+        this.apiResourcesRelativePath = uriPathToResourcePath(apiResourcesRelativePath);
       } else if (isSyncProtocol(rootRamlLocation)) {
         this.apiResourcesRelativePath = rootRamlLocation;
       }
+      this.acceptedClasspathResources = getAcceptedClasspathResources(api, apiResourcesRelativePath);
       this.errorTypeRepository = errorTypeRepository;
     } else {
       String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
       throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
     }
+  }
 
+  private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
+    return api.getAllReferences().stream().map(ref -> ref.substring(ref.indexOf(apiResourcesRelativePath))).collect(toList());
   }
 
   /**
@@ -139,53 +152,53 @@ public class RamlHandler {
 
   // resourcesRelativePath should not contain the console path
   public String getRamlV2(String resourceRelativePath) throws TypedException {
-    resourceRelativePath = sanitarizeResourceRelativePath(resourceRelativePath);
-    if (resourceRelativePath.contains("..")) {
-      throw throwErrorType(new NotFoundException("\"..\" is not allowed"),
-                           errorTypeRepository);
-    }
-    if (apiResourcesRelativePath.equals(resourceRelativePath)) {
-      // root raml
-      String rootRaml = dumpRaml();
-      if (keepApiBaseUri) {
+    String resourcePath = uriPathToResourcePath(resourceRelativePath);
+    Path normalizedPath = Paths.get(resourcePath).normalize();
+    // we don't want to expose something from the root. e.g. folder/some.xml/ it's ok, but some.xml should return 404
+    if (normalizedPath.getNameCount() > 1) {
+      String normalized = normalizedPath.toString();
+      if (apiResourcesRelativePath.equals(normalized)) {
+        String rootRaml = dumpRaml();
+        if (!keepApiBaseUri) {
+          String baseUriReplacement = getBaseUriReplacement(apiServer);
+          return UrlUtils.replaceBaseUri(rootRaml, baseUriReplacement);
+        }
         return rootRaml;
-      }
-      String baseUriReplacement = getBaseUriReplacement(apiServer);
-      return UrlUtils.replaceBaseUri(rootRaml, baseUriReplacement);
-    } else {
-      // the resource should be in a subfolder, otherwise it could be requesting the properties file
-      if (!resourceRelativePath.contains("/")) {
-        throw throwErrorType(new NotFoundException("Requested resources should be in a subfolder"),
-                             errorTypeRepository);
-      }
-      // resource
-      InputStream apiResource = null;
-      ByteArrayOutputStream baos = null;
-      try {
-        if (isSyncProtocol(apiResourcesRelativePath)) {
-          final String resourcePath = resourceRelativePath.substring(apiResourcesRelativePath.length());
-          apiResource = new ApiSyncResourceLoader(apiResourcesRelativePath).getResourceAsStream(resourcePath);
-        } else {
-          apiResource = new ClassPathResourceLoader().getResourceAsStream(resourceRelativePath);
-        }
+      } else {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        InputStream apiResource = null;
+        try {
+          if (isSyncProtocol(apiResourcesRelativePath)) {
+            ApiSyncResourceLoader loader = new ApiSyncResourceLoader(apiResourcesRelativePath);
+            apiResource = loader.getResourceAsStream(normalized.substring(apiResourcesRelativePath.length()));
+          } else {
+            // this normalized path should be controlled carefully since can scan all the classpath.
+            URL classpathResouce = Thread.currentThread().getContextClassLoader().getResource(normalized);
+            if (classpathResouce != null) {
+              String path = classpathResouce.getPath();
+              // if is a console resource, the API raml or a resource of that raml
+              if (CONSOLE_RESOURCE_PATTERN.asPredicate().test(path) ||
+                acceptedClasspathResources.stream().anyMatch(path::endsWith) ||
+                path.endsWith(api.getLocation())) {
+                apiResource = classpathResouce.openStream();
+              }
+            }
+          }
 
-        if (apiResource == null) {
-          throw throwErrorType(new NotFoundException(resourceRelativePath),
-                               errorTypeRepository);
+          if (apiResource != null) {
+            StreamUtils.copyLarge(apiResource, baos);
+            return baos.toString();
+          }
+        } catch (IOException e) {
+          LOGGER.debug(e.getMessage());
+          throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
+        } finally {
+          IOUtils.closeQuietly(apiResource);
+          IOUtils.closeQuietly(baos);
         }
-
-        baos = new ByteArrayOutputStream();
-        StreamUtils.copyLarge(apiResource, baos);
-      } catch (IOException e) {
-        LOGGER.debug(e.getMessage());
-        throw throwErrorType(new NotFoundException(resourceRelativePath),
-                             errorTypeRepository);
-      } finally {
-        IOUtils.closeQuietly(apiResource);
-        IOUtils.closeQuietly(baos);
       }
-      return baos.toString();
     }
+    throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
   }
 
   // TODO: why is an exception for AMF? this should dumping AMF should be the same as dumping a raml
@@ -235,14 +248,14 @@ public class RamlHandler {
       && requestPath.startsWith(resourcesFullPath);
   }
 
-  private String sanitarizeResourceRelativePath(String resourceRelativePath) {
+  private String uriPathToResourcePath(String resourceRelativePath) {
     // delete first slash
     if (resourceRelativePath.startsWith("/") && resourceRelativePath.length() > 1) {
       resourceRelativePath = resourceRelativePath.substring(1);
     }
     // delete querystring
     if (resourceRelativePath.contains("?raml")) {
-      resourceRelativePath = resourceRelativePath.substring(0, resourceRelativePath.indexOf('?'));
+      resourceRelativePath = resourceRelativePath.substring(0, resourceRelativePath.lastIndexOf('?'));
     }
     // delete last slash
     if (resourceRelativePath.endsWith("/") && resourceRelativePath.length() > 1) {

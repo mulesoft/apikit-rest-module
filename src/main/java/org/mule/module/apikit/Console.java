@@ -8,6 +8,7 @@ package org.mule.module.apikit;
 
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,6 +21,7 @@ import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.UrlUtils;
 import org.mule.module.apikit.api.console.ConsoleResources;
 import org.mule.module.apikit.api.console.Resource;
+import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.module.apikit.helpers.EventHelper;
 import org.mule.module.apikit.helpers.EventWrapper;
@@ -28,11 +30,13 @@ import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.util.StringMessageUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +77,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
   }
 
   @Override
-  public CoreEvent process(CoreEvent event) throws MuleException {
+  public CoreEvent process(CoreEvent event) {
     final Configuration config = getConfiguration();
 
     EventWrapper eventWrapper = new EventWrapper(event, config.getOutboundHeadersMapName(), config.getHttpStatusVarName());
@@ -85,10 +89,9 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     String queryString = attributes.getQueryString();
     String method = attributes.getMethod();
 
-    ConsoleResources consoleResources =
-        new ConsoleResources(config, listenerPath,
-                             requestPath, queryString, method, acceptHeader,
-                             errorRepositoryFrom(muleContext));
+    ConsoleResources consoleResources = new ConsoleResources(config, listenerPath,
+                                                             requestPath, queryString, method, acceptHeader,
+                                                             errorRepositoryFrom(muleContext));
 
     // Listener path MUST end with /*
     consoleResources.isValidPath(attributes.getListenerPath());
@@ -101,12 +104,9 @@ public class Console extends AbstractComponent implements Processor, Initialisab
       eventWrapper.doClientRedirect();
       return eventWrapper.build();
     }
-
     Resource resource = consoleResources.getConsoleResource(resourceRelativePath);
-
     eventWrapper.setPayload(resource.getContent(), resource.getMediaType());
     eventWrapper.addOutboundProperties(resource.getHeaders());
-
     return eventWrapper.build();
   }
 
