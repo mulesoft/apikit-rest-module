@@ -34,7 +34,7 @@ public class AttributesValidator {
 
     // uriparams
     UriParametersValidator uriParametersValidator = new UriParametersValidator(action, resolvedVariables);
-    uriParams = uriParametersValidator.validateAndAddDefaults(attributes.getUriParams());
+    uriParametersValidator.validate(attributes.getUriParams());
 
     // queryStrings
     QueryStringValidator queryStringValidator = new QueryStringValidator(action);
@@ -55,7 +55,7 @@ public class AttributesValidator {
     headers = headersValidator.getNewHeaders();
 
     // regenerate attributes
-    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString, uriParams);
+    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString, new MultiMap<>(attributes.getUriParams()));
   }
 
 }

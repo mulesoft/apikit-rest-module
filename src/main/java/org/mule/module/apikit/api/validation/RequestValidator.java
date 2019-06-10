@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
+import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.CharsetUtils;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.BadRequestException;
@@ -64,7 +65,7 @@ public class RequestValidator {
                                       ErrorTypeRepository errorTypeRepository)
       throws MuleRestException {
 
-    final HttpRequestAttributes httpRequestAttributes;
+    HttpRequestAttributes httpRequestAttributes;
     final ValidBody validBody;
     if (config.isDisableValidations()) {
       httpRequestAttributes = attributes;
@@ -94,11 +95,22 @@ public class RequestValidator {
       validBody = BodyValidator.validate(resource.getAction(method), attributes, payload, config, charset, errorTypeRepository);
     }
 
+    httpRequestAttributes = addUriParams(resolvedVariables, httpRequestAttributes);
+
     return ValidRequest.builder()
         .withAttributes(httpRequestAttributes)
         .withBody(validBody)
         .build();
+  }
 
+  private static HttpRequestAttributes addUriParams(ResolvedVariables resolvedVariables, HttpRequestAttributes httpRequestAttributes) {
+    MultiMap<String, String> uriParams = new MultiMap<>(httpRequestAttributes.getUriParams());
+    for (String name : resolvedVariables.names()) {
+      String value = String.valueOf(resolvedVariables.get(name));
+      uriParams = AttributesHelper.addParam(uriParams, name, value);
+    }
+
+    return new HttpRequestAttributesBuilder(httpRequestAttributes).uriParams(uriParams).build();
   }
 
   private static Object makePayloadRepeatable(Object payload) {
