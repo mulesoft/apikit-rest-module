@@ -23,7 +23,8 @@
 	  </http:request>
 	</munit:execution>
 	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+		<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		<munit-tools:assert-equals actual="#[output application/java --- payload]" expected="#['INVALID_URI_PARAM']"/>
 	</munit:validation>
   </munit:test>
 
