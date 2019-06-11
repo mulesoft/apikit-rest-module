@@ -48,6 +48,7 @@
         <munit.tools.version>2.2.1-SNAPSHOT</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.5.1</mockServerVersion>
+        <jacoco.version>0.7.9</jacoco.version>
     </properties>
 
     <dependencies>
@@ -419,6 +420,12 @@
                         <artifactId>munit-runner</artifactId>
                         <version>${munit.version}</version>
                         <classifier>mule-plugin</classifier>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>org.jacoco.agent</artifactId>
+                        <version>${jacoco.version}</version>
+                        <classifier>runtime</classifier>
                     </dependency>
                 </dependencies>
             </plugin>
