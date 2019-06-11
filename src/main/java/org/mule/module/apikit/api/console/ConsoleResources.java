@@ -26,8 +26,6 @@ public class ConsoleResources {
   private static final String ROOT_CONSOLE_PATH = "/";
   private static final String INDEX_RESOURCE_RELATIVE_PATH = "/index.html";
   private static final String RAML_LOCATION_PLACEHOLDER_KEY = "RAML_LOCATION_PLACEHOLDER";
-  private static final String HTTP_LISTENER_BASE_PATH = "HTTP_LISTENER_BASE_PATH";
-  private static final String AMF_MODEL_LOCATION = "AMF_MODEL_LOCATION";
 
   private final String CONSOLE_RESOURCES_BASE;
   private ConsoleConfig config;
@@ -108,9 +106,6 @@ public class ConsoleResources {
     String indexHtml = IOUtils.toString(inputStream);
     IOUtils.closeQuietly(inputStream);
 
-    // for amf console index
-    indexHtml = indexHtml.replaceFirst(HTTP_LISTENER_BASE_PATH, getCompletePathFromBasePathAndPath("", listenerPath));
-    indexHtml = indexHtml.replaceFirst(AMF_MODEL_LOCATION, listenerPath + "/?amf");
 
     indexHtml = indexHtml.replaceFirst(RAML_LOCATION_PLACEHOLDER_KEY, ramlLocation);
     inputStream = new ByteArrayInputStream(indexHtml.getBytes());
