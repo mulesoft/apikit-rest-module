@@ -6,31 +6,25 @@
  */
 package org.mule.module.apikit;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ApikitRegistry {
 
-  private Map<String, Configuration> configMap;
-
-  private Map<String, String> apiSourceMap;
+  private Map<String, Configuration> configMap = new ConcurrentHashMap<>();
+  private Map<String, String> apiSourceMap = new ConcurrentHashMap<>();
 
   public void registerConfiguration(Configuration config) {
-    if (configMap == null) {
-      configMap = new HashMap<>();
-    }
-    this.configMap.put(config.getName(), config);
-
-    if (apiSourceMap != null) {
+    synchronized (this) {
+      this.configMap.put(config.getName(), config);
       config.getRamlHandler().setApiServer(apiSourceMap.get(config.getName()));
-
-
       for (String apiSourceMapItem : apiSourceMap.keySet()) {
         if (configMap.get(apiSourceMapItem) != null) {
           configMap.get(apiSourceMapItem).getRamlHandler().setApiServer(apiSourceMap.get(apiSourceMapItem));
         }
       }
-
     }
   }
 
@@ -39,13 +33,8 @@ public class ApikitRegistry {
   }
 
   public void setApiSource(String configName, String apiSource) {
-    if (apiSourceMap == null) {
-      apiSourceMap = new HashMap<>();
-    }
-    apiSourceMap.put(configName, apiSource);
-
-
-    if (configMap != null) {
+    synchronized (this) {
+      apiSourceMap.put(configName, apiSource);
       for (String apiSourceMapItem : apiSourceMap.keySet()) {
         if (configMap.get(apiSourceMapItem) != null) {
           configMap.get(apiSourceMapItem).getRamlHandler().setApiServer(apiSourceMap.get(apiSourceMapItem));
