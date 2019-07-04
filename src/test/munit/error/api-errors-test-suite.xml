@@ -8,7 +8,7 @@
   xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
   <munit:config name="api-error-test-suite">
     <munit:parameterizations>
@@ -25,15 +25,63 @@
     </munit:parameterizations>
   </munit:config>
 
-  <munit:test name="error-response-without-timeout" description="Test" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR" expectedException="org.mule.runtime.api.exception.MuleRuntimeException">
-    <munit:enable-flow-sources >
+  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
+  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
+  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
+  <munit:test name="error-on-subflow-propagates-to-main-flow" ignore="#[not Munit::muleVersionPriorTo('4.2.1')]">
+    <munit:enable-flow-sources>
       <munit:enable-flow-source value="api-errors-main" />
-      <munit:enable-flow-source value="get:\somethings:api-errors-config"/>
+      <munit:enable-flow-source value="get:\raiseError:api-errors-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/api/somethings">
+      <http:request method="GET" config-ref="http-requester-simple" path="/errors/raiseError">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
       </http:request>
     </munit:execution>
+    <munit:validation>
+      <munit-tools:retrieve key="errorType"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('API:ERROR')]"/>
+      <munit-tools:retrieve key="errorDescription"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('An error occurred.')]"/>
+      <munit-tools:retrieve key="mainPayload"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Some Content')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
+  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
+  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
+  <munit:test name="error-propagates-from-subflow" ignore="#[not Munit::muleVersionPriorTo('4.2.1')]">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="api-errors-main" />
+      <munit:enable-flow-source value="get:\onErrorPropagate:api-errors-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/errors/onErrorPropagate"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:retrieve key="errorType"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('API:ERROR')]"/>
+      <munit-tools:retrieve key="errorDescription"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('An error occurred.')]"/>
+      <munit-tools:retrieve key="mainPayload"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Changing payload propagating error')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="error-continues-on-handler-in-subflow">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="api-errors-main" />
+      <munit:enable-flow-source value="get:\onErrorContinue:api-errors-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/errors/onErrorContinue"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Content set in the sub flow error handler')]"/>
+    </munit:validation>
   </munit:test>
 
 </mule>
