@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.error;
 
+import org.mule.runtime.api.component.execution.ExecutableComponent;
 import org.mule.runtime.api.event.Event;
 import org.mule.runtime.core.api.event.CoreEvent;
 
@@ -16,7 +17,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * {@link RouterExceptionHandler} implementation that wraps the resulting event and exception into a MessagingException.
  *
+ * The MuleMessagingException is an internal Mule exception but it the only one that provides de capability to provide a custom
+ * event to the processing chain when an error occurs, there is no API for doing this until mule 4.2.2 in which cases the
+ * {@link ComponentExecutionExceptionHandler} should be active instead of this implementation.
+ *
+ * This class builds a MessagingException reflectively by looking up in the classloader hierarchy until the class is visible.
+ *
+ * Also note that previous versions of APIKit did not have this code, this is because the Router used to use a privileged API that
+ * does not work anymore. Now, instead, is using the {@link ExecutableComponent} API to execute flows dynamically, see the
+ * org.mule.module.apikit.Router#doRoute for more info on this.
  */
 public class MuleMessagingExceptionHandler implements RouterExceptionHandler {
 

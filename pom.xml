@@ -41,7 +41,6 @@
         <munit.tools.version>2.2.0-SNAPSHOT</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.5.1</mockServerVersion>
-        <file.connector.version>1.2.0</file.connector.version>
     </properties>
 
     <dependencies>
@@ -316,12 +315,6 @@
                         <groupId>com.mulesoft.munit</groupId>
                         <artifactId>munit-runner</artifactId>
                         <version>${munit.version}</version>
-                        <classifier>mule-plugin</classifier>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.mule.connectors</groupId>
-                        <artifactId>mule-file-connector</artifactId>
-                        <version>${file.connector.version}</version>
                         <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>

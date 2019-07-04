@@ -8,6 +8,9 @@ package org.mule.module.apikit.error;
 
 import org.mule.runtime.api.event.Event;
 
+/**
+ * Contract for implementations that handle exceptions when a sub flow fails.
+ */
 public interface RouterExceptionHandler {
 
   Exception handle(Event event, Exception exception);
