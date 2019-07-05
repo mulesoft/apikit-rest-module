@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * Also note that previous versions of APIKit did not have this code, this is because the Router used to use a privileged API that
  * does not work anymore. Now, instead, is using the {@link ExecutableComponent} API to execute flows dynamically, see the
- * org.mule.module.apikit.Router#doRoute for more info on this.
+ * org.mule.module.apikit.Router#doRoute() for more info on this.
  */
 public class MuleMessagingExceptionHandler implements RouterExceptionHandler {
 

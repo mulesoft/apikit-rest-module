@@ -15,7 +15,6 @@ import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
 import static reactor.core.publisher.Mono.error;
-import static reactor.core.publisher.Mono.fromFuture;
 
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.Resource;
@@ -29,21 +28,18 @@ import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ValidRequest;
-import org.mule.module.apikit.error.ComponentExecutionExceptionHandler;
-import org.mule.module.apikit.error.MuleMessagingExceptionHandler;
-import org.mule.module.apikit.error.RouterExceptionHandler;
 import org.mule.module.apikit.exception.NotFoundException;
+import org.mule.module.apikit.routing.DefaultFlowRoutingStrategy;
+import org.mule.module.apikit.routing.FlowRoutingStrategy;
+import org.mule.module.apikit.routing.PrivilegedFlowRoutingStrategy;
+import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.runtime.api.component.AbstractComponent;
-import org.mule.runtime.api.component.execution.ComponentExecutionException;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
-import org.mule.runtime.api.event.Event;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.message.Message;
-import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.MuleContext;
-import org.mule.runtime.core.api.config.MuleManifest;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
@@ -52,49 +48,54 @@ import javax.inject.Inject;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import com.google.common.cache.LoadingCache;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 
 public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter {
 
-  private final ApikitRegistry registry;
-  private final ConfigurationComponentLocator locator;
-  private Configuration configuration;
-  private String name;
-  private RouterExceptionHandler exceptionHandler;
+  private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
 
   @Inject
   private MuleContext muleContext;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
+  private final ApikitRegistry registry;
+  private final ConfigurationComponentLocator locator;
+
+  private FlowRoutingStrategy routingStrategy;
+  private Configuration configuration;
+  private String name;
 
   @Inject
   public Router(ApikitRegistry registry, ConfigurationComponentLocator locator) {
     this.registry = registry;
     this.locator = locator;
-    this.exceptionHandler = isMule422orGreater() ? new ComponentExecutionExceptionHandler() : new MuleMessagingExceptionHandler();
-  }
-
-  private boolean isMule422orGreater() {
-    return new MuleVersion(MuleManifest.getProductVersion()).atLeast("4.2.2");
   }
 
   @Override
   public void initialise() {
     String name = getLocation().getRootContainerName();
     Optional<URI> url = getSourceLocation(locator, name);
+    this.routingStrategy = getRoutingStrategy();
     if (!url.isPresent()) {
-      LOGGER.error("There was an error retrieving Api Source. Console will work only if the keepApiBaseUri property is set to true.");
+      LOGGER
+        .error("There was an error retrieving Api Source. Console will work only if the keepApiBaseUri property is set to true.");
     } else {
       String configName = configuration.getName();
       registry.setApiSource(configName, url.get().toString().replace("*", ""));
       LOGGER.info(getBoilerPlate("APIKit Router '" + configName + "' started using Parser: " + configuration.getType()));
     }
+  }
+
+  private FlowRoutingStrategy getRoutingStrategy() {
+    // privileged API should only be used in MULE 4.1.x versions, since 4.2.0 we start using the ExecutableComponent public API
+    return MuleVersionUtils.isAtLeast("4.2.0") ?
+      new DefaultFlowRoutingStrategy() :
+      new PrivilegedFlowRoutingStrategy(getLocation());
   }
 
   @Override
@@ -145,12 +146,9 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     TypedValue<Object> payload = mainEvent.getMessage().getPayload();
     ValidRequest request = validate(config, resource, attributes, resolvedVariables, payload, errorRepositoryFrom(muleContext));
     Flow flow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(), getMediaType(attributes));
-    CoreEvent childEvent = buildEventoFAlopa(mainEvent, request, config.getOutboundHeadersMapName());
-    CompletableFuture<Event> execution = flow.execute(childEvent);
+    CoreEvent subflowEvent = buildSubflowEvent(mainEvent, request, config.getOutboundHeadersMapName());
 
-    return fromFuture(execution)
-      .onErrorMap(ComponentExecutionException.class,
-                  e -> exceptionHandler.handle(CoreEvent.builder(mainEvent.getContext(), ((CoreEvent) e.getEvent())).build(), e))
+    return Mono.from(routingStrategy.route(flow, mainEvent, subflowEvent))
       .map(result -> {
         if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
           // If status code is missing, a default one is added
@@ -192,7 +190,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     this.name = name;
   }
 
-  private CoreEvent buildEventoFAlopa(CoreEvent parent, ValidRequest request, String outboundHeadersMapName) {
+  private CoreEvent buildSubflowEvent(CoreEvent parent, ValidRequest request, String outboundHeadersMapName) {
     CoreEvent.Builder eventBuilder = CoreEvent.builder(parent);
     eventBuilder.addVariable(outboundHeadersMapName, new HashMap<>());
 

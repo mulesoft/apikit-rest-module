@@ -80,7 +80,7 @@
       <http:request method="GET" config-ref="http-requester-simple" path="/errors/onErrorContinue"/>
     </munit:execution>
     <munit:validation>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Content set in the sub flow error handler')]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::equalTo('Content set in the sub flow error handler')]"/>
     </munit:validation>
   </munit:test>
 
