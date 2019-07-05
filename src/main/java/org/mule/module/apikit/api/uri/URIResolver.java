@@ -7,6 +7,9 @@
 
 package org.mule.module.apikit.api.uri;
 
+import static org.mule.module.apikit.uri.URIResolveResult.Status.ERROR;
+import static org.mule.module.apikit.uri.URIResolveResult.Status.RESOLVED;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,11 +19,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.mule.module.apikit.uri.Token;
-import org.mule.module.apikit.uri.URICoder;
 import org.mule.module.apikit.uri.URIResolveResult;
 import org.mule.module.apikit.uri.Variable;
-import org.mule.module.apikit.uri.VariableBinder;
-import org.mule.module.apikit.uri.VariableResolver;
 
 
 /**
@@ -136,30 +136,19 @@ public class URIResolver {
   }
 
   /**
-   * Resolves the given URI pattern.
+   * Resolves the given URI pattern using the specified variable binder.
    *
    * @param pattern The pattern to resolve.
    * @return The URI pattern that best matches the given URI.
    */
   public URIResolveResult resolve(URIPattern pattern) {
-    return resolve(pattern, new VariableBinder());
-  }
-
-  /**
-   * Resolves the given URI pattern using the specified variable binder.
-   *
-   * @param pattern The pattern to resolve.
-   * @param binder  The variable binder.
-   * @return The URI pattern that best matches the given URI.
-   */
-  public URIResolveResult resolve(URIPattern pattern, VariableBinder binder) {
     URIResolveResult result = new URIResolveResult(pattern);
     Matcher mx = pattern.pattern().matcher(this._uri);
     boolean match = mx.matches();
     // it is an error condition if there is no match
     // or if the number of capturing groups is not the same as the number of tokens
     if (!match || mx.groupCount() != pattern.tokens().size()) {
-      result.setStatus(URIResolveResult.Status.ERROR);
+      result.setStatus(ERROR);
       return result;
     }
     // extracts the variable token
@@ -171,7 +160,7 @@ public class URIResolver {
       mt.resolve(s, map);
     }
     // lookup variable values
-    lookup(result, map, binder);
+    lookup(result, map);
     return result;
   }
 
@@ -185,36 +174,20 @@ public class URIResolver {
    *
    * @param result Where the results go.
    * @param map    Values mapped to the variables.
-   * @param binder The resolvers to use for each variable.
    */
-  private void lookup(URIResolveResult result, Map<Variable, Object> map, VariableBinder binder) {
-    URIResolveResult.Status status = URIResolveResult.Status.RESOLVED;
+  private void lookup(URIResolveResult result, Map<Variable, Object> map) {
     // lookup variable values
     for (Map.Entry<Variable, Object> entry : map.entrySet()) {
-      Variable var = entry.getKey();
-      VariableResolver r = binder.getResolver(var.name(), var.type());
       Object value = entry.getValue();
-
       // most common case: a string
       if (value instanceof String) {
-        final String decoded = URICoder.decode(value.toString());
-        Object o = r.resolve(decoded);
-        result.put(entry.getKey().name(), o);
-        if (o == null) {
-          status = URIResolveResult.Status.UNRESOLVED;
-        }
-
-        // returned an array of values
-      } else if (value instanceof String[]) {
-        // FIXME: handle arrays
-        status = URIResolveResult.Status.ERROR;
-
-        // unknown object
+        result.put(entry.getKey().name(), value);
       } else {
-        status = URIResolveResult.Status.ERROR;
+        result.setStatus(ERROR);
+        return;
       }
     }
-    result.setStatus(status);
+    result.setStatus(RESOLVED);
   }
 
   /**

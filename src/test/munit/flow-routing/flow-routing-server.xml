@@ -12,6 +12,7 @@
     <apikit:flow-mappings>
       <apikit:flow-mapping resource="/apply-with-charset" action="put" content-type="application/json" flow-ref="put:\apply-with-charset:application\json:api-routing-config" />
       <apikit:flow-mapping resource="/{resourceType}:{id}" action="get" flow-ref="get:\(resourceType):(id):api-routing-config" />
+      <apikit:flow-mapping resource="/uri-param/{uriID}/test" action="get" flow-ref="get:\uri-param\(uriID)\test:api-routing-config"/>
     </apikit:flow-mappings>
   </apikit:config>
 
@@ -30,11 +31,14 @@
   </flow>
 
   <flow name="put:\apply-with-charset:application\json:api-routing-config">
-    <logger level="INFO" message="put:\apply-with-charset:application\json:api-routing-config" />
+    <logger level="INFO" message="put:\apply-with-charset:application\json:api-routing-config"/>
   </flow>
 
   <flow name="get:\(resourceType):(id):api-routing-config">
-    <set-payload value="#[output application/json --- {&quot;name&quot;: &quot;testType&quot;}]" />
+    <set-payload value="#[output application/json --- {&quot;name&quot;: &quot;testType&quot;}]"/>
   </flow>
 
+  <flow name="get:\uri-param\(uriID)\test:api-routing-config">
+    <set-payload value="#[output application/json --- { test:attributes.uriParams.uriID }]"/>
+  </flow>
 </mule>
