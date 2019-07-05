@@ -29,3 +29,12 @@ types:
       200:
         body:
           application/json: !!null
+
+/uri-param:
+  /{uriID}/test:
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              type: ApplyCreditMemoType
