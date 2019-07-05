@@ -6,75 +6,70 @@
  */
 package org.mule.module.apikit;
 
-import static java.util.Optional.ofNullable;
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
+import static org.mule.module.apikit.api.validation.RequestValidator.validate;
 import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
-import static org.mule.runtime.core.api.event.CoreEvent.builder;
+import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
-import static org.mule.runtime.core.privileged.processor.MessageProcessors.processWithChildContext;
 import static reactor.core.publisher.Mono.error;
-import static reactor.core.publisher.Mono.from;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Optional;
-
-import javax.inject.Inject;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.UrlUtils;
-import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.spi.AbstractRouter;
-import org.mule.module.apikit.api.spi.RouterService;
 import org.mule.module.apikit.api.spi.RouterServiceAdapter;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
-import org.mule.module.apikit.api.validation.RequestValidator;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.module.apikit.exception.NotFoundException;
-import org.mule.module.apikit.helpers.EventHelper;
 import org.mule.raml.interfaces.model.IRaml;
 import org.mule.raml.interfaces.model.IResource;
+import org.mule.module.apikit.routing.DefaultFlowRoutingStrategy;
+import org.mule.module.apikit.routing.FlowRoutingStrategy;
+import org.mule.module.apikit.routing.PrivilegedFlowRoutingStrategy;
+import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
-import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-import org.mule.runtime.core.api.util.StringMessageUtils;
-import org.mule.runtime.core.privileged.event.BaseEventContext;
+
+import javax.inject.Inject;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Optional;
+
+import com.google.common.cache.LoadingCache;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.cache.LoadingCache;
 import reactor.core.publisher.Mono;
 
 
-public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter, org.mule.module.apikit.spi.AbstractRouter
-{
+public class Router extends AbstractComponent
+  implements Processor, Initialisable, AbstractRouter, org.mule.module.apikit.spi.AbstractRouter {
 
-  private final ApikitRegistry registry;
-
-  private final ConfigurationComponentLocator locator;
-
-  private Configuration configuration;
-
-  private String name;
+  private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
 
   @Inject
   private MuleContext muleContext;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
+  private final ApikitRegistry registry;
+  private final ConfigurationComponentLocator locator;
+
+  private FlowRoutingStrategy routingStrategy;
+  private Configuration configuration;
+  private String name;
 
   @Inject
   public Router(ApikitRegistry registry, ConfigurationComponentLocator locator) {
@@ -83,21 +78,25 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   }
 
   @Override
-  public void initialise() throws InitialisationException {
-    final String name = getLocation().getRootContainerName();
-    final Optional<URI> url = getSourceLocation(locator, name);
-
+  public void initialise() {
+    String name = getLocation().getRootContainerName();
+    Optional<URI> url = getSourceLocation(locator, name);
+    this.routingStrategy = getRoutingStrategy();
     if (!url.isPresent()) {
       LOGGER
-          .error("There was an error retrieving api source. Console will work only if the keepApiBaseUri property is set to true.");
-      return;
+        .error("There was an error retrieving Api Source. Console will work only if the keepApiBaseUri property is set to true.");
+    } else {
+      String configName = configuration.getName();
+      registry.setApiSource(configName, url.get().toString().replace("*", ""));
+      LOGGER.info(getBoilerPlate("APIKit Router '" + configName + "' started using Parser: " + configuration.getParser()));
     }
-    final String configurationName = configuration.getName();
-    registry.setApiSource(configurationName, url.get().toString().replace("*", ""));
+  }
 
-    LOGGER.info(StringMessageUtils
-        .getBoilerPlate("APIKit Router for config '" + configurationName + "' started using Parser: "
-            + configuration.getParser().name()));
+  private FlowRoutingStrategy getRoutingStrategy() {
+    // privileged API should only be used in MULE 4.1.x versions, since 4.2.0 we start using the ExecutableComponent public API
+    return MuleVersionUtils.isAtLeast("4.2.0") ?
+      new DefaultFlowRoutingStrategy() :
+      new PrivilegedFlowRoutingStrategy(getLocation());
   }
 
   @Override
@@ -110,13 +109,9 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     return flatMap(publisher, this::processWithExtension, this);
   }
 
-  public RamlHandler getRamlHandler() {
-    return this.getConfiguration().getRamlHandler();
-  }
-
   @Override
   public IRaml getRaml() {
-    return this.getRamlHandler().getApi();
+    return this.getConfiguration().getRamlHandler().getApi();
   }
 
   private Publisher<CoreEvent> processWithExtension(CoreEvent event) {
@@ -136,51 +131,40 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
   public Publisher<CoreEvent> processEvent(CoreEvent event) throws MuleRestException {
     Configuration config = registry.getConfiguration(getConfiguration().getName());
-    CoreEvent.Builder eventBuilder = CoreEvent.builder(event);
-    eventBuilder.addVariable(config.getOutboundHeadersMapName(), new HashMap<>());
-
     HttpRequestAttributes attributes = ((HttpRequestAttributes) event.getMessage().getAttributes().getValue());
-
-    return doRoute(event, config, eventBuilder, attributes);
+    return doRoute(event, config, attributes);
   }
 
-  private Publisher<CoreEvent> doRoute(CoreEvent event, Configuration config, CoreEvent.Builder eventBuilder,
-                                       HttpRequestAttributes attributes)
-      throws MuleRestException {
-    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), UrlUtils.encode(attributes.getRequestPath()));
-    path = path.isEmpty() ? "/" : path;
+  private Publisher<CoreEvent> doRoute(CoreEvent mainEvent, Configuration config, HttpRequestAttributes attributes)
+    throws MuleRestException {
 
+    String path = getRequestPath(attributes);
     // Get uriPattern, uriResolver, and the resolvedVariables
     URIPattern uriPattern = findInCache(path, config.getUriPatternCache());
     URIResolver uriResolver = findInCache(path, config.getUriResolverCache());
     ResolvedVariables resolvedVariables = uriResolver.resolve(uriPattern);
-
     IResource resource = config.getFlowFinder().getResource(uriPattern);
-    eventBuilder = validateRequest(event, eventBuilder, config, resource, attributes, resolvedVariables);
-    String contentType = getMediaType(attributes);
-    Flow flow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(), contentType);
+    TypedValue<Object> payload = mainEvent.getMessage().getPayload();
+    ValidRequest request = validate(config, resource, attributes, resolvedVariables, payload, errorRepositoryFrom(muleContext));
+    Flow flow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(), getMediaType(attributes));
+    CoreEvent subflowEvent = buildSubflowEvent(mainEvent, request, config.getOutboundHeadersMapName());
 
-    final Publisher<CoreEvent> flowResult =
-        processWithChildContext(eventBuilder.build(), flow, ofNullable(getLocation()), flow.getExceptionListener());
+    return Mono.from(routingStrategy.route(flow, mainEvent, subflowEvent))
+      .map(result -> {
+        if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
+          // If status code is missing, a default one is added
+          RamlHandler handler = config.getRamlHandler();
+          String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
+          return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
+        }
+        return result;
+      });
+  }
 
-    return from(flowResult)
-        .doOnSuccess(result -> {
-          if (result == null) {
-            ((BaseEventContext) event.getContext()).success();
-          }
-        })
-        .doOnError(e -> ((BaseEventContext) event.getContext()).error(e))
-        .map(result -> {
-          if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
-            // If status code is missing, a default one is added
-            final String successStatusCode =
-                config.getRamlHandler()
-                    .getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
-            return builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode)
-                .build();
-          }
-          return result;
-        });
+  private String getRequestPath(HttpRequestAttributes attributes) {
+    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), UrlUtils.encode(attributes.getRequestPath()));
+    path = path.isEmpty() ? "/" : path;
+    return path;
   }
 
   private <T> T findInCache(String key, LoadingCache<String, T> cache) {
@@ -207,18 +191,13 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     this.name = name;
   }
 
-  public CoreEvent.Builder validateRequest(CoreEvent event, CoreEvent.Builder eventBuilder, ValidationConfig config,
-                                           IResource resource, HttpRequestAttributes attributes,
-                                           ResolvedVariables resolvedVariables)
-      throws MuleRestException {
+  private CoreEvent buildSubflowEvent(CoreEvent parent, ValidRequest request, String outboundHeadersMapName) {
+    CoreEvent.Builder eventBuilder = CoreEvent.builder(parent);
+    eventBuilder.addVariable(outboundHeadersMapName, new HashMap<>());
 
-    TypedValue payload = event.getMessage().getPayload();
-
-    final ValidRequest validRequest =
-        RequestValidator.validate(config, resource, attributes, resolvedVariables, payload,
-                                  errorRepositoryFrom(muleContext));
-
-    return EventHelper.regenerateEvent(event.getMessage(), eventBuilder, validRequest);
+    Message.Builder messageBuilder = Message.builder(parent.getMessage());
+    messageBuilder.value(request.getBody().getPayload());
+    messageBuilder.attributesValue(request.getAttributes());
+    return eventBuilder.message(messageBuilder.build()).build();
   }
-
 }
