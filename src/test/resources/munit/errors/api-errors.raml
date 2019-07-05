@@ -1,21 +1,22 @@
 #%RAML 1.0
 ---
-title: API for test routing!
+title: API for test errors!
 
-types:
-  ApplyCreditMemoType:
-    type: object
-    properties:
-      effectiveDate:
-        description: |
-          The date when the credit memo is applied.
-        type: date-only
-        required: false
-
-/somethings:
+/raiseError:
   get:
     responses:
       200:
         body:
             application/json:
-              type:  ApplyCreditMemoType
+/onErrorContinue:
+  get:
+    responses:
+      200:
+        body:
+            application/json:
+/onErrorPropagate:
+  get:
+    responses:
+      200:
+        body:
+            application/json:

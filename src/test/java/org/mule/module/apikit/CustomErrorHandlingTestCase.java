@@ -35,5 +35,4 @@ public class CustomErrorHandlingTestCase extends AbstractMultiParserFunctionalTe
         .statusCode(404)
         .when().get("/api/error");
   }
-
 }

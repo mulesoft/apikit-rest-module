@@ -1,29 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
-  xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-    http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+                          http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+                          http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-  <apikit:config name="api-errors-config" api="munit/errors/api-errors.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+    <apikit:config name="api-errors-config" api="munit/errors/api-errors.raml" outboundHeadersMapName="outboundHeaders"
+                   httpStatusVarName="httpStatus"/>
 
-  <flow name="api-errors-main">
-    <http:listener config-ref="http-listener-simple" path="/api/*">
-      <http:response statusCode="#[vars.httpStatus default 200]">
-      </http:response>
-      <http:error-response statusCode="#[vars.httpStatus default 500]">
-        <http:body>#[payload]</http:body>
-      </http:error-response>
-    </http:listener>
-    <apikit:router config-ref="api-errors-config"/>
-  </flow>
+    <flow name="api-errors-main">
+        <http:listener config-ref="http-listener-simple" path="/errors/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="api-errors-config"/>
+        <error-handler>
+            <on-error-continue type="MULE:ANY">
+                <!-- Storing the error to be checked later in the test -->
+                <munit-tools:store key="errorType">
+                    <munit-tools:value>#[error.errorType.namespace ++ ':' ++ error.errorType.identifier]</munit-tools:value>
+                </munit-tools:store>
+                <munit-tools:store key="errorPayload">
+                    <munit-tools:value>#[error.errorMessage.payload]</munit-tools:value>
+                </munit-tools:store>
+                <munit-tools:store key="errorDescription">
+                    <munit-tools:value>#[error.description]</munit-tools:value>
+                </munit-tools:store>
+                <munit-tools:store key="mainPayload">
+                    <munit-tools:value>#[payload]</munit-tools:value>
+                </munit-tools:store>
+            </on-error-continue>
+        </error-handler>
+    </flow>
 
-  <flow name="get:\somethings:api-errors-config">
-    <raise-error type="API:ERROR"/>
-  </flow>
+    <flow name="get:\raiseError:api-errors-config">
+        <set-payload value="Some Content"/>
+        <raise-error type="API:ERROR"/>
+    </flow>
+
+    <flow name="get:\onErrorContinue:api-errors-config">
+        <raise-error type="API:ERROR"/>
+        <error-handler>
+            <on-error-continue type="API:ERROR">
+                <set-payload value="Content set in the sub flow error handler" mimeType="text/plain"/>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="get:\onErrorPropagate:api-errors-config">
+        <raise-error type="API:ERROR"/>
+        <error-handler>
+            <on-error-propagate type="API:ERROR">
+                <set-payload value="Changing payload propagating error" mimeType="text/plain"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
 
 </mule>
