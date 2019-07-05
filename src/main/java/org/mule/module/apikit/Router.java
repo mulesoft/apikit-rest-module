@@ -154,9 +154,9 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
           // If status code is missing, a default one is added
           RamlHandler handler = config.getRamlHandler();
           String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
-          return CoreEvent.builder(((CoreEvent) result)).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
+          return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
         }
-        return ((CoreEvent) result);
+        return result;
       });
   }
 
