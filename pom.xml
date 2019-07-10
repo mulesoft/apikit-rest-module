@@ -30,6 +30,8 @@
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <httpmime.version>4.5.8</httpmime.version>
 
+        <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
+
         <!-- PARSERS -->
         <parser.service.version>2.0.0-SNAPSHOT</parser.service.version>
 
@@ -388,6 +390,60 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <skipNoSnapshotsEnforcerPluginRule>false</skipNoSnapshotsEnforcerPluginRule>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>${maven.enforcer.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-no-snapshots-in-deps</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireReleaseDeps>
+                                            <message>No Snapshots Allowed in Deps!</message>
+                                            <excludes>
+                                                <exclude>com.mulesoft.munit:munit-runner</exclude>
+                                                <exclude>com.mulesoft.munit:munit-tools</exclude>
+                                            </excludes>
+                                        </requireReleaseDeps>
+                                        <requireReleaseVersion>
+                                            <message>No Snapshots Allowed in Project Version!</message>
+                                        </requireReleaseVersion>
+                                        <requirePluginVersions>
+                                            <message>Best Practice is to always define plugin versions!</message>
+                                            <unCheckedPluginList>
+                                                com.mulesoft.munit:munit-extensions-maven-plugin,
+                                                org.apache.maven.plugins:maven-source-plugin,
+                                                org.apache.maven.plugins:maven-resources-plugin,
+                                                org.apache.maven.plugins:maven-site-plugin,
+                                                org.apache.maven.plugins:maven-javadoc-plugin,
+                                                org.apache.maven.plugins:maven-surefire-plugin,
+                                                org.apache.maven.plugins:maven-clean-plugin,
+                                                org.apache.maven.plugins:maven-install-plugin,
+                                                org.apache.maven.plugins:maven-deploy-plugin
+                                            </unCheckedPluginList>
+                                        </requirePluginVersions>
+                                    </rules>
+                                    <skip>${skipNoSnapshotsEnforcerPluginRule}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <distributionManagement>
         <repository>
             <id>mule-releases</id>
