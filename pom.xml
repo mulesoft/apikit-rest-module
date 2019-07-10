@@ -387,7 +387,6 @@
         <profile>
             <id>release</id>
             <properties>
-                <skipGpg>false</skipGpg>
                 <skipNoSnapshotsEnforcerPluginRule>false</skipNoSnapshotsEnforcerPluginRule>
             </properties>
             <build>
