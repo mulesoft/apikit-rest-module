@@ -161,9 +161,10 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   }
 
   private String getRequestPath(HttpRequestAttributes attributes) {
-    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), UrlUtils.encode(attributes.getRequestPath()));
-    path = path.isEmpty() ? "/" : path;
-    return path;
+    boolean isEncoded = !attributes.getRequestPath().equals(attributes.getRawRequestPath());
+    String rawRequestPath = isEncoded ? attributes.getRawRequestPath() : UrlUtils.encode(attributes.getRawRequestPath());
+    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), rawRequestPath);
+    return path.isEmpty() ? "/" : path;
   }
 
   private <T> T findInCache(String key, LoadingCache<String, T> cache) {
