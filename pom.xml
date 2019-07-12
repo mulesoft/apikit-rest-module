@@ -29,11 +29,16 @@
         <rest.assured.version>3.2.0</rest.assured.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <httpmime.version>4.5.8</httpmime.version>
-
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
 
         <!-- PARSERS -->
         <parser.service.version>2.0.0-SNAPSHOT</parser.service.version>
+
+        <!--remove this APIKIT-1873 -->
+        <commons.io.version>2.6</commons.io.version>
+        <guava.version>27.1-jre</guava.version>
+        <jackson.version>2.9.9</jackson.version>
+        <libthrift.version>0.12.0</libthrift.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -62,6 +67,33 @@
             <groupId>org.mule.apikit</groupId>
             <artifactId>parser-service</artifactId>
             <version>${parser.service.version}</version>
+            <!--remove this APIKIT-1873 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.thrift</groupId>
+                    <artifactId>libthrift</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.runtime</groupId>
@@ -100,6 +132,13 @@
             <artifactId>mule-http-connector</artifactId>
             <classifier>mule-plugin</classifier>
             <version>${mule.http.connector.version}</version>
+            <!--remove this APIKIT-1873 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--TODO: MULE-10837-->
         <dependency>
@@ -107,6 +146,13 @@
             <artifactId>mule-module-service</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
+            <!--remove this APIKIT-1873 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mule.services</groupId>
@@ -117,6 +163,11 @@
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <!--remove this APIKIT-1873 -->
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
                 </exclusion>
             </exclusions>
             <scope>provided</scope>
@@ -139,12 +190,57 @@
             <artifactId>mule-module-extensions-spring-support</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
+            <!--remove this APIKIT-1873 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>${commons-fileupload.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!--remove this APIKIT-1873 -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>${libthrift.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
