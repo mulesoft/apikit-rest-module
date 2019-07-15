@@ -162,9 +162,14 @@ public class Router extends AbstractComponent
   }
 
   private String getRequestPath(HttpRequestAttributes attributes) {
-    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), UrlUtils.encode(attributes.getRequestPath()));
-    path = path.isEmpty() ? "/" : path;
-    return path;
+    // raw request path is encoded only when it's not encoded
+    // if raw request path is decoded always, and encoded again
+    // we can get "not found" error, when raw request path contains %2F (%2F decode-> "/")
+    // example raw request path : "uri-param/AA%2F11%2F00000070" decode-> "uri-param/AA/11/00000070" encode->"uri-param/AA/11/00000070"
+    boolean isEncoded = !attributes.getRequestPath().equals(attributes.getRawRequestPath());
+    String rawRequestPath = isEncoded ? attributes.getRawRequestPath() : UrlUtils.encode(attributes.getRawRequestPath());
+    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), rawRequestPath);
+    return path.isEmpty() ? "/" : path;
   }
 
   private <T> T findInCache(String key, LoadingCache<String, T> cache) {
