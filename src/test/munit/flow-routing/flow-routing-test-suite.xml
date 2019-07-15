@@ -95,4 +95,19 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="uri-param-value-with-encoded-slash-char-routing-test">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="api-routing-main"/>
+      <munit:enable-flow-source value="get:\uri-param\(uriID)\test:api-routing-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple"
+        path="api/uri-param/AA%2F11%2F00000070/test"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[payload.test]" is="#[MunitTools::equalTo('AA/11/00000070')]"/>
+    </munit:validation>
+  </munit:test>
+
 </mule>
