@@ -10,7 +10,7 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="body-validation-test-suite"/>
+  <munit:config name="disabled-validation-test-suite"/>
 
   <munit:test name="invalid-data-must-not-fail-with-disabled-validation">
 	<munit:enable-flow-sources>
