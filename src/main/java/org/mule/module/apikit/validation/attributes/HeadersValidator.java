@@ -65,7 +65,7 @@ public class HeadersValidator {
       } else {
         final List<String> values = AttributesHelper.getParamsIgnoreCase(headers, ramlHeader);
         if (values.isEmpty() && ramlType.isRequired()) {
-          throw new InvalidHeaderException("Required header " + ramlHeader + " not specified");
+          throw new InvalidHeaderException("\"Required header '" + ramlHeader + "' not specified\"");
         }
         if (values.isEmpty() && ramlType.getDefaultValue() != null) {
           headers = AttributesHelper.addParam(headers, ramlHeader, ramlType.getDefaultValue());
@@ -129,7 +129,7 @@ public class HeadersValidator {
 
   private void validateType(String name, String value, IParameter type) throws InvalidHeaderException {
     if (!type.validate(value)) {
-      throw new InvalidHeaderException(format("\"Invalid value '%s' for header %s. %s\"", value, name, type.message(value)));
+      throw new InvalidHeaderException(format("\"Invalid value '%s' for header '%s'\"", value, name));
     }
   }
 
