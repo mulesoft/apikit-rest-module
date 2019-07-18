@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="form-body-validation-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
+
+  <munit:test name="filename-with-spaces">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\form-data\(form-id)\file:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/form-data/form-id/file">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="filename"; filename="Test Assignment.txt"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 'F4L0P4'
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.parts.filename.headers.'Content-Disposition'.filename]" is="#[MunitTools::equalTo('Test Assignment.txt')]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>
