@@ -23,7 +23,7 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 import java.util.List;
 import java.util.Map;
 
-public class UrlencodedFormV1Validator implements FormValidatorStrategy<TypedValue> {
+public class UrlencodedFormV1Validator implements FormValidator<TypedValue> {
 
   Map<String, List<Parameter>> formParameters;
   DataWeaveTransformer dataWeaveTransformer;
