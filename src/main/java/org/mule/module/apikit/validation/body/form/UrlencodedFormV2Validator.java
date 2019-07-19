@@ -23,7 +23,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
 
-public class UrlencodedFormV2Validator implements FormValidatorStrategy<TypedValue> {
+public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
 
   protected static final Logger logger = LoggerFactory.getLogger(UrlencodedFormV2Validator.class);
   Map<String, List<Parameter>> formParameters;

@@ -13,20 +13,16 @@ import org.mule.module.apikit.validation.body.form.transformation.MultipartFormD
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.runtime.api.metadata.TypedValue;
-import org.mule.runtime.core.api.el.ExpressionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-public class MultipartFormValidator implements FormValidatorStrategy<TypedValue> {
+public class MultipartFormValidator implements FormValidator<TypedValue> {
 
-  protected static final Logger logger = LoggerFactory.getLogger(MultipartFormValidator.class);
   Map<String, List<Parameter>> formParameters;
 
-  public MultipartFormValidator(Map<String, List<Parameter>> formParameters, ExpressionManager expressionManager) {
+  public MultipartFormValidator(Map<String, List<Parameter>> formParameters) {
     this.formParameters = formParameters;
   }
 

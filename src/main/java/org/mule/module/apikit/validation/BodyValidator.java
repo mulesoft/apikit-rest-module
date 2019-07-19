@@ -18,7 +18,8 @@ import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.api.validation.ValidBody;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
-import org.mule.module.apikit.validation.body.form.FormParametersValidator;
+import org.mule.module.apikit.validation.body.form.FormValidatorFactory;
+import org.mule.module.apikit.validation.body.form.FormValidator;
 import org.mule.module.apikit.validation.body.form.MultipartFormValidator;
 import org.mule.module.apikit.validation.body.form.UrlencodedFormV1Validator;
 import org.mule.module.apikit.validation.body.form.UrlencodedFormV2Validator;
@@ -75,7 +76,7 @@ public class BodyValidator {
 
       validBody = validateAsString(config, mimeType, action, requestMimeTypeName, payload, charset, errorTypeRepository);
 
-    } else if ((requestMimeTypeName.contains("multipart/form-data")
+    } else if ((requestMimeTypeName.contains("multipart/")
         || requestMimeTypeName.contains("application/x-www-form-urlencoded"))) {
 
       validBody = validateAsMultiPart(config, mimeType, requestMimeTypeName, payload);
@@ -83,13 +84,6 @@ public class BodyValidator {
     }
 
     return validBody;
-  }
-
-  private static ValidBody validateAsString(ValidationConfig config, MimeType mimeType, Action action,
-                                            String requestMimeTypeName,
-                                            Object payload, String charset)
-      throws BadRequestException {
-    return validateAsString(config, mimeType, action, requestMimeTypeName, payload, charset, null);
   }
 
   private static ValidBody validateAsString(ValidationConfig config, MimeType mimeType, Action action,
@@ -126,37 +120,17 @@ public class BodyValidator {
     return validBody;
   }
 
-  private static ValidBody validateAsMultiPart(ValidationConfig config, MimeType mimeType, String requestMimeTypeName,
-                                               Object payload)
-      throws BadRequestException {
+  private static ValidBody validateAsMultiPart(ValidationConfig config, MimeType mimeType,
+      String requestMimeTypeName,
+      Object payload) throws BadRequestException {
+    ValidBody validBody = new ValidBody(payload);
 
-    final ValidBody validBody = new ValidBody(payload);
-
-    final TypedValue payloadAsTypedValue = validBody.getPayloadAsTypedValue();
-
-    final FormParametersValidator formParametersValidator;
     if (mimeType.getFormParameters() != null) {
-
-      if (requestMimeTypeName.contains("multipart/form-data")) {
-
-        formParametersValidator =
-            new FormParametersValidator(new MultipartFormValidator(mimeType.getFormParameters(), config.getExpressionManager()));
-        validBody.setFormParameters(formParametersValidator.validate(payloadAsTypedValue));
-
-      } else if (requestMimeTypeName.contains("application/x-www-form-urlencoded")) {
-        if (config.isParserV2()) {
-          formParametersValidator =
-              new FormParametersValidator(new UrlencodedFormV2Validator(mimeType, config.getExpressionManager()));
-
-        } else {
-          formParametersValidator = new FormParametersValidator(new UrlencodedFormV1Validator(mimeType.getFormParameters(),
-                                                                                              config.getExpressionManager()));
-        }
-
-        validBody.setFormParameters(formParametersValidator.validate(payloadAsTypedValue));
-      }
+      TypedValue payloadAsTypedValue = validBody.getPayloadAsTypedValue();
+      FormValidator formValidator = new FormValidatorFactory(mimeType,
+          config.getExpressionManager()).createValidator(requestMimeTypeName, config.isParserV2());
+      validBody.setFormParameters(formValidator.validate(payloadAsTypedValue));
     }
-
     return validBody;
   }
 
