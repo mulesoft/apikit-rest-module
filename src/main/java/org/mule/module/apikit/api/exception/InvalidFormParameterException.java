@@ -18,10 +18,6 @@ public class InvalidFormParameterException extends BadRequestException {
     super(t);
   }
 
-  public InvalidFormParameterException() {
-    super();
-  }
-
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

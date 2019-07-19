@@ -30,7 +30,7 @@ import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 
 public class MultipartFormData {
   private static Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
-  private static Pattern FILE_NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sfilename=([^\\n;]*?)[;\\n\\s]");
+  private static Pattern FILE_NAME_PATTERN = Pattern.compile("filename=\"([^\"]+)\"");
   private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
@@ -69,7 +69,7 @@ public class MultipartFormData {
     return multiMapParameters;
   }
 
-  private String getFileName(String headers) throws InvalidFormParameterException {
+  private String getFileName(String headers) {
     Matcher matcher = FILE_NAME_PATTERN.matcher(headers);
     if (!matcher.find()){
       return null;
