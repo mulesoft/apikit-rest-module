@@ -31,6 +31,8 @@
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <httpmime.version>4.5.8</httpmime.version>
 
+        <javaFormatter.plugin.version>1.9.0</javaFormatter.plugin.version>
+
         <!--remove this APIKIT-1873 -->
         <commons.io.version>2.6</commons.io.version>
         <guava.version>27.1-jre</guava.version>
@@ -495,6 +497,7 @@
             <plugin>
                 <groupId>com.marvinformatics.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
+                <version>${javaFormatter.plugin.version}</version>
             </plugin>
         </plugins>
     </build>
