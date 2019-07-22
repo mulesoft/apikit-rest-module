@@ -22,6 +22,11 @@
           <http:success-status-code-validator values="1..500"/>
         </http:response-validator>
       </http:request>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/../log4j2-test.xml" target="rootOfBySlash2" targetValue="#[attributes.statusCode]">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
       <http:request method="GET" config-ref="http-requester-simple" path="/console/log4j2-test.xml" target="rootToClasspath" targetValue="#[attributes.statusCode]">
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
@@ -36,9 +41,10 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[vars.rootOfBySlash]" is="#[MunitTools::equalTo(404)]"/>
+      <munit-tools:assert-that expression="#[vars.rootOfBySlash2]" is="#[MunitTools::equalTo(404)]"/>
       <munit-tools:assert-that expression="#[vars.rootToClasspath]" is="#[MunitTools::equalTo(404)]"/>
       <munit-tools:assert-that expression="#[vars.rootParentOfBySlashes]" is="#[MunitTools::equalTo(404)]"/>
-      <!-- SUCCESS HITTING /console/-->
+       <!--SUCCESS HITTING /console/-->
       <munit-tools:assert-that expression="#[vars.console.attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[vars.console.payload.^mimeType]" is="#[MunitTools::equalTo('text/html')]"/>
     </munit:validation>

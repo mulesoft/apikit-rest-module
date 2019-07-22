@@ -7,7 +7,6 @@
 package org.mule.module.apikit.api.console;
 
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.api.UrlUtils.getCompletePathFromBasePathAndPath;
 import static org.mule.raml.interfaces.ParserType.AMF;
 
 import java.io.ByteArrayInputStream;
@@ -15,6 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.exception.NotFoundException;
@@ -67,6 +68,10 @@ public class ConsoleResources {
         consoleResourcePath = CONSOLE_RESOURCES_BASE + resourceRelativePath;
       }
 
+      Path normalizedPath = Paths.get(consoleResourcePath).normalize();
+      if (!normalizedPath.toString().startsWith(CONSOLE_RESOURCES_BASE)) {
+        throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
+      }
       resourceContent = getClass().getResourceAsStream(consoleResourcePath);
 
       if (resourceContent == null) {
