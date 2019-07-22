@@ -103,7 +103,8 @@ public class RequestValidator {
         .build();
   }
 
-  private static HttpRequestAttributes addUriParams(ResolvedVariables resolvedVariables, HttpRequestAttributes httpRequestAttributes) {
+  private static HttpRequestAttributes addUriParams(ResolvedVariables resolvedVariables,
+                                                    HttpRequestAttributes httpRequestAttributes) {
     MultiMap<String, String> uriParams = new MultiMap<>(httpRequestAttributes.getUriParams());
     for (String name : resolvedVariables.names()) {
       String value = String.valueOf(resolvedVariables.get(name));

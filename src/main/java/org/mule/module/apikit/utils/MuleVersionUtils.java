@@ -11,7 +11,7 @@ import org.mule.runtime.core.api.config.MuleManifest;
 
 public class MuleVersionUtils {
 
-  private MuleVersionUtils(){ }
+  private MuleVersionUtils() {}
 
   public static boolean isAtLeast(String version) {
     return new MuleVersion(MuleManifest.getProductVersion()).atLeast(version);

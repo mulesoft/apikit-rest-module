@@ -126,7 +126,8 @@ public class BodyValidator {
     if (mimeType.getFormParameters() != null) {
       TypedValue payloadAsTypedValue = validBody.getPayloadAsTypedValue();
       FormValidator formValidator = new FormValidatorFactory(mimeType,
-          config.getExpressionManager()).createValidator(requestMimeTypeName, config.isParserV2());
+                                                             config.getExpressionManager()).createValidator(requestMimeTypeName,
+                                                                                                            config.isParserV2());
       validBody.setFormParameters(formValidator.validate(payloadAsTypedValue));
     }
     return validBody;
