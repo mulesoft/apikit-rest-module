@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit;
 
-import org.apache.log4j.Logger;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationState;
@@ -22,8 +21,6 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 
 public class MessageSourceUtils {
 
-  private static final Logger LOGGER = Logger.getLogger(MessageSourceUtils.class);
-
   /**
    * Extracts the configured HTTP URI from a flow. It only works for flows that uses the HTTP extension.
    *
@@ -34,7 +31,6 @@ public class MessageSourceUtils {
         String resolvedPath = getListenerPath(source);
         return buildListenerUri(getConfigState(source).getConnectionParameters(), resolvedPath);
       } catch (Exception e) {
-        LOGGER.warn("Error getting uri from flow " + source.getLocation().getRootContainerName(), e);
       }
     }
 
