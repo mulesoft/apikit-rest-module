@@ -122,6 +122,7 @@ public abstract class MultipartFormFunctionalTestCase extends AbstractMultiParse
         .statusCode(201)
         .when().post("/api/multipart");
   }
+
   @Test
   public void postTextFileResourceIntoMultiPartFormData() throws Exception {
     given().multiPart("document", "lorem.txt", this.getClass().getClassLoader()
@@ -141,11 +142,11 @@ public abstract class MultipartFormFunctionalTestCase extends AbstractMultiParse
     final String jsonAsString = IOUtils.toString(getResourceAsStream(jsonFilePath));
 
     given().multiPart("document", "example.json", getResourceAsStream(jsonFilePath), "application/json")
-            .expect()
-            .response()
-            .statusCode(200)
-            .body(is(jsonAsString))
-            .when().post("/api/uploadJsonFile");
+        .expect()
+        .response()
+        .statusCode(200)
+        .body(is(jsonAsString))
+        .when().post("/api/uploadJsonFile");
   }
 
   @Test

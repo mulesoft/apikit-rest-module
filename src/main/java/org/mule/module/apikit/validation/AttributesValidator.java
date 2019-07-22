@@ -55,7 +55,8 @@ public class AttributesValidator {
     headers = headersValidator.getNewHeaders();
 
     // regenerate attributes
-    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString, new MultiMap<>(attributes.getUriParams()));
+    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString,
+                                          new MultiMap<>(attributes.getUriParams()));
   }
 
 }
