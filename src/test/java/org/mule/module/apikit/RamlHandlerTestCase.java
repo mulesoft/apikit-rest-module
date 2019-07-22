@@ -118,9 +118,6 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("org/mule/module/apikit/raml-handler/amf-only.raml", keepRamlBaseUri, ParserMode.AUTO);
     assertEquals(AMF, handler.getApi().getType());
 
-    handler = createRamlHandler("org/mule/module/apikit/raml-handler/raml-parser-only.raml", keepRamlBaseUri, ParserMode.AUTO);
-    assertEquals(RAML, handler.getApi().getType());
-
     assertException("Invalid reference 'SomeTypo'",
                     () -> createRamlHandler("org/mule/module/apikit/raml-handler/failing-api.raml", keepRamlBaseUri, ParserMode.AUTO));
   }
@@ -134,8 +131,6 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("org/mule/module/apikit/raml-handler/amf-only.raml", keepRamlBaseUri, ParserMode.AMF);
     assertEquals(AMF, handler.getApi().getType());
 
-    assertException("Named example fragments must be included in 'examples' facet",
-                    () -> createRamlHandler("org/mule/module/apikit/raml-handler/raml-parser-only.raml", keepRamlBaseUri, ParserMode.AMF));
     assertException( "Unresolved reference 'SomeTypo'",
                     () -> createRamlHandler("org/mule/module/apikit/raml-handler/failing-api.raml", keepRamlBaseUri, ParserMode.AMF));
   }
