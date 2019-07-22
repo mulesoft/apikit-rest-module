@@ -41,6 +41,7 @@
         
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
 
+        <jar.plugin.version>3.0.2</jar.plugin.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -439,7 +440,9 @@
                 <version>${mule.plugin.maven.plugin.version}</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${jar.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
