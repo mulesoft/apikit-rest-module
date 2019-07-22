@@ -34,15 +34,15 @@ public class DefaultFlowRoutingStrategy implements FlowRoutingStrategy {
     // In MULE 4.2.0 and 4.2.1 there is not way to propagate an event to the main flow when an error occur, for that
     // we have the MuleMessagingExceptionHandler that reflectively creates an internal Mule Exception to do this task.
     // since Mule 4.2.2 there is a proper API to propagate the error with an exception, see ComponentExecutionExceptionHandler.
-    this.exceptionHandler = MuleVersionUtils.isAtLeast("4.2.2") ?
-      new ComponentExecutionExceptionHandler() :
-      new MuleMessagingExceptionHandler();
+    this.exceptionHandler =
+        MuleVersionUtils.isAtLeast("4.2.2") ? new ComponentExecutionExceptionHandler() : new MuleMessagingExceptionHandler();
   }
 
   public Publisher<CoreEvent> route(Flow flow, CoreEvent mainEvent, CoreEvent subFlowEvent) {
     CompletableFuture<Event> execution = flow.execute(subFlowEvent);
     return ((Publisher) fromFuture(execution)
-      .onErrorMap(ComponentExecutionException.class,
-                  e -> exceptionHandler.handle(CoreEvent.builder(mainEvent.getContext(), ((CoreEvent) e.getEvent())).build(), e)));
+        .onErrorMap(ComponentExecutionException.class,
+                    e -> exceptionHandler.handle(CoreEvent.builder(mainEvent.getContext(), ((CoreEvent) e.getEvent())).build(),
+                                                 e)));
   }
 }

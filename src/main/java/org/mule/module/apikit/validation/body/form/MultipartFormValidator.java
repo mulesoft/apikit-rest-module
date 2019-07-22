@@ -34,14 +34,14 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
 
     for (String expectedKey : formParameters.keySet()) {
       List<IParameter> params = formParameters.get(expectedKey);
-      if (params != null && params.size() == 1){
+      if (params != null && params.size() == 1) {
         IParameter expected = params.get(0);
         if (actualParameters.containsKey(expectedKey)) {
           MultipartFormDataParameter multipartFormDataParameter = actualParameters.get(expectedKey);
           multipartFormDataParameter.validate(expected);
         } else {
           if (expected.getDefaultValue() != null) {
-            multipartFormData.addDefault(expectedKey,expected.getDefaultValue());
+            multipartFormData.addDefault(expectedKey, expected.getDefaultValue());
           } else if (expected.isRequired()) {
             throw new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified");
           }
@@ -54,7 +54,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
 
   private byte[] getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
     String boundary = originalPayload.getDataType().getMediaType().getParameter("boundary");
-    if(boundary == null){
+    if (boundary == null) {
       throw new InvalidFormParameterException("Required boundary parameter not found");
     }
     return boundary.getBytes();

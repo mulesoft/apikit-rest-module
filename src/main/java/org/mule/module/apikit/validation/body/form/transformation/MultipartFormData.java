@@ -29,19 +29,20 @@ import java.util.regex.Pattern;
 import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 
 public class MultipartFormData {
+
   private static Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
   private static Pattern FILE_NAME_PATTERN = Pattern.compile("filename=\"([^\"]+)\"");
   private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
 
-  public MultipartFormData(InputStream inputStream, byte[] boundary){
-    multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
+  public MultipartFormData(InputStream inputStream, byte[] boundary) {
+    multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE, null);
     multipartEntityBuilder = MultipartEntityBuilder.create();
   }
 
   public Map<String, MultipartFormDataParameter> getFormDataParameters() throws InvalidFormParameterException {
-    Map<String, MultipartFormDataParameter> multiMapParameters= new HashMap<>();
+    Map<String, MultipartFormDataParameter> multiMapParameters = new HashMap<>();
     try {
       boolean nextPart = multipartStream.skipPreamble();
       while (nextPart) {
@@ -52,18 +53,18 @@ public class MultipartFormData {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         multipartStream.readBodyData(baos);
         byte[] buf = baos.toByteArray();
-        multipartEntityBuilder.addPart(name, new ByteArrayBody(buf,ContentType.parse(contentType),fileName));
+        multipartEntityBuilder.addPart(name, new ByteArrayBody(buf, ContentType.parse(contentType), fileName));
         MediaType mediaType = MediaType.parse(contentType);
-        if(mediaType.matches(MediaType.TEXT)) {
+        if (mediaType.matches(MediaType.TEXT)) {
           String body = IOUtils.toString(new ByteArrayInputStream(buf));
-          multiMapParameters.put(name,new MultipartFormDataTextParameter(body, mediaType));
-        }else{
-          multiMapParameters.put(name,new MultipartFormDataBinaryParameter(buf, mediaType));
+          multiMapParameters.put(name, new MultipartFormDataTextParameter(body, mediaType));
+        } else {
+          multiMapParameters.put(name, new MultipartFormDataBinaryParameter(buf, mediaType));
         }
         nextPart = multipartStream.readBoundary();
       }
 
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new InvalidFormParameterException(e);
     }
     return multiMapParameters;
@@ -71,34 +72,35 @@ public class MultipartFormData {
 
   private String getFileName(String headers) {
     Matcher matcher = FILE_NAME_PATTERN.matcher(headers);
-    if (!matcher.find()){
+    if (!matcher.find()) {
       return null;
     }
 
-    return matcher.group(1).replace("\"","").replace("'","");
+    return matcher.group(1).replace("\"", "").replace("'", "");
   }
 
   private String getName(String headers) throws InvalidFormParameterException {
     Matcher matcher = NAME_PATTERN.matcher(headers);
-    if (!matcher.find()){
+    if (!matcher.find()) {
       throw new InvalidFormParameterException("Unable to get name from form-data");
     }
 
-    return matcher.group(1).replace("\"","").replace("'","");
+    return matcher.group(1).replace("\"", "").replace("'", "");
   }
 
-  private String getContentType(String headers){
+  private String getContentType(String headers) {
     Matcher matcher = CONTENT_TYPE_PATTERN.matcher(headers);
-    if (!matcher.find()){
+    if (!matcher.find()) {
       return MediaType.TEXT.toString();
     }
     return matcher.group(1);
   }
-  public void addDefault(String key,String value){
-    multipartEntityBuilder.addTextBody(key,value);
+
+  public void addDefault(String key, String value) {
+    multipartEntityBuilder.addTextBody(key, value);
   }
 
-  public InputStream build() throws InvalidFormParameterException{
+  public InputStream build() throws InvalidFormParameterException {
     try {
       return getInputStream(multipartEntityBuilder.build());
     } catch (IOException e) {

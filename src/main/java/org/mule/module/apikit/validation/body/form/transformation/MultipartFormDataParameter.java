@@ -11,5 +11,5 @@ import org.mule.raml.interfaces.model.parameter.IParameter;
 
 public interface MultipartFormDataParameter {
 
-  void validate(IParameter parameter) throws InvalidFormParameterException ;
+  void validate(IParameter parameter) throws InvalidFormParameterException;
 }

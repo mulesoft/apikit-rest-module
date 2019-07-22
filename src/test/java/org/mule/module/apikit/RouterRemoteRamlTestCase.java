@@ -38,10 +38,10 @@ public class RouterRemoteRamlTestCase extends AbstractMultiParserFunctionalTestC
   protected void doSetUpBeforeMuleContextCreation() {
     this.server = ClientAndServer.startClientAndServer(port.getNumber());
     this.server
-      .when(request().withMethod("GET").withPath("/testRaml"), unlimited())
-      .respond(HttpResponse.response().withBody(getTestRamlAsString())
-                  .withStatusCode(200)
-                  .withHeader("Content-Type", "application/raml+yaml"));
+        .when(request().withMethod("GET").withPath("/testRaml"), unlimited())
+        .respond(HttpResponse.response().withBody(getTestRamlAsString())
+            .withStatusCode(200)
+            .withHeader("Content-Type", "application/raml+yaml"));
     super.doSetUpBeforeMuleContextCreation();
   }
 
@@ -50,7 +50,7 @@ public class RouterRemoteRamlTestCase extends AbstractMultiParserFunctionalTestC
       ClassLoader ccl = Thread.currentThread().getContextClassLoader();
       return IOUtils.toString(ccl.getResourceAsStream("org/mule/module/apikit/router-remote-raml/remote.raml"));
     } catch (Exception e) {
-      throw  new RuntimeException("fail to create HTTP Test Server", e);
+      throw new RuntimeException("fail to create HTTP Test Server", e);
     }
   }
 
