@@ -89,7 +89,7 @@ public class RamlHandler {
   public String getRamlV2(String resourceRelativePath) throws TypedException {
     resourceRelativePath = sanitarizeResourceRelativePath(resourceRelativePath);
     if (resourceRelativePath.contains("..") || resourceRelativePath.contains("./")) {
-      throw ApikitErrorTypes.throwErrorType(new NotFoundException("\"..\" is not allowed"));
+      throw ApikitErrorTypes.throwErrorType(new NotFoundException("\"..\" and \"./\" is not allowed"));
     }
     if (apiResourcesRelativePath.equals(resourceRelativePath)) {
       //root raml
