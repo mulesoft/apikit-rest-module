@@ -9,6 +9,7 @@ package org.mule.module.apikit.validation.body.schema;
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
+import org.junit.Ignore;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
@@ -85,6 +86,7 @@ public class Schema10TestCase extends MuleArtifactFunctionalTestCase {
   }
 
   @Test
+  @Ignore
   public void postValidJsonUsingRamlType() throws Exception {
     given().body("{\"firstname\":\"george\",\"lastname\":\"bernard shaw\",\"age\":\"30\"}")
         .contentType("application/json")

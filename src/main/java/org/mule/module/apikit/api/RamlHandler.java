@@ -88,7 +88,7 @@ public class RamlHandler {
   //resourcesRelativePath should not contain the console path
   public String getRamlV2(String resourceRelativePath) throws TypedException {
     resourceRelativePath = sanitarizeResourceRelativePath(resourceRelativePath);
-    if (resourceRelativePath.contains("..")) {
+    if (resourceRelativePath.contains("..") || resourceRelativePath.contains("./")) {
       throw ApikitErrorTypes.throwErrorType(new NotFoundException("\"..\" is not allowed"));
     }
     if (apiResourcesRelativePath.equals(resourceRelativePath)) {
@@ -109,7 +109,10 @@ public class RamlHandler {
       ByteArrayOutputStream baos = null;
       try {
         apiResource = muleContext.getExecutionClassLoader().getResourceAsStream(resourceRelativePath);
-
+        if (!resourceRelativePath.endsWith(".raml") && !resourceRelativePath.endsWith(".json")
+            && !resourceRelativePath.endsWith(".js") && !resourceRelativePath.endsWith(".html")) {
+          throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
+        }
         if (apiResource == null) {
           throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
         }
