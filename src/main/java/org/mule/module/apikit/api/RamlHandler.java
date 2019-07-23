@@ -160,7 +160,7 @@ public class RamlHandler {
     String resourcePath = uriPathToResourcePath(resourceRelativePath);
     Path normalizedPath = Paths.get(resourcePath).normalize();
     // we don't want to expose something from the root. e.g. folder/some.xml/ it's ok, but some.xml should return 404
-    if (normalizedPath.getNameCount() > 1) {
+    if (normalizedPath.getNameCount() >= 1) {
       String normalized = normalizedPath.toString();
       if (apiResourcesRelativePath.equals(normalized)) {
         String rootRaml = dumpRaml();
