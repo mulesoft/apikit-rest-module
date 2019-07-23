@@ -11,6 +11,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.mule.module.apikit.ApikitErrorTypes;
 import org.mule.module.apikit.api.config.ConsoleConfig;
@@ -58,7 +60,10 @@ public class ConsoleResources {
       } else {
         consoleResourcePath = CONSOLE_RESOURCES_BASE + resourceRelativePath;
       }
-
+      Path normalizedPath = Paths.get(consoleResourcePath).normalize();
+      if (!normalizedPath.startsWith(CONSOLE_RESOURCES_BASE)) {
+        throw ApikitErrorTypes.throwErrorType(new NotFoundException(normalizedPath.toString()));
+      }
       inputStream = getClass().getResourceAsStream(consoleResourcePath);
 
       if (inputStream == null) {
