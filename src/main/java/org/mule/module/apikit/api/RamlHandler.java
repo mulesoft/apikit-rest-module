@@ -88,8 +88,8 @@ public class RamlHandler {
   //resourcesRelativePath should not contain the console path
   public String getRamlV2(String resourceRelativePath) throws TypedException {
     resourceRelativePath = sanitarizeResourceRelativePath(resourceRelativePath);
-    if (resourceRelativePath.contains("..")) {
-      throw ApikitErrorTypes.throwErrorType(new NotFoundException("\"..\" is not allowed"));
+    if (resourceRelativePath.contains("..") || resourceRelativePath.contains("./")) {
+      throw ApikitErrorTypes.throwErrorType(new NotFoundException("\"..\" and \"./\" is not allowed"));
     }
     if (apiResourcesRelativePath.equals(resourceRelativePath)) {
       //root raml
