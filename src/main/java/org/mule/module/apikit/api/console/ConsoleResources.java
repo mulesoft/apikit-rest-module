@@ -7,7 +7,6 @@
 package org.mule.module.apikit.api.console;
 
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.api.UrlUtils.getCompletePathFromBasePathAndPath;
 import static org.mule.raml.interfaces.ParserType.AMF;
 
 import java.io.ByteArrayInputStream;
@@ -15,6 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.exception.NotFoundException;
@@ -26,8 +27,6 @@ public class ConsoleResources {
   private static final String ROOT_CONSOLE_PATH = "/";
   private static final String INDEX_RESOURCE_RELATIVE_PATH = "/index.html";
   private static final String RAML_LOCATION_PLACEHOLDER_KEY = "RAML_LOCATION_PLACEHOLDER";
-  private static final String HTTP_LISTENER_BASE_PATH = "HTTP_LISTENER_BASE_PATH";
-  private static final String AMF_MODEL_LOCATION = "AMF_MODEL_LOCATION";
 
   private final String CONSOLE_RESOURCES_BASE;
   private ConsoleConfig config;
@@ -37,11 +36,6 @@ public class ConsoleResources {
   private String method;
   private String aceptHeader;
   private ErrorTypeRepository errorTypeRepository;
-
-  public ConsoleResources(ConsoleConfig config, String listenerPath, String requestPath, String queryString, String method,
-                          String aceptHeader) {
-    this(config, listenerPath, requestPath, queryString, method, aceptHeader, null);
-  }
 
   public ConsoleResources(ConsoleConfig config, String listenerPath, String requestPath, String queryString, String method,
                           String aceptHeader, ErrorTypeRepository errorTypeRepository) {
@@ -65,9 +59,8 @@ public class ConsoleResources {
     }
 
     String consoleResourcePath;
-    InputStream inputStream = null;
-    ByteArrayOutputStream byteArrayOutputStream = null;
-
+    InputStream resourceContent = null;
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     try {
       if (resourceRelativePath.equals(ROOT_CONSOLE_PATH)) {
         consoleResourcePath = CONSOLE_RESOURCES_BASE + INDEX_RESOURCE_RELATIVE_PATH;
@@ -75,9 +68,13 @@ public class ConsoleResources {
         consoleResourcePath = CONSOLE_RESOURCES_BASE + resourceRelativePath;
       }
 
-      inputStream = getClass().getResourceAsStream(consoleResourcePath);
+      Path normalizedPath = Paths.get(consoleResourcePath).normalize();
+      if (!normalizedPath.toString().startsWith(CONSOLE_RESOURCES_BASE)) {
+        throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
+      }
+      resourceContent = getClass().getResourceAsStream(consoleResourcePath);
 
-      if (inputStream == null) {
+      if (resourceContent == null) {
         raml = config.getRamlHandler().getRamlV2(resourceRelativePath);
         if (raml == null) {
           throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
@@ -87,18 +84,15 @@ public class ConsoleResources {
       }
 
       if (consoleResourcePath.contains("index.html")) {
-        inputStream = updateIndexWithRamlLocation(inputStream);
+        resourceContent = updateIndexWithRamlLocation(resourceContent);
       }
 
-      byteArrayOutputStream = new ByteArrayOutputStream();
-      IOUtils.copyLarge(inputStream, byteArrayOutputStream);
-
+      IOUtils.copyLarge(resourceContent, byteArrayOutputStream);
       return new ConsoleResource(byteArrayOutputStream.toByteArray(), consoleResourcePath);
-
     } catch (IOException e) {
       throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
     } finally {
-      IOUtils.closeQuietly(inputStream);
+      IOUtils.closeQuietly(resourceContent);
       IOUtils.closeQuietly(byteArrayOutputStream);
     }
 
@@ -117,9 +111,6 @@ public class ConsoleResources {
     String indexHtml = IOUtils.toString(inputStream);
     IOUtils.closeQuietly(inputStream);
 
-    // for amf console index
-    indexHtml = indexHtml.replaceFirst(HTTP_LISTENER_BASE_PATH, getCompletePathFromBasePathAndPath("", listenerPath));
-    indexHtml = indexHtml.replaceFirst(AMF_MODEL_LOCATION, listenerPath + "/?amf");
 
     indexHtml = indexHtml.replaceFirst(RAML_LOCATION_PLACEHOLDER_KEY, ramlLocation);
     inputStream = new ByteArrayInputStream(indexHtml.getBytes());
@@ -139,7 +130,7 @@ public class ConsoleResources {
     }
   }
 
-  public String getApiResourceIfRequested(String resourceRelativePath) {
+  private String getApiResourceIfRequested(String resourceRelativePath) {
     if (queryString.equals("api")) {
       return config.getRamlHandler().dumpRaml();
     }
