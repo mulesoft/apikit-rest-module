@@ -38,7 +38,7 @@ Version: branch 2.0.0-preview commit b873cc5362c7160ce462bc238e9660184848dc33
     <!--<link rel="import" href="bower_components/anypoint-styles/anypoint-theme.html">-->
     <!-- This is build file. Can't be combined with imports above (this is how web components works). Also the build does not contain app layout elements and combining them will cause errors. -->
     <!-- <script src="import-detection.js"></script> -->
-    <link rel="import" href="HTTP_LISTENER_BASE_PATH/import.html">
+    <link rel="import" href="import.html">
     <style>
         html,
         body {
@@ -152,7 +152,7 @@ Version: branch 2.0.0-preview commit b873cc5362c7160ce462bc238e9660184848dc33
             <api-documentation id="doc" aware="model" handle-navigation-events no-try-it></api-documentation>
             <div class="tryit" hidden>
                 <!-- This shows how to handle tryit in exchange where try it sticks to the right hand side of the page. -->
-                <api-request-panel aware="model" narrow no-docs></api-request-panel>
+                <api-request-panel aware="model" allow-custom narrow no-docs></api-request-panel>
             </div>
         </div>
     </app-header-layout>
@@ -195,7 +195,7 @@ Version: branch 2.0.0-preview commit b873cc5362c7160ce462bc238e9660184848dc33
         });
         xhr.addEventListener('error', () => window.alert('Unable to load AMF model'));
         xhr.addEventListener('load', selectSummary);
-        xhr.open('GET', 'AMF_MODEL_LOCATION');
+        xhr.open('GET', '*/?amf');
         xhr.send();
     };
     Demo.init = function() {
