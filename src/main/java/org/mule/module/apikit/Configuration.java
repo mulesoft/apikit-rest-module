@@ -111,7 +111,6 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
       // we will keep the value defined during raml handler instantiation
       parserType = ramlHandler.getParserType();
     } catch (final Exception e) {
-      e.printStackTrace();
       throw new InitialisationException(e, this);
     }
     flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings(),
