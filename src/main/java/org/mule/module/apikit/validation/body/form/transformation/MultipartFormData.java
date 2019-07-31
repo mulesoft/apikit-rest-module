@@ -8,12 +8,10 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.ContentTooLongException;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
 
@@ -32,17 +30,21 @@ public class MultipartFormData {
   private static Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
   private static Pattern FILE_NAME_PATTERN = Pattern.compile("filename=\"([^\"]+)\"");
   private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
+  private final InputStream inputStream;
+  private final String boundary;
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
 
-  public MultipartFormData(InputStream inputStream, byte[] boundary){
-    multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
-    multipartEntityBuilder = MultipartEntityBuilder.create();
+  public MultipartFormData(InputStream inputStream, String boundary){
+    this.inputStream = inputStream;
+    this.boundary = boundary;
+    this.multipartEntityBuilder = MultipartEntityBuilder.create().setBoundary(boundary);
   }
 
   public Map<String, MultipartFormDataParameter> getFormDataParameters() throws InvalidFormParameterException {
     Map<String, MultipartFormDataParameter> multiMapParameters= new HashMap<>();
     try {
+      multipartStream = new MultipartStream(inputStream, boundary.getBytes("UTF-8"), BUFFER_SIZE,null);
       boolean nextPart = multipartStream.skipPreamble();
       while (nextPart) {
         String headers = multipartStream.readHeaders();
