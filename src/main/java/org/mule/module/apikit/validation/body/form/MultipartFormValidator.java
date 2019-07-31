@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
@@ -28,7 +29,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
   @Override
   public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
     final InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
-    final byte[] boundary = getBoundary(originalPayload);
+    final String boundary = getBoundary(originalPayload);
     MultipartFormData multipartFormData = new MultipartFormData(inputStream, boundary);
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormData.getFormDataParameters();
 
@@ -52,12 +53,12 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
     return TypedValue.of(multipartFormData.build());
   }
 
-  private byte[] getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
+  private String getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
     String boundary = originalPayload.getDataType().getMediaType().getParameter("boundary");
     if (boundary == null) {
       throw new InvalidFormParameterException("Required boundary parameter not found");
     }
-    return boundary.getBytes();
+    return boundary;
   }
 
 }
