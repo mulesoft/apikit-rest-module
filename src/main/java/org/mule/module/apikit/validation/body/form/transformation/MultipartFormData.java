@@ -8,12 +8,10 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.ContentTooLongException;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
 
@@ -35,9 +33,9 @@ public class MultipartFormData {
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
 
-  public MultipartFormData(InputStream inputStream, byte[] boundary){
-    multipartStream = new MultipartStream(inputStream, boundary, BUFFER_SIZE,null);
-    multipartEntityBuilder = MultipartEntityBuilder.create();
+  public MultipartFormData(InputStream inputStream, String boundary){
+    multipartStream = new MultipartStream(inputStream, boundary.getBytes(), BUFFER_SIZE,null);
+    multipartEntityBuilder = MultipartEntityBuilder.create().setBoundary(boundary);
   }
 
   public Map<String, MultipartFormDataParameter> getFormDataParameters() throws InvalidFormParameterException {

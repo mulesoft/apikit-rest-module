@@ -36,7 +36,7 @@
       <http:request method="POST" config-ref="http-requester-simple" path="/form-data/form-data/form-id/file">
         <http:body>#[
           %dw 2.0
-          output multipart/form-data
+          output multipart/form-data boundary="test"
           ---
           {
             parts: {
@@ -57,6 +57,7 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("boundary=\"test\"")]'/>
       <munit-tools:assert-that expression="#[output application/java --- payload.parts.filename.headers.'Content-Disposition'.filename]" is="#[MunitTools::equalTo('Test Assignment.txt')]"/>
     </munit:validation>
   </munit:test>
