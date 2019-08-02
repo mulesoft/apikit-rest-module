@@ -10,6 +10,8 @@ import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.FormBodyPartBuilder;
+import org.apache.http.entity.mime.MIME;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
@@ -28,8 +30,9 @@ import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 
 public class MultipartFormData {
   private static Pattern NAME_PATTERN = Pattern.compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
+  private static Pattern HEADERS_PATTERN = Pattern.compile("([\\w-]+): (.*)");
   private static Pattern FILE_NAME_PATTERN = Pattern.compile("filename=\"([^\"]+)\"");
-  private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n;]*?)[;\\n\\s]");
+  private static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("Content-Type:\\s*([^\\n]+)");
   private final InputStream inputStream;
   private final String boundary;
   private MultipartStream multipartStream;
@@ -44,17 +47,19 @@ public class MultipartFormData {
   public Map<String, MultipartFormDataParameter> getFormDataParameters() throws InvalidFormParameterException {
     Map<String, MultipartFormDataParameter> multiMapParameters= new HashMap<>();
     try {
-      multipartStream = new MultipartStream(inputStream, boundary.getBytes("UTF-8"), BUFFER_SIZE,null);
+      multipartStream = new MultipartStream(inputStream, boundary.getBytes(MIME.UTF8_CHARSET), BUFFER_SIZE,null);
       boolean nextPart = multipartStream.skipPreamble();
       while (nextPart) {
         String headers = multipartStream.readHeaders();
-        String name = getName(headers);
-        String fileName = getFileName(headers);
-        String contentType = getContentType(headers);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         multipartStream.readBodyData(baos);
         byte[] buf = baos.toByteArray();
-        multipartEntityBuilder.addPart(name, new ByteArrayBody(buf,ContentType.parse(contentType),fileName));
+        String name = getName(headers);
+        String fileName = getFileName(headers);
+        String contentType = getContentType(headers);
+        FormBodyPartBuilder formBodyPartBuilder = FormBodyPartBuilder.create(name, new ByteArrayBody(buf, ContentType.parse(contentType), fileName));
+        getHeaders(headers).forEach((headerName,value)-> formBodyPartBuilder.addField(headerName,value) );
+        multipartEntityBuilder.addPart(formBodyPartBuilder.build());
         MediaType mediaType = MediaType.parse(contentType);
         if(mediaType.matches(MediaType.TEXT)) {
           String body = IOUtils.toString(new ByteArrayInputStream(buf));
@@ -69,6 +74,18 @@ public class MultipartFormData {
       throw new InvalidFormParameterException(e);
     }
     return multiMapParameters;
+  }
+
+  private Map<String, String> getHeaders(String headers) {
+    Map<String,String> map = new HashMap<>();
+    Matcher matcher = HEADERS_PATTERN.matcher(headers);
+    while(matcher.find()){
+      String name = matcher.group(1);
+      String value =  matcher.group(2);
+      map.put(name,value);
+    }
+
+    return map;
   }
 
   private String getFileName(String headers) {
