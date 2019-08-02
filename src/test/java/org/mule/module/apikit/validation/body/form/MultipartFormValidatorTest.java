@@ -26,7 +26,21 @@ import static org.junit.Assert.*;
 public class MultipartFormValidatorTest {
 
   public static final String BOUNDARY = "test";
-  public static final String MULTIPART_BODY = "--test--\r\n";
+  public static final String MULTIPART_BODY =
+      "--test\r\n" +
+          "Content-Disposition: form-data; name=\"file\" filename=\"fileName\"\r\n" +
+          "Content-Transfer-Encoding: 8bit\r\n" +
+          "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+          "\r\n" +
+          "hello world\r\n" +
+          "--test\r\n" +
+          "Custom-Header: customValue; customAttribute=customAttrValue\r\n" +
+          "Content-Disposition: form-data; name=\"part1\"\r\n" +
+          "Content-Transfer-Encoding: 8bit\r\n" +
+          "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+          "\r\n" +
+          "hello world\r\n" +
+          "--test--\r\n";
 
   @Test
   public void validate() throws Exception {
