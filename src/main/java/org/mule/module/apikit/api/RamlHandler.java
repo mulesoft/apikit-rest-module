@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.api;
 
+import static java.util.stream.Collectors.toList;
+
 import org.mule.module.apikit.ApikitErrorTypes;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.exception.NotFoundException;
@@ -19,9 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+
 import org.mule.runtime.core.api.MuleContext;
+
 import org.raml.model.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +37,8 @@ public class RamlHandler {
   public static final String APPLICATION_RAML = "application/raml+yaml";
   private static final String RAML_QUERY_STRING = "raml";
 
+  private final List<String> acceptedClasspathResources;
+  private final String rootRamlLocation;
   private boolean keepRamlBaseUri;
   private String apiServer;
   private IRaml api;
@@ -47,7 +55,7 @@ public class RamlHandler {
   public RamlHandler(String ramlLocation, boolean keepRamlBaseUri, MuleContext muleContext) throws IOException {
     this.keepRamlBaseUri = keepRamlBaseUri;
 
-    String rootRamlLocation = findRootRaml(ramlLocation);
+    this.rootRamlLocation = findRootRaml(ramlLocation);
     if (rootRamlLocation == null) {
       throw new IOException("Raml not found at: " + ramlLocation);
     }
@@ -60,7 +68,17 @@ public class RamlHandler {
       this.apiResourcesRelativePath = rootRamlLocation.substring(0, idx + 1);
       this.apiResourcesRelativePath = sanitarizeResourceRelativePath(apiResourcesRelativePath);
     }
+    this.acceptedClasspathResources = getAcceptedClasspathResources(api, apiResourcesRelativePath);
     this.muleContext = muleContext;
+  }
+
+  private List<String> getAcceptedClasspathResources(IRaml api, String apiResourcesRelativePath) {
+    return api.getResources().keySet().stream()
+      .map(ref -> {
+        int index = ref.indexOf(apiResourcesRelativePath);
+        return index > 0 ? ref.substring(index) : ref;
+      })
+      .collect(toList());
   }
 
   public boolean isParserV2() {
@@ -87,6 +105,7 @@ public class RamlHandler {
 
   //resourcesRelativePath should not contain the console path
   public String getRamlV2(String resourceRelativePath) throws TypedException {
+    Set<String> strings = api.getResources().keySet();
     resourceRelativePath = sanitarizeResourceRelativePath(resourceRelativePath);
     if (resourceRelativePath.contains("..") || resourceRelativePath.contains("./")) {
       throw ApikitErrorTypes.throwErrorType(new NotFoundException("\"..\" and \"./\" is not allowed"));
@@ -108,18 +127,17 @@ public class RamlHandler {
       InputStream apiResource = null;
       ByteArrayOutputStream baos = null;
       try {
-        apiResource = muleContext.getExecutionClassLoader().getResourceAsStream(resourceRelativePath);
-        if (!resourceRelativePath.endsWith(".raml") && !resourceRelativePath.endsWith(".json")
-            && !resourceRelativePath.endsWith(".js") && !resourceRelativePath.endsWith(".html")) {
-          throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
-        }
+        URL classPathResouce = muleContext.getExecutionClassLoader().getResource(resourceRelativePath);
         if (apiResource == null) {
           throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
         }
-
+        String path = classPathResouce.getPath();
+        if (acceptedClasspathResources.stream().anyMatch(path::endsWith) || path.endsWith(rootRamlLocation)) {
+          apiResource = classPathResouce.openStream();
+        }
         baos = new ByteArrayOutputStream();
         StreamUtils.copyLarge(apiResource, baos);
-      } catch (IOException e) {
+      } catch (Exception e) {
         logger.debug(e.getMessage());
         throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
       } finally {
@@ -142,10 +160,10 @@ public class RamlHandler {
     String postalistenerPath = UrlUtils.getListenerPath(listenerPath, requestPath);
 
     return (!isParserV2() &&
-        (postalistenerPath.equals(requestPath) || (postalistenerPath + "/").equals(requestPath)) &&
-        ActionType.GET.toString().equals(method.toUpperCase()) &&
-        (APPLICATION_RAML.equals(acceptHeader)
-            || queryString.equals(RAML_QUERY_STRING)));
+      (postalistenerPath.equals(requestPath) || (postalistenerPath + "/").equals(requestPath)) &&
+      ActionType.GET.toString().equals(method.toUpperCase()) &&
+      (APPLICATION_RAML.equals(acceptHeader)
+        || queryString.equals(RAML_QUERY_STRING)));
   }
 
   public boolean isRequestingRamlV2(String listenerPath, String requestPath, String queryString, String method) {
@@ -162,8 +180,8 @@ public class RamlHandler {
       }
     }
     return isParserV2() && queryString.equals(RAML_QUERY_STRING)
-        && ActionType.GET.toString().equals(method.toUpperCase())
-        && requestPath.startsWith(resourcesFullPath);
+      && ActionType.GET.toString().equals(method.toUpperCase())
+      && requestPath.startsWith(resourcesFullPath);
   }
 
   private String sanitarizeResourceRelativePath(String resourceRelativePath) {
