@@ -108,11 +108,10 @@ public class RamlHandler {
       InputStream apiResource = null;
       ByteArrayOutputStream baos = null;
       try {
-        apiResource = muleContext.getExecutionClassLoader().getResourceAsStream(resourceRelativePath);
-        if (!resourceRelativePath.endsWith(".raml") && !resourceRelativePath.endsWith(".json")
-            && !resourceRelativePath.endsWith(".js") && !resourceRelativePath.endsWith(".html")) {
+        if (!resourceRelativePath.startsWith(apiResourcesRelativePath)) {
           throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
         }
+        apiResource = muleContext.getExecutionClassLoader().getResourceAsStream(resourceRelativePath);
         if (apiResource == null) {
           throw ApikitErrorTypes.throwErrorType(new NotFoundException(resourceRelativePath));
         }
