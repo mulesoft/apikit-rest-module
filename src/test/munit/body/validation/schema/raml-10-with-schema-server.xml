@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+  xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+  xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+      http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+
+  <apikit:config name="raml-10-with-schema-config" api="munit/body/raml-10-with-schema.raml"
+    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"
+    parser="${parser.type}"/>
+
+  <flow name="raml-10-with-schema-main">
+    <http:listener config-ref="http-listener-simple" path="/raml-10-with-schema/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:router config-ref="raml-10-with-schema-config"/>
+    <error-handler ref="global-server-error-handler"/>
+  </flow>
+
+  <flow name="put:\schema10user">
+    <set-payload value="hello"/>
+  </flow>
+
+  <flow name="post:\ramluser">
+    <set-payload value="hello"/>
+  </flow>
+
+</mule>

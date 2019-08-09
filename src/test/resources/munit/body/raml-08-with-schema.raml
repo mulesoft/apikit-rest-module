@@ -1,6 +1,11 @@
 #%RAML 0.8
-title: sample api
-/currentuser:
+title: raml 08 schemas validation
+
+schemas:
+    - global-json-schema: !include refs/fstab-referring.json
+    - global-xml-schema: !include refs/xsd-includer-nested.xsd
+
+/schema:
     put:
         body:
             application/json:
@@ -53,3 +58,37 @@ title: sample api
         responses:
             201: ~
             204: ~
+
+/include-json-schema:
+    put:
+        body:
+            application/json:
+                schema: !include refs/fstab-referring.json
+                #schema: !include refs/fstab.json
+        responses:
+            200:
+                body:
+                    text/plain: ~
+/global-json-schema:
+    put:
+        #body: !include refs/xsd-global-json-schema.raml
+        body:
+            application/json:
+                schema: global-json-schema
+
+/global-json-schema-include:
+    put:
+        body: !include refs/json-schema-global.raml
+
+/xsd-with-include:
+    put:
+        body:
+            application/xml:
+                schema: !include refs/xsd-includer.xsd
+        responses:
+            200:
+                body:
+                    text/plain: ~
+/global-xsd-schema-include:
+    put:
+        body: !include refs/xsd-global.raml

@@ -3,9 +3,6 @@
         targetNamespace="http://www.example.org/simple"
         elementFormDefault="unqualified"
         xmlns="http://www.example.org/simple">
-    <xs:include schemaLocation="refs/xsd-include.xsd"></xs:include>
+    <xs:include schemaLocation="xsd-include.xsd"></xs:include>
     <xs:element name="message" type="Message"></xs:element>
-    <!--<xs:complexType name="Message">-->
-        <!--<xs:attribute name="item" type="xs:string"></xs:attribute>-->
-    <!--</xs:complexType>-->
 </xs:schema>
