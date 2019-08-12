@@ -8,7 +8,7 @@
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-  <apikit:config name="form-body-validation-config" api="munit/body/form-body-api.raml"
+  <apikit:config name="form-body-validation-config" api="${raml.api}"
     outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
   <flow name="form-body-validation-main">
@@ -27,6 +27,34 @@
 
   <flow name="post:\form-data\(form-id)\file:multipart\form-data:form-body-validation-config">
     <set-payload value="#[payload]"/>
+  </flow>
+
+  <flow name="post:\multiple-required-multipart:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output application/json --- payload.parts pluck $$ as String]" />
+  </flow>
+
+  <flow name="post:\multiple-optional-multipart:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output application/json --- payload.parts pluck $$ as String]" />
+  </flow>
+
+  <flow name="post:\multipart:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output application/json --- {(payload.parts pluck {'$$': $.content})}]" />
+  </flow>
+
+  <flow name="post:\uploadFile:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output text/plain --- payload.parts.document.content]"/>
+  </flow>
+
+  <flow name="post:\uploadJsonFile:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output application/json --- payload.parts.document.content]"/>
+  </flow>
+
+  <flow name="post:\uploadXmlFile:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output application/xml --- payload.parts.document.content]"/>
+  </flow>
+
+  <flow name="post:\uploadImage:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output text/plain  --- sizeOf(payload.parts.image.content) == sizeOf(readUrl('classpath://org/mule/module/apikit/validation/formParameters/bbva.jpg', 'application/octet-stream'))]"/>
   </flow>
 
 </mule>
