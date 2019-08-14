@@ -14,15 +14,16 @@ import org.junit.runners.Parameterized;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.mule.tck.junit4.rule.DynamicPort;
 import org.mule.test.runner.ArtifactClassLoaderRunnerConfig;
+import org.mule.test.runner.RunnerDelegateTo;
 
 import static java.util.Arrays.asList;
 import static org.mule.module.apikit.api.RamlHandler.MULE_APIKIT_PARSER_PROPERTY;
 
-//@RunnerDelegateTo(Parameterized.class)
+@RunnerDelegateTo(Parameterized.class)
 @ArtifactClassLoaderRunnerConfig
 public abstract class AbstractMultiParserFunctionalTestCase extends MuleArtifactFunctionalTestCase {
 
-//  @Parameterized.Parameter(value = 0)
+  @Parameterized.Parameter(value = 0)
   public String parser = "RAML";
 
   @Parameterized.Parameters(name = "{0}")

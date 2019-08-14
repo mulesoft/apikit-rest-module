@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="console-without-router-replacements-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="keepApiBaseUriOn">
+        <munit:parameters>
+          <munit:parameter propertyName="keepBaseUri" value="true"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="keepApiBaseUriOff">
+        <munit:parameters>
+          <munit:parameter propertyName="keepBaseUri" value="false"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
+
+  <munit:test name="get-root-without-router">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="console-without-router"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/munit/console/?raml" target="rootRaml" targetValue="#[payload]" >
+        <http:headers>#[{'Accept':'application/raml+yaml'}]</http:headers>
+      </http:request>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/munit/console/?raml" target="noHeader" targetValue="#[payload]" />
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/munit/console/" target="noQueryParam" targetValue="#[payload]" >
+        <http:headers>#[{'Accept':'application/raml+yaml'}]</http:headers>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.rootRaml.^mimeType]" is="#[MunitTools::equalTo('application/raml+yaml')]"/>
+      <munit-tools:assert-that expression="#[vars.noHeader.^mimeType]" is="#[MunitTools::equalTo('application/raml+yaml')]"/>
+      <munit-tools:assert-that expression="#[vars.noQueryParam.^mimeType]" is="#[MunitTools::equalTo('application/raml+yaml')]"/>
+      <munit-tools:assert-that
+              expression="#[output application/json --- vars.rootRaml]"
+              is="#[MunitTools::containsString('baseUri: http://www.google.com')]"/>
+      <munit-tools:assert-that
+              expression="#[output application/json --- vars.noHeader]"
+              is="#[MunitTools::containsString('baseUri: http://www.google.com')]"/>
+      <munit-tools:assert-that
+              expression="#[output application/json --- vars.noQueryParam]"
+              is="#[MunitTools::containsString('baseUri: http://www.google.com')]"/>
+    </munit:validation>
+  </munit:test>
+
+
+</mule>
