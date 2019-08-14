@@ -17,25 +17,25 @@
       <munit:parameterization name="RAML-10">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="RAML"/>
-          <munit:parameter propertyName="raml.api" value="munit/body/form-body-api-10.raml"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-10.raml"/>
         </munit:parameters>
       </munit:parameterization>
       <munit:parameterization name="RAML-08">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="RAML"/>
-          <munit:parameter propertyName="raml.api" value="munit/body/form-body-api-08.raml"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-08.raml"/>
         </munit:parameters>
       </munit:parameterization>
       <munit:parameterization name="AMF-10">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="AMF"/>
-          <munit:parameter propertyName="raml.api" value="munit/body/form-body-api-10.raml"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-10.raml"/>
         </munit:parameters>
       </munit:parameterization>
       <munit:parameterization name="AMF-08">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="AMF"/>
-          <munit:parameter propertyName="raml.api" value="munit/body/form-body-api-08.raml"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-08.raml"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>
