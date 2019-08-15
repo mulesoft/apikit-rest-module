@@ -20,6 +20,8 @@ import java.util.function.Supplier;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mule.raml.interfaces.ParserType.AMF;
@@ -115,10 +117,7 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("org/mule/module/apikit/raml-handler/amf-only.raml", keepRamlBaseUri, AUTO);
     assertEquals(AMF, handler.getParserType());
 
-    handler = createRamlHandler("org/mule/module/apikit/raml-handler/raml-parser-only.raml", keepRamlBaseUri, AUTO);
-    assertEquals(RAML, handler.getParserType());
-
-    assertException(RuntimeException.class, "Invalid API descriptor -- errors found: 1",
+    assertException("Unresolved reference 'SomeTypo'",
                     () -> createRamlHandler("org/mule/module/apikit/raml-handler/failing-api.raml", keepRamlBaseUri, AUTO));
   }
 
@@ -131,9 +130,7 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("org/mule/module/apikit/raml-handler/amf-only.raml", keepRamlBaseUri, AMF);
     assertEquals(AMF, handler.getParserType());
 
-    assertException(ParserServiceException.class, "Invalid API descriptor -- errors found: 1",
-                    () -> createRamlHandler("org/mule/module/apikit/raml-handler/raml-parser-only.raml", keepRamlBaseUri, AMF));
-    assertException(ParserServiceException.class, "Invalid API descriptor -- errors found: 1",
+    assertException("Unresolved reference 'SomeTypo'",
                     () -> createRamlHandler("org/mule/module/apikit/raml-handler/failing-api.raml", keepRamlBaseUri, AMF));
   }
 
@@ -146,19 +143,18 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("org/mule/module/apikit/raml-handler/raml-parser-only.raml", keepRamlBaseUri, RAML);
     assertEquals(RAML, handler.getParserType());
 
-    assertException(RuntimeException.class, "Invalid API descriptor -- errors found: 1",
+    assertException("Invalid facets for type amf-valid-type:",
                     () -> createRamlHandler("org/mule/module/apikit/raml-handler/amf-only.raml", keepRamlBaseUri, RAML));
-    assertException(RuntimeException.class, "Invalid API descriptor -- errors found: 1\n\nInvalid reference 'SomeTypo'",
+    assertException("Invalid reference 'SomeTypo'",
                     () -> createRamlHandler("org/mule/module/apikit/raml-handler/failing-api.raml", keepRamlBaseUri, RAML));
   }
 
-  private <A extends Exception, B> void assertException(Class<A> clazz, String message, Supplier<B> supplier) {
+  private <A extends Exception, B> void assertException(String message, Supplier<B> supplier) {
     try {
       supplier.get();
-      fail(clazz.getName() + " was expected");
+      fail("an exception was expected");
     } catch (Exception e) {
-      assertTrue(clazz.isAssignableFrom(e.getClass()));
-      assertTrue(e.getMessage().contains(message));
+      assertThat(e.getMessage(), containsString(message));
     }
   }
 

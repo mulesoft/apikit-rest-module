@@ -6,16 +6,17 @@
  */
 package org.mule.module.apikit;
 
-import org.apache.log4j.Logger;
 import org.mule.runtime.api.component.Component;
 import org.mule.runtime.api.component.ComponentIdentifier;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationState;
 import org.mule.runtime.extension.api.runtime.config.ConfiguredComponent;
 import org.mule.runtime.extension.api.runtime.source.ParameterizedSource;
+import org.slf4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import org.slf4j.LoggerFactory;
 
 import static com.sun.jmx.mbeanserver.Util.cast;
 import static org.apache.commons.lang3.StringUtils.prependIfMissing;
@@ -23,7 +24,7 @@ import static org.mule.runtime.api.component.ComponentIdentifier.buildFromString
 
 public class MessageSourceUtils {
 
-  private static final Logger LOGGER = Logger.getLogger(MessageSourceUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MessageSourceUtils.class);
 
   /**
    * Extracts the configured HTTP URI from a flow. It only works for flows that uses the HTTP extension.
