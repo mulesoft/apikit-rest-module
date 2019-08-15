@@ -11,11 +11,9 @@
     <description>Module for creating REST APIs</description>
 
     <properties>
-        <aspectjVersion>1.8.10</aspectjVersion>
         <mule.version>4.1.5</mule.version>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
-        <sonar.jacoco.reportPaths>../target/jacoco.exec</sonar.jacoco.reportPaths>
         <testExtensionModelLoaderId>crafted</testExtensionModelLoaderId>
 
         <mule.api.version>1.1.5</mule.api.version>
@@ -50,6 +48,10 @@
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.5.1</mockServerVersion>
         <jacoco.version>0.7.9</jacoco.version>
+        <allureJunitVersion>2.0-BETA17</allureJunitVersion>
+        <allureReportVersion>2.3.4</allureReportVersion>
+        <allure.maven.plugin.version>2.8</allure.maven.plugin.version>
+
     </properties>
 
     <dependencies>
@@ -344,6 +346,12 @@
             <version>${mockServerVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit4</artifactId>
+            <version>${allureJunitVersion}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -375,7 +383,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Dfile.encoding=UTF-8 -javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjVersion}/aspectjweaver-${aspectjVersion}.jar -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</argLine>
+                    <argLine>-Dfile.encoding=UTF-8 -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</argLine>
                     <properties>
                         <property>
                             <name>listener</name>
@@ -396,17 +404,20 @@
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>org.aspectj</groupId>
-                        <artifactId>aspectjweaver</artifactId>
-                        <version>${aspectjVersion}</version>
-                    </dependency>
-                    <dependency>
                         <groupId>org.jacoco</groupId>
                         <artifactId>org.jacoco.agent</artifactId>
                         <version>${jacoco.version}</version>
                         <classifier>runtime</classifier>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.maven.plugin.version}</version>
+                <configuration>
+                    <reportVersion>${allureReportVersion}</reportVersion>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.mulesoft.munit</groupId>
