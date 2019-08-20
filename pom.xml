@@ -14,7 +14,6 @@
         <mule.version>4.1.5</mule.version>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
-        <sonar.jacoco.reportPaths>../target/jacoco.exec</sonar.jacoco.reportPaths>
         <testExtensionModelLoaderId>crafted</testExtensionModelLoaderId>
 
         <mule.api.version>1.1.5</mule.api.version>
@@ -48,6 +47,11 @@
         <munit.tools.version>2.2.1</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.5.1</mockServerVersion>
+        <jacoco.version>0.7.9</jacoco.version>
+        <allureJunitVersion>2.0-BETA17</allureJunitVersion>
+        <allureReportVersion>2.3.4</allureReportVersion>
+        <allure.maven.plugin.version>2.8</allure.maven.plugin.version>
+
     </properties>
 
     <dependencies>
@@ -342,6 +346,12 @@
             <version>${mockServerVersion}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit4</artifactId>
+            <version>${allureJunitVersion}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -370,6 +380,46 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8 -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile='${session.executionRootDirectory}/target/jacoco.exec'</argLine>
+                    <properties>
+                        <property>
+                            <name>listener</name>
+                            <value>io.qameta.allure.junit4.AllureJunit4</value>
+                        </property>
+                    </properties>
+                    <systemPropertyVariables>
+                        <!-- Just propagate this variable due to surefire will not do this when forked vm for tests -->
+                        <mule.freePortFinder.lockPath>${java.io.tmpdir}/mule/freePortFinder</mule.freePortFinder.lockPath>
+                        <maven.projectVersion>${project.version}</maven.projectVersion>
+                    </systemPropertyVariables>
+                    <systemProperties>
+                        <property>
+                            <name>allure.results.directory</name>
+                            <value>${project.build.directory}/allure-results</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>org.jacoco.agent</artifactId>
+                        <version>${jacoco.version}</version>
+                        <classifier>runtime</classifier>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.maven.plugin.version}</version>
+                <configuration>
+                    <reportVersion>${allureReportVersion}</reportVersion>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.mulesoft.munit</groupId>
                 <artifactId>munit-extensions-maven-plugin</artifactId>
                 <version>${munit.extensions.maven.plugin.version}</version>
@@ -382,6 +432,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <argLines>
+                        <argLine>
+                            -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco.exec
+                        </argLine>
+                    </argLines>
                     <runtimeConfiguration>
                         <discoverRuntimes>
                             <product>EE</product>
@@ -407,6 +462,12 @@
                         <artifactId>munit-runner</artifactId>
                         <version>${munit.version}</version>
                         <classifier>mule-plugin</classifier>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>org.jacoco.agent</artifactId>
+                        <version>${jacoco.version}</version>
+                        <classifier>runtime</classifier>
                     </dependency>
                 </dependencies>
             </plugin>
