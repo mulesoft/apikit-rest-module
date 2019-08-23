@@ -1,0 +1,43 @@
+#%RAML 0.8
+---
+title: test x-www-form-urlencoded API
+
+/url-encoded-simple:
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          first:
+            type: string
+    responses:
+      201: ~
+/url-encoded-with-default:
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          first:
+            type: string
+            default: primo
+          second:
+            type: string
+            required: true
+          third:
+            type: boolean
+    responses:
+      201: ~
+/url-encoded-duplicated-key:
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          first:
+            type: string
+            default: primo
+          second:
+            type: string
+            required: true
+          third:
+            type: boolean
+    responses:
+      201: ~

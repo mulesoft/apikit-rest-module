@@ -1,0 +1,103 @@
+#%RAML 1.0
+title: Testing multipart/form API!
+
+/form-data:
+  /{form-id}/file:
+    post:
+      body:
+        multipart/form-data:
+          properties:
+            filename:
+              description: uploaded attachment file
+              required: true
+              type: file
+      responses:
+        200:
+          body:
+            application/json:
+
+/multipart:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          first:
+            type: string
+          second:
+            type: string
+            default: segundo
+          third:
+            type: boolean
+            required: false
+            default: true
+          fourth:
+            type: string
+            required: false
+    responses:
+      201: ~
+
+/uploadImage:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          image:
+            type: file
+
+/uploadFile:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          document:
+            type: file
+
+/uploadJsonFile:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          document:
+            type: file
+
+/uploadXmlFile:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          document:
+            type: file
+
+/multiple-required-multipart:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          userId:
+            type: string
+          second:
+            type: string
+          third:
+            type: boolean
+    responses:
+      201: ~
+
+/multiple-optional-multipart:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          first:
+            type: string
+            required: false
+            maxLength: 10
+          second:
+            type: string
+            required: false
+            default: segundo
+          third:
+            type: boolean
+            required: false
+            default: true
+    responses:
+      201: ~

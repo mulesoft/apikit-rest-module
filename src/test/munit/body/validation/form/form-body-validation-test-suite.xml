@@ -14,14 +14,28 @@
 
   <munit:config name="form-body-validation-test-suite">
     <munit:parameterizations>
-      <munit:parameterization name="RAML">
+      <munit:parameterization name="RAML-10">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-10.raml"/>
         </munit:parameters>
       </munit:parameterization>
-      <munit:parameterization name="AMF">
+      <munit:parameterization name="RAML-08">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-08.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-10">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-10.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-08">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-08.raml"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>
@@ -59,6 +73,348 @@
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("boundary=\"test\"")]'/>
       <munit-tools:assert-that expression="#[output application/java --- payload.parts.filename.headers.'Content-Disposition'.filename]" is="#[MunitTools::equalTo('Test Assignment.txt')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="multiple-required-form-parameters">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\multiple-required-multipart:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multiple-required-multipart">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="userId"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 12345
+              },
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="second"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 'F4L0P4'
+              },
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="third"',
+                  'Content-Type': 'text/plain'
+                },
+                content: true
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+      <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("application/json")]'/>
+      <munit-tools:assert-that expression="#[output application/java --- sizeOf(payload)]" is="#[MunitTools::equalTo(3)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="optional-form-parameter-is-provided-as-empty">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\multiple-required-multipart:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multiple-optional-multipart">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="first"',
+                  'Content-Type': 'text/plain'
+                },
+                content: '12345'
+              },
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="second"',
+                  'Content-Type': 'text/plain'
+                },
+                content: ''
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+      <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("application/json")]'/>
+      <munit-tools:assert-that expression="#[output application/java --- sizeOf(payload)]" is="#[MunitTools::equalTo(3)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="multiple-optional-form-parameters">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\multiple-optional-multipart:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multiple-optional-multipart">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data
+          ---
+          {
+          parts: {
+            file: {
+              headers: {
+                'Content-Disposition': 'form-data; name="first"',
+                'Content-Type': 'text/plain'
+              },
+              content: 12345
+            }
+          }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+      <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("application/json")]'/>
+      <munit-tools:assert-that expression="#[output application/java --- sizeOf(payload)]" is="#[MunitTools::equalTo(3)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="optional-form-parameter-is-invalid">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\multiple-optional-multipart:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multiple-optional-multipart">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="first"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 12345678912
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("application/json")]'/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="set-default-form-parameters">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\multipart:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multipart">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="first"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 'primero'
+              },
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="payload"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 3.4
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.first]" is="#[MunitTools::equalTo('primero')]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.payload]" is="#[MunitTools::equalTo('3.4')]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.second]" is="#[MunitTools::equalTo('segundo')]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.third]" is="#[MunitTools::equalTo('true')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="upload-text-file">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\uploadFile:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/uploadFile">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data boundary="test"
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="document"; filename="lorem.txt"',
+                  'Content-Type': 'text/plain'
+                },
+                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam tempus vehicula nisi, in pulvinar arcu interdum bibendum.'
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload]" is="#[MunitTools::containsString('Lorem ipsum dolor sit amet')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="post-json-file">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\uploadJsonFile:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/uploadJsonFile">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data boundary="test"
+          ---
+          {
+          parts: {
+            file: {
+              headers: {
+                'Content-Disposition': 'form-data; name="document"; filename="example.json"',
+                'Content-Type': 'application/json'
+              },
+              content: '{"test":"test"}'
+            }
+          }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::containsString('test')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="post-xml-file">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\uploadXmlFile:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <set-payload value='#[output application/xml --- { test : "test"}]'/>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/uploadXmlFile">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data boundary="test"
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="document"; filename="example.xml"',
+                  'Content-Type': 'application/xml'
+                },
+                content: payload
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.test.'__text']" is="#[MunitTools::equalTo('test')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="post-jpg-file">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\uploadImage:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <set-payload value="#[readUrl('classpath://org/mule/module/apikit/validation/formParameters/bbva.jpg', 'application/octet-stream')]"/>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/uploadImage">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data boundary="test"
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="image"; filename="bbva.jpg"',
+                  'Content-Type': 'application/octet-stream'
+                },
+                content: payload
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::equalTo('true')]"/>
     </munit:validation>
   </munit:test>
 
