@@ -1,53 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="console-test-suite"/>
+  <munit:config name="console-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
 
-  <munit:test name="off-by-slash-path-transversal-fetch">
+  <munit:test name="succes-hitting-console">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="console"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/console/./log4j2-test.xml" target="rootOfBySlash" targetValue="#[attributes.statusCode]">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-      <http:request method="GET" config-ref="http-requester-simple" path="/console/../log4j2-test.xml" target="rootOfBySlash2" targetValue="#[attributes.statusCode]">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-      <http:request method="GET" config-ref="http-requester-simple" path="/console/log4j2-test.xml" target="rootToClasspath" targetValue="#[attributes.statusCode]">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-      <http:request method="GET" config-ref="http-requester-simple" path="/console/../../log4j2-test.xml" target="rootParentOfBySlashes" targetValue="#[attributes.statusCode]">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-      <http:request method="GET" config-ref="http-requester-simple" path="/console/" target="console" targetValue="#[message]"/>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/munit/console/example.json"
+                    target="example" targetValue="#[attributes.statusCode]"/>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/" target="console"
+                    targetValue="#[message]"/>
     </munit:execution>
     <munit:validation>
-      <munit-tools:assert-that expression="#[vars.rootOfBySlash]" is="#[MunitTools::equalTo(404)]"/>
-      <munit-tools:assert-that expression="#[vars.rootOfBySlash2]" is="#[MunitTools::equalTo(404)]"/>
-      <munit-tools:assert-that expression="#[vars.rootToClasspath]" is="#[MunitTools::equalTo(404)]"/>
-      <munit-tools:assert-that expression="#[vars.rootParentOfBySlashes]" is="#[MunitTools::equalTo(404)]"/>
-       <!--SUCCESS HITTING /console/-->
       <munit-tools:assert-that expression="#[vars.console.attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[vars.example]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[vars.console.payload.^mimeType]" is="#[MunitTools::equalTo('text/html')]"/>
+      <munit-tools:assert-that expression="#[vars.console.attributes.Headers.expires]" is="#[MunitTools::equalTo('-1')]"/>
+      <munit-tools:assert-that expression="#[vars.console.attributes.Headers.'access-control-allow-origin']" is="#[MunitTools::equalTo('*')]"/>
     </munit:validation>
   </munit:test>
+
+  <munit:test name="success-hitting-amf-console" ignore="#['${parser.type}' == 'RAML']">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="console"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/" target="console"
+                    targetValue="#[message]"/>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/bower_components/prism/plugins/autolinker/prism-autolinker.min.js" target="consoleAmfInclude"
+                    targetValue="#[attributes.statusCode]"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.consoleAmfInclude]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- vars.console.payload]"
+                               is="#[MunitTools::containsString('&lt;title>API console bundle inspector&lt;/title>')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="success-hitting-raml-console" ignore="#['${parser.type}' == 'AMF']">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="console"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/" target="console"
+                    targetValue="#[message]"/>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/bower_components/webcomponentsjs/webcomponents-lite.min.js" target="consoleRamlInclude"
+                    targetValue="#[attributes.statusCode]"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.consoleRamlInclude]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- vars.console.payload]"
+                               is="#[MunitTools::containsString('&lt;title>API Console&lt;/title>')]"/>
+    </munit:validation>
+  </munit:test>
+
 
 </mule>
