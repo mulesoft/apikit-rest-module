@@ -1,5 +1,6 @@
 #%RAML 1.0
 title: sample api
+
 types:
   User:
     type: object
@@ -7,7 +8,8 @@ types:
       firstname: string
       lastname:  string
       age:       number
-/currentuser:
+
+/schema10user:
     put:
         body:
             application/json:

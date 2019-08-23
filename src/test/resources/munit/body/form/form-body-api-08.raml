@@ -1,6 +1,20 @@
 #%RAML 0.8
----
-title: Parameters API
+title: Testing multipart/form API!
+
+/form-data:
+  /{form-id}/file:
+    post:
+      body:
+        multipart/form-data:
+          formParameters:
+            filename:
+              description: uploaded attachment file
+              required: true
+              type: file
+      responses:
+        200:
+          body:
+            application/json:
 
 /multipart:
   post:
@@ -9,64 +23,25 @@ title: Parameters API
         formParameters:
           first:
             type: string
-            required: true
           second:
             type: string
-            required: true
             default: segundo
           third:
             type: boolean
+            required: false
             default: true
           fourth:
             type: string
+            required: false
     responses:
       201: ~
-/url-encoded-simple:
-  post:
-    body:
-      application/x-www-form-urlencoded:
-        formParameters:
-          first:
-            type: string
-    responses:
-      201: ~
-/url-encoded-with-default:
-  post:
-    body:
-      application/x-www-form-urlencoded:
-        formParameters:
-          first:
-            type: string
-            default: primo
-          second:
-            type: string
-            required: true
-          third:
-            type: boolean
-    responses:
-      201: ~
-/url-encoded-duplicated-key:
-  post:
-    body:
-      application/x-www-form-urlencoded:
-        formParameters:
-          first:
-            type: string
-            default: primo
-          second:
-            type: string
-            required: true
-          third:
-            type: boolean
-    responses:
-      201: ~
+
 /uploadImage:
   post:
     body:
       multipart/form-data:
         formParameters:
           image:
-            required: true
             type: file
 
 /uploadFile:
@@ -75,42 +50,24 @@ title: Parameters API
       multipart/form-data:
         formParameters:
           document:
-            required: true
             type: file
+
 /uploadJsonFile:
   post:
     body:
       multipart/form-data:
         formParameters:
           document:
-            required: true
             type: file
+
 /uploadXmlFile:
   post:
     body:
       multipart/form-data:
         formParameters:
           document:
-            required: true
             type: file
-/users:
-  post:
-    body:
-      multipart/form-data:
-        formParameters:
-          userId:
-            required: true
-            type: integer
 
-/announcements:
-  post:
-    body:
-      multipart/form-data:
-        formParameters:
-          content:
-            required: false
-            type: string
-            maxLength: 10
 /multiple-required-multipart:
   post:
     body:
@@ -118,15 +75,13 @@ title: Parameters API
         formParameters:
           userId:
             type: string
-            required: true
           second:
             type: string
-            required: true
           third:
             type: boolean
-            required: true
     responses:
       201: ~
+
 /multiple-optional-multipart:
   post:
     body:
@@ -135,11 +90,14 @@ title: Parameters API
           first:
             type: string
             required: false
+            maxLength: 10
           second:
             type: string
+            required: false
             default: segundo
           third:
             type: boolean
+            required: false
             default: true
     responses:
       201: ~
