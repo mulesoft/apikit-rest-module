@@ -8,8 +8,47 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="console-config" raml="munit/console/console-api.raml"
-                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+  <apikit:config parser="${parser.type}" name="console-config" raml="munit/console/console-api.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" keepApiBaseUri="${keepBaseUri}"/>
+
+  <apikit:config parser="${parser.type}" name="console-08-config" raml="munit/console/console-api-08.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" keepApiBaseUri="${keepBaseUri}"/>
+
+  <apikit:config parser="${parser.type}" name="console-api-without-base-uri-config" raml="munit/console/console-api-without-base-uri.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" keepApiBaseUri="${keepBaseUri}"/>
+
+
+  <flow name="console-router">
+    <http:listener config-ref="http-listener-simple" path="/api/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+    </http:listener>
+    <apikit:router config-ref="console-config"/>
+  </flow>
+
+  <flow name="console-without-base-uri-router">
+    <http:listener config-ref="http-listener-simple" path="/api/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+    </http:listener>
+    <apikit:router config-ref="console-api-without-base-uri-config"/>
+  </flow>
+
+  <flow name="console-without-base-uri">
+    <http:listener config-ref="http-listener-simple" path="/console/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:console config-ref="console-api-without-base-uri-config"/>
+    <error-handler ref="global-server-error-handler"/>
+  </flow>
 
   <flow name="console">
     <http:listener config-ref="http-listener-simple" path="/console/*">
@@ -23,6 +62,43 @@
     </http:listener>
     <apikit:console config-ref="console-config"/>
     <error-handler ref="global-server-error-handler"/>
+  </flow>
+
+
+  <flow name="console-08-router">
+    <http:listener config-ref="http-listener-simple" path="/api/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+    </http:listener>
+    <apikit:router config-ref="console-08-config"/>
+  </flow>
+
+  <flow name="console-08">
+    <http:listener config-ref="http-listener-simple" path="/console/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:console config-ref="console-08-config"/>
+    <error-handler ref="global-server-error-handler"/>
+  </flow>
+
+  <flow name="invalid-path">
+    <http:listener config-ref="http-listener-simple" path="/console/">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:console config-ref="console-config" />
   </flow>
 
 </mule>
