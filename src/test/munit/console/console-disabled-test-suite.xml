@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:before-test name="disable-console">
+    <ee:transform>
+      <ee:message>
+        <ee:set-payload>
+          <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::setSystemProperty("apikit.console.disabled", "true")
+        ]]>
+        </ee:set-payload>
+      </ee:message>
+    </ee:transform>
+  </munit:before-test>
+
+  <munit:after-test name="enable-console">
+    <ee:transform>
+      <ee:message>
+        <ee:set-payload>
+          <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::setSystemProperty("apikit.console.disabled", "false")
+        ]]>
+        </ee:set-payload>
+      </ee:message>
+    </ee:transform>
+  </munit:after-test>
+
+  <munit:test name="fail-hitting-disabled-console">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="console-disabled-router"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console-disabled/munit/console/example.json"
+        target="example" targetValue="#[attributes.statusCode]"/>
+      <http:request method="GET" config-ref="http-requester-simple" path="/console-disabled/" target="console"
+        targetValue="#[attributes.statusCode]"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.console]" is="#[MunitTools::equalTo(404)]"/>
+      <munit-tools:assert-that expression="#[vars.example]" is="#[MunitTools::equalTo(404)]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>
