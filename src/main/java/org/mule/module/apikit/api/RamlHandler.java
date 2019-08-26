@@ -113,7 +113,10 @@ public class RamlHandler {
   }
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
-    return api.getAllReferences().stream().map(ref -> ref.substring(ref.indexOf(apiResourcesRelativePath))).collect(toList());
+    return api.getAllReferences().stream().map(ref ->{
+              int index = ref.indexOf(apiResourcesRelativePath);
+              return index > 0 ? ref.substring(index) : ref;
+            }).collect(toList());
   }
 
   /**
