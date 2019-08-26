@@ -12,10 +12,6 @@ import org.mule.runtime.api.metadata.TypedValue;
 
 public class MessageHelper {
 
-  public static Message setPayload(Message message, Object payload, String mimetype) {
-    return setPayload(message, payload, MediaType.parse(mimetype));
-  }
-
   public static Message setPayload(Message message, Object payload, MediaType mediatype) {
     Message.Builder messageBuilder = Message.builder(message);
     messageBuilder.value(payload);

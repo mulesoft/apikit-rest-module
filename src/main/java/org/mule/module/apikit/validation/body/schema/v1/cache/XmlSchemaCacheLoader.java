@@ -25,7 +25,7 @@ public class XmlSchemaCacheLoader extends CacheLoader<String, Schema> {
   }
 
   @Override
-  public Schema load(String schemaLocation) throws IOException, SAXException {
+  public Schema load(String schemaLocation) {
     return SchemaCacheUtils.resolveXmlSchema(schemaLocation, api);
   }
 

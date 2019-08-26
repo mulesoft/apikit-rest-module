@@ -6,11 +6,6 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import org.mule.apikit.model.MimeType;
-
-import com.google.common.collect.Lists;
-import com.google.common.net.MediaType;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,10 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.net.MediaType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * MIME-Type Parser
@@ -37,8 +31,6 @@ import org.slf4j.LoggerFactory;
  * http://code.google.com/p/mimeparse/
  */
 public class MimeTypeParser {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypeParser.class);
 
   /**
    * Parse results container
@@ -289,38 +281,5 @@ public class MimeTypeParser {
 
     FitnessAndQuality lastOne = weightedMatches.get(weightedMatches.size() - 1);
     return NumberUtils.compare(lastOne.quality, 0) != 0 ? MediaType.parse(lastOne.mimeType) : null;
-  }
-
-  @Deprecated
-  private static MediaType getMediaType(MimeType mimeType) {
-    MediaType mediaType = MediaType.parse(mimeType.getType());
-    return mediaType.withParameter("q", "1");
-  }
-
-  public static boolean isMediaTypeAcceptable(List<MediaType> acceptContentTypes, MediaType mediaType) {
-    for (MediaType accept : acceptContentTypes) {
-      if (accept.withoutParameters().equals(mediaType)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-
-
-  // hidden
-  private MimeTypeParser() {}
-
-  public static List<MediaType> parseMediaTypes(String mediaTypes) {
-    List<MediaType> parsedMediaTypes = Lists.newArrayList();
-    for (String r : StringUtils.split(mediaTypes, ',')) {
-      try {
-        parsedMediaTypes.add(MediaType.parse(StringUtils.trim(r)));
-      } catch (IllegalArgumentException e) {
-        LOGGER.warn("Unable to get", e);
-      }
-    }
-
-    return parsedMediaTypes;
   }
 }

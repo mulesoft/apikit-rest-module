@@ -28,7 +28,6 @@ public class AttributesHelper {
   private static final String ANY_RESPONSE_MEDIA_TYPE = "*/*";
 
   private AttributesHelper() {
-    // Prevents instantiation :)
   }
 
   public static MultiMap<String, String> addParam(MultiMap<String, String> oldParams, String key, String value) {

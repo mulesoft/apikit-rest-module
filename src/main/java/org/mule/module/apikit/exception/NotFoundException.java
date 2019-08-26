@@ -16,14 +16,6 @@ public class NotFoundException extends MuleRestException {
     super(path);
   }
 
-  public NotFoundException(Throwable t) {
-    super(t);
-  }
-
-  public NotFoundException() {
-    super("Not found");
-  }
-
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

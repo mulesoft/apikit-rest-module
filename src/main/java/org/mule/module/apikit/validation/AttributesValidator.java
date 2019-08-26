@@ -28,7 +28,6 @@ public class AttributesValidator {
     MultiMap<String, String> headers;
     MultiMap<String, String> queryParams;
     String queryString;
-    MultiMap<String, String> uriParams;
 
     final Action action = resource.getAction(attributes.getMethod().toLowerCase());
 

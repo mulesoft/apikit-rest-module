@@ -27,8 +27,6 @@ public class RoutingTable {
 
     for (Resource resource : resources.values()) {
 
-      String parentUri = resource.getParentUri();
-
       String uri = resource.getResolvedUri(version);
 
       routingTable.put(new URIPattern(uri), resource);

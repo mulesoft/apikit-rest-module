@@ -14,14 +14,6 @@ public class InvalidUriParameterException extends BadRequestException {
     super(message);
   }
 
-  public InvalidUriParameterException(Throwable t) {
-    super(t);
-  }
-
-  public InvalidUriParameterException() {
-    super("Invalid Uri Parameter");
-  }
-
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit;
 
-import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
