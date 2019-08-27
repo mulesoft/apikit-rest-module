@@ -354,7 +354,7 @@
       <munit:enable-flow-source value="post:\uploadXmlFile:multipart\form-data:form-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <set-payload value='#[output application/xml --- { test : "test"}]'/>
+      <set-payload value='#[output application/xml --- {inteflow: {request @(cd_type: "submit"): {user: "user"}}}]'/>
       <http:request method="POST" config-ref="http-requester-simple" path="/form-data/uploadXmlFile">
         <http:body>#[
           %dw 2.0
@@ -379,7 +379,7 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[output application/java --- payload.test.'__text']" is="#[MunitTools::equalTo('test')]"/>
+      <munit-tools:assert-that expression="#[output application/java --- payload.inteflow.request.user]" is="#[MunitTools::equalTo('user')]"/>
     </munit:validation>
   </munit:test>
 
