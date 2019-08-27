@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.validation.body.schema.v2;
 
+import static java.util.stream.Collectors.*;
+
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
 import org.mule.apikit.model.MimeType;
@@ -26,11 +28,12 @@ public class RestSchemaV2Validator implements IRestSchemaValidatorStrategy {
 
   public void validate(String payload) throws BadRequestException {
     final List<ApiValidationResult> validationResults = mimeType.validate(payload);
-
     if (!validationResults.isEmpty()) {
-      String logMessage = validationResults.get(0).getMessage();
-      logger.info("Schema validation failed: " + logMessage);
-      throw new BadRequestException(logMessage);
+      throw new BadRequestException(buildLogMessage(validationResults));
     }
+  }
+
+  private String buildLogMessage(List<ApiValidationResult> validationResults) {
+    return validationResults.stream().map(result -> result.getMessage().replace("\n", "")).collect(joining("\n"));
   }
 }
