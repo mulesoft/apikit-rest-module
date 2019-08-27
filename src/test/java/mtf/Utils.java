@@ -6,10 +6,34 @@
  */
 package mtf;
 
+import org.mule.runtime.api.exception.ErrorMessageAwareException;
+import org.mule.runtime.api.message.Message;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.metadata.TypedValue;
+
 public class Utils {
 
   public static void setSystemProperty(String key, String value) {
     System.setProperty(key, value);
   }
+
+  public static ExceptionWithMuleMessage throwErrorMessageAwareException() {
+    return new ExceptionWithMuleMessage();
+  }
+
+  public static class ExceptionWithMuleMessage extends RuntimeException implements ErrorMessageAwareException {
+
+    ExceptionWithMuleMessage() {
+      super("We are testing, everything is fine");
+    }
+
+    @Override
+    public Message getErrorMessage() {
+      return Message.builder()
+        .payload(new TypedValue<>("Payload value", DataType.STRING))
+        .attributes(new TypedValue<>("Attributes value", DataType.STRING)).build();
+    }
+  }
+
 
 }
