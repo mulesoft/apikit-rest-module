@@ -14,14 +14,6 @@ public class InvalidQueryParameterException extends BadRequestException {
     super(message);
   }
 
-  public InvalidQueryParameterException(Throwable t) {
-    super(t);
-  }
-
-  public InvalidQueryParameterException() {
-    super("Invalid Query Parameter");
-  }
-
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

@@ -14,14 +14,6 @@ public class InvalidQueryStringException extends BadRequestException {
     super(message);
   }
 
-  public InvalidQueryStringException(Throwable t) {
-    super(t);
-  }
-
-  public InvalidQueryStringException() {
-    super("Invalid Query String");
-  }
-
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

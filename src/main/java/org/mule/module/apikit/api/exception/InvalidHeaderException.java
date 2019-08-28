@@ -14,14 +14,6 @@ public class InvalidHeaderException extends BadRequestException {
     super(message);
   }
 
-  public InvalidHeaderException(Throwable t) {
-    super(t);
-  }
-
-  public InvalidHeaderException() {
-    super("Invalid Header");
-  }
-
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

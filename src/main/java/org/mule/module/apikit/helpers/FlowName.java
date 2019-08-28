@@ -61,48 +61,12 @@ public class FlowName {
     return value;
   }
 
-  public static String getAction(String flowName) {
-    return getAction(getMatcher(flowName));
-  }
-
-  public static String getAction(Matcher flowNameMatcher) {
-    return flowNameMatcher.group(1);
-  }
-
   public static String getResource(String flowName) {
     return getResource(getMatcher(flowName));
   }
 
   public static String getResource(Matcher flowNameMatcher) {
     return flowNameMatcher.group(2);
-  }
-
-  public static Optional<String> getMimeType(Matcher flowNameMatcher, Collection<String> existingConfigs) {
-    if (flowNameMatcher.group(4) != null) {
-      if (flowNameMatcher.group(6) == null) {
-        if (existingConfigs == null || !existingConfigs.contains(flowNameMatcher.group(4))) {
-          return Optional.of(flowNameMatcher.group(4));
-        }
-      } else {
-        return Optional.of(flowNameMatcher.group(4));
-      }
-    }
-
-    return Optional.empty();
-  }
-
-  public static Optional<String> getConfig(Matcher flowNameMatcher, Collection<String> existingConfigs) {
-    if (flowNameMatcher.group(4) != null) {
-      if (flowNameMatcher.group(6) == null) {
-        if (existingConfigs != null && existingConfigs.contains(flowNameMatcher.group(4))) {
-          return Optional.of(flowNameMatcher.group(4));
-        }
-      } else {
-        return Optional.of(flowNameMatcher.group(6));
-      }
-    }
-
-    return Optional.empty();
   }
 
 }
