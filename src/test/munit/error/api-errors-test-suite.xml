@@ -84,4 +84,29 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="error-mule-message-is-preserved-in-main-flow">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="api-errors-main" />
+      <munit:enable-flow-source value="get:\errorWithMuleMessageIsBeingPropagated:api-errors-config"/>
+    </munit:enable-flow-sources>
+    <munit:behavior>
+      <munit-tools:mock-when processor="set-payload">
+        <munit-tools:then-return>
+          <munit-tools:error cause="#[java!mtf::Utils::throwErrorMessageAwareException()]"/>
+        </munit-tools:then-return>
+      </munit-tools:mock-when>
+    </munit:behavior>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/errors/errorWithMuleMessageIsBeingPropagated"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:retrieve key="errorPayload"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Payload value')]"/>
+      <munit-tools:retrieve key="errorAttributes"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Attributes value')]"/>
+      <munit-tools:retrieve key="errorDescription"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('We are testing, everything is fine')]"/>
+    </munit:validation>
+  </munit:test>
+
 </mule>

@@ -55,7 +55,9 @@ public class MuleMessagingExceptionHandler implements RouterExceptionHandler {
   public Exception handle(Event event, Exception exception) {
     try {
       if (constructor != null) {
-        return (Exception) constructor.newInstance(event, exception);
+        // we use exception.getCause() to get the actual exception thrown by the module inside the flow.
+        // this way we propagate to the runtime an exception that may carry additional data. e.g. an ErrorMessageAwareException
+        return (Exception) constructor.newInstance(event, exception.getCause());
       }
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       LOGGER.error("Error while handling exception for main flow: " + e.getMessage());
