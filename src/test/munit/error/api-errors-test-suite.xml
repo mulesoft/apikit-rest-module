@@ -25,10 +25,7 @@
     </munit:parameterizations>
   </munit:config>
 
-  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
-  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
-  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
-  <munit:test name="error-on-subflow-propagates-to-main-flow" ignore="#[not Munit::muleVersionPriorTo('4.2.1')]">
+  <munit:test name="error-on-subflow-propagates-to-main-flow">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="api-errors-main" />
       <munit:enable-flow-source value="get:\raiseError:api-errors-config"/>
@@ -50,10 +47,7 @@
     </munit:validation>
   </munit:test>
 
-  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
-  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
-  <!-- TODO: IGNORE UNTIL APIKIT-1943 is done -->
-  <munit:test name="error-propagates-from-subflow" ignore="#[not Munit::muleVersionPriorTo('4.2.1')]">
+  <munit:test name="error-propagates-from-subflow">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="api-errors-main" />
       <munit:enable-flow-source value="get:\onErrorPropagate:api-errors-config"/>
