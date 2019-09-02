@@ -33,9 +33,11 @@
         <!-- PARSERS -->
         <parser.service.version>2.0.0-SNAPSHOT</parser.service.version>
 
-        <!--remove this APIKIT-1873 -->
+
+        <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.6</commons.io.version>
         <guava.version>27.1-jre</guava.version>
+        <jackson.databind.version>2.9.9.3</jackson.databind.version>
         <jackson.version>2.9.9</jackson.version>
         <libthrift.version>0.12.0</libthrift.version>
 
@@ -71,7 +73,7 @@
             <groupId>org.mule.apikit</groupId>
             <artifactId>parser-service</artifactId>
             <version>${parser.service.version}</version>
-            <!--remove this APIKIT-1873 -->
+            <!-- exclusions due to RP-592, they are limited because of java 7 -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -143,7 +145,7 @@
             <artifactId>mule-module-service</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
-            <!--remove this APIKIT-1873 -->
+            <!-- exclusions due to RP-592, they are limited because of java 7 -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -161,7 +163,7 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
-                <!--remove this APIKIT-1873 -->
+                <!-- exclusions due to RP-592, they are limited because of java 7 -->
                 <exclusion>
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
@@ -187,7 +189,7 @@
             <artifactId>mule-module-extensions-spring-support</artifactId>
             <version>${mule.version}</version>
             <scope>provided</scope>
-            <!--remove this APIKIT-1873 -->
+            <!-- exclusions due to RP-592, they are limited because of java 7 -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -206,7 +208,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--remove this APIKIT-1873 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${httpmime.version}</version>
+        </dependency>
+
+        <!-- RP-592: ADDING THIS DEPENDENCIES TO HAVE CONTROL OF THIS VERSIONS, SEE COMMENT BELOW AND IN MOST EXCLUSIONS -->
+        <!-- START OF: exclusions due to RP-592, they are limited because of java 7 -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -230,20 +239,14 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
             <version>${libthrift.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>${httpmime.version}</version>
-        </dependency>
-
+        <!-- END OF: exclusions due to RP-592, they are limited because of java 7 -->
 
         <!-- TEST -->
         <dependency>
