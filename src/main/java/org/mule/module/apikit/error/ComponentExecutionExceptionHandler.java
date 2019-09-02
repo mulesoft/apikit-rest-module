@@ -16,8 +16,10 @@ import org.mule.runtime.api.event.Event;
  */
 public class ComponentExecutionExceptionHandler implements RouterExceptionHandler {
 
+  private final MuleMessagingExceptionHandler delegate = new MuleMessagingExceptionHandler();
+
   // TODO(APIKIT-1943): CHANGE IMPLEMENTATION ONCE NEW MULE API FOR ERRORS IS AVAILABLE, UNIGNORE TESTS.
   public Exception handle(Event event, Exception exception) {
-    return new ComponentExecutionException(exception, event);
+    return delegate.handle(event, exception);
   }
 }
