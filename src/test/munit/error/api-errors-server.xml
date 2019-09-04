@@ -13,7 +13,7 @@
 
 
     <apikit:config name="api-errors-config" api="munit/errors/api-errors.raml" outboundHeadersMapName="outboundHeaders"
-                   httpStatusVarName="httpStatus"/>
+                   httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
     <flow name="api-errors-main">
         <http:listener config-ref="http-listener-simple" path="/errors/*">
