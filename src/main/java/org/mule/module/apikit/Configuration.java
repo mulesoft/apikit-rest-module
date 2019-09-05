@@ -30,7 +30,6 @@ import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoader;
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
-import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Initialisable;
@@ -51,6 +50,9 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   private static final String DEFAULT_OUTBOUND_HEADERS_MAP_NAME = "outboundHeaders";
   private static final String DEFAULT_HTTP_STATUS_VAR_NAME = "httpStatus";
   private static final int URI_CACHE_SIZE = 1000;
+  public static final String MULE_EXTERNAL_ENTITIES_PROPERTY = "mule.xml.expandExternalEntities";
+  public static final String MULE_EXPAND_ENTITIES_PROPERTY = "mule.xml.expandInternalEntities";
+
 
   protected static final Logger logger = LoggerFactory.getLogger(Configuration.class);
   protected LoadingCache<String, URIResolver> uriResolverCache;
@@ -93,6 +95,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
 
   @Override
   public void initialise() throws InitialisationException {
+    xmlEntitiesConfiguration();
     this.routerService = findExtension();
     try {
       ramlHandler = new RamlHandler(getApi(), isKeepApiBaseUri(), errorRepositoryFrom(muleContext), parserMode.get());
@@ -338,6 +341,16 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
 
   public Optional<RouterService> getExtension() {
     return this.routerService;
+  }
+
+  private void xmlEntitiesConfiguration() {
+    String externalEntities = System.getProperty(MULE_EXTERNAL_ENTITIES_PROPERTY, "false");
+    System.setProperty("raml.xml.expandExternalEntities", externalEntities);
+    System.setProperty("amf.plugins.xml.expandExternalEntities", externalEntities);
+
+    String internalEntities = System.getProperty(MULE_EXPAND_ENTITIES_PROPERTY, "false");
+    System.setProperty("raml.xml.expandInternalEntities", internalEntities);
+    System.setProperty("amf.plugins.xml.expandInternalEntities", internalEntities);
   }
 
 }

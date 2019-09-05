@@ -31,11 +31,6 @@ import org.xml.sax.SAXException;
 
 public class RestXmlSchemaValidator implements IRestSchemaValidatorStrategy {
 
-  public static final String RAML_EXTERNAL_ENTITIES_PROPERTY = "raml.xml.expandExternalEntities";
-  public static final String RAML_EXPAND_ENTITIES_PROPERTY = "raml.xml.expandInternalEntities";
-  public static final String MULE_EXTERNAL_ENTITIES_PROPERTY = "mule.xml.expandExternalEntities";
-  public static final String MULE_EXPAND_ENTITIES_PROPERTY = "mule.xml.expandInternalEntities";
-
   protected static final Logger logger = LoggerFactory.getLogger(RestXmlSchemaValidator.class);
 
   private Schema schema;
@@ -52,12 +47,6 @@ public class RestXmlSchemaValidator implements IRestSchemaValidatorStrategy {
 
   @Override
   public void validate(String payload) throws BadRequestException {
-    if (System.getProperty(MULE_EXTERNAL_ENTITIES_PROPERTY) == null) {
-      System.setProperty(MULE_EXTERNAL_ENTITIES_PROPERTY, System.getProperty(RAML_EXTERNAL_ENTITIES_PROPERTY, "false"));
-    }
-    if (System.getProperty(MULE_EXPAND_ENTITIES_PROPERTY) == null) {
-      System.setProperty(MULE_EXPAND_ENTITIES_PROPERTY, System.getProperty(RAML_EXPAND_ENTITIES_PROPERTY, "false"));
-    }
     try {
       Document data = loadDocument(new StringReader(payload));
 
