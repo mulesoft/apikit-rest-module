@@ -1,0 +1,17 @@
+#%RAML 1.0
+title: Test example with DOCTYPE
+              
+/example-with-doctype:
+    post:
+      body:
+        application/xml:
+            example: !include resources/test.xml
+            schema: !include resources/Note.xsd
+      
+      responses:
+        200:
+          body:
+            application/xml:
+                
+                
+           
