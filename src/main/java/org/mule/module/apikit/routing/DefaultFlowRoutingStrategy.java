@@ -8,7 +8,7 @@ package org.mule.module.apikit.routing;
 
 import static reactor.core.publisher.Mono.fromFuture;
 
-import org.mule.module.apikit.error.ComponentExecutionExceptionHandler;
+import org.mule.module.apikit.error.EventProcessingExceptionHandler;
 import org.mule.module.apikit.error.MuleMessagingExceptionHandler;
 import org.mule.module.apikit.error.RouterExceptionHandler;
 import org.mule.module.apikit.utils.MuleVersionUtils;
@@ -33,9 +33,9 @@ public class DefaultFlowRoutingStrategy implements FlowRoutingStrategy {
   public DefaultFlowRoutingStrategy() {
     // In MULE 4.2.0 and 4.2.1 there is not way to propagate an event to the main flow when an error occur, for that
     // we have the MuleMessagingExceptionHandler that reflectively creates an internal Mule Exception to do this task.
-    // since Mule 4.2.2 there is a proper API to propagate the error with an exception, see ComponentExecutionExceptionHandler.
+    // since Mule 4.2.2 there is a proper API to propagate the error with an exception, see EventProcessingExceptionHandler.
     this.exceptionHandler = MuleVersionUtils.isAtLeast("4.2.2") ?
-      new ComponentExecutionExceptionHandler() :
+      new EventProcessingExceptionHandler() :
       new MuleMessagingExceptionHandler();
   }
 
