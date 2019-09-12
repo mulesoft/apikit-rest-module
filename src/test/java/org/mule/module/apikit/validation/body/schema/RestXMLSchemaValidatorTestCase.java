@@ -6,17 +6,23 @@
  */
 package org.mule.module.apikit.validation.body.schema;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import javax.xml.validation.Schema;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+
 import org.mule.module.apikit.Configuration;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.exception.BadRequestException;
@@ -27,8 +33,12 @@ import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.Resource;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.TypedException;
+import org.mule.runtime.api.message.ErrorType;
 
 public class RestXMLSchemaValidatorTestCase {
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   private static final String xmlSchema = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>" +
       "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"" +
@@ -43,6 +53,7 @@ public class RestXMLSchemaValidatorTestCase {
       "  </xs:complexType>" +
       "</xs:element>" +
       "</xs:schema>";
+
   private static ApiSpecification api;
 
   @BeforeClass
@@ -97,6 +108,32 @@ public class RestXMLSchemaValidatorTestCase {
     config.setRamlHandler(ramlHandler);
 
     RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath));
+    xmlValidator.validate(payload);
+  }
+
+  @Test
+  public void xxeAttackIsDisabled() throws TypedException, ExecutionException, BadRequestException {
+
+    expectedException.expectMessage("An internal operation failed.");
+
+    String payload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      + "<!DOCTYPE leagues [\n"
+      + "<!ENTITY mls \"MLS\">"
+      + "]>\n"
+      + "<league xmlns=\"http://mulesoft.com/schemas/soccer\"><name>&mls;</name></league>";
+
+    String schemaPath = "/leagues,POST,application/xml";
+
+    Configuration config = new Configuration();
+    RamlHandler ramlHandler = Mockito.mock(RamlHandler.class);
+    ErrorTypeRepository errorTypeRepository = Mockito.mock(ErrorTypeRepository.class);
+    ErrorType type = mock(ErrorType.class);
+    when(errorTypeRepository.getErrorType(any())).thenReturn(Optional.of(type));
+    when(ramlHandler.getApi()).thenReturn(api);
+    config.setRamlHandler(ramlHandler);
+
+    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), errorTypeRepository);
+
     xmlValidator.validate(payload);
   }
 }
