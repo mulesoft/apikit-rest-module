@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * The MuleMessagingException is an internal Mule exception but it the only one that provides de capability to provide a custom
  * event to the processing chain when an error occurs, there is no API for doing this until mule 4.2.2 in which cases the
- * {@link ComponentExecutionExceptionHandler} should be active instead of this implementation.
+ * {@link EventProcessingExceptionHandler} should be active instead of this implementation.
  *
  * This class builds a MessagingException reflectively by looking up in the classloader hierarchy until the class is visible.
  *
