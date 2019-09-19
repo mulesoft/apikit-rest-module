@@ -110,4 +110,17 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="perform-request-that-uses-a-flow-mapping">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="api-routing-main"/>
+      <munit:enable-flow-source value="test-flow-mapping"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="api/mapping"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('mapped')]"/>
+    </munit:validation>
+  </munit:test>
 </mule>
