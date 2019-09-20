@@ -57,6 +57,21 @@
 	</munit:validation>
   </munit:test>
 
+	<munit:test name="string-starting-with-asterisk-for-string-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="scalar-types-validation-main"/>
+	  <munit:enable-flow-source value="get:\resource:scalar-types-validation-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <set-variable variableName="param" value="#['str']"/>
+	  <set-variable variableName="value" value="#['*a-b some']"/>
+	  <flow-ref name="scalar-types-validation\do-request"/>
+	</munit:execution>
+	<munit:validation>
+	  <flow-ref name="scalar-types-validation\do-assert-success"/>
+	</munit:validation>
+  </munit:test>
+
   <munit:test name="number-for-string-param">
 	<munit:enable-flow-sources>
 	  <munit:enable-flow-source value="scalar-types-validation-main"/>

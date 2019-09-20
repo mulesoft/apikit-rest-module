@@ -103,16 +103,18 @@ public class QueryParameterValidator {
       builder.append("\n");
     });
 
-    validateQueryParam(paramKey, expected, builder.toString());
+    validate(paramKey, expected, builder.toString());
   }
 
   private void validateQueryParam(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
+    validate(paramKey,expected,expected.surroundWithQuotesIfNeeded(paramValue));
+  }
+
+  private void validate(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
       String msg = String.format("\"Invalid value '%s' for query parameter %s. %s\"",
-                                 paramValue, paramKey, expected.message(paramValue));
-
+              paramValue, paramKey, expected.message(paramValue));
       throw new InvalidQueryParameterException(msg);
     }
   }
-
 }
