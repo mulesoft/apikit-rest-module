@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="non-repeatable-streaming-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
+
+  <munit:test name="non-repeatable-url-encoded-request">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="non-repeatable-streaming-main"/>
+      <munit:enable-flow-source value="post:\url-encoded-simple:application\x-www-form-urlencoded:non-repeatable-streaming-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="nr-streaming/url-encoded-simple">
+        <http:body>
+          #[
+            %dw 2.0
+            output application/x-www-form-urlencoded
+            ---
+            {
+            "first" : "capo",
+            "second": "juani"
+            }
+          ]
+        </http:body>
+        <http:headers>
+          #[{'Content-Type': 'application/x-www-form-urlencoded'}]
+        </http:headers>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo({first: 'capo', second: 'juani'})]"/>
+      <munit-tools:assert-that expression="#[payload.^mimeType]" is="#[MunitTools::equalTo('application/x-www-form-urlencoded
+      ')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="non-repeatable-multipart-request">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="non-repeatable-streaming-main"/>
+      <munit:enable-flow-source value="post:\multipart:multipart\form-data:non-repeatable-streaming-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="nr-streaming/multipart">
+        <http:body>
+          #[
+            %dw 2.0
+            output multipart/form-data
+            ---
+            {
+              parts : {
+                first : {
+                  headers : {
+                    "Content-Type": "text/plain"
+                  },
+                  content : "primero"
+                },
+                second : {
+                  headers : {
+                    "Content-Type": "text/plain"
+                  },
+                  content : 'segundo'
+              }
+            }
+          }
+          ]
+        </http:body>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <set-variable variableName="expected" value="#[output application/json ---
+                                            {
+                                               first: 'primero',
+                                               second: 'segundo',
+                                               third: 'true'
+                                            }]"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo(vars.expected)]"/>
+    </munit:validation>
+  </munit:test>
+
+
+</mule>

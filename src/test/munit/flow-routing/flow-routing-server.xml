@@ -8,7 +8,8 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="api-routing-config" raml="munit/flow-routing/api-routing.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
+  <apikit:config name="api-routing-config" raml="munit/flow-routing/api-routing.raml" outboundHeadersMapName="outboundHeaders"
+                 httpStatusVarName="httpStatus" parser="${parser.type}">
     <apikit:flow-mappings>
       <apikit:flow-mapping resource="/mapping" action="get" flow-ref="test-flow-mapping"/>
 
