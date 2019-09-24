@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="oas-routing-test-suite"/>
+
+  <munit:test name="OAS-get-request-with-uri-param-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="oas-routing-main"/>
+      <munit:enable-flow-source value="get:\pets\(petId):oas-routing-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="oas/pets/1"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1:CAT')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="OAS-simple-get-request">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="oas-routing-main"/>
+      <munit:enable-flow-source value="get:\pets:oas-routing-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="oas/pets"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[payload[0]]" is="#[MunitTools::equalTo('DOG')]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>

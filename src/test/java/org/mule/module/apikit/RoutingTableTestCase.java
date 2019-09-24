@@ -29,7 +29,7 @@ public class RoutingTableTestCase {
   public static void beforeAll() throws IOException {
     muleContext = mock(MuleContext.class);
     when(muleContext.getExecutionClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
-    ramlHandler = new RamlHandler("org/mule/module/apikit/routing-table-sample.raml", true, muleContext.getErrorTypeRepository());
+    ramlHandler = new RamlHandler("unit/routing-table-sample.raml", true, muleContext.getErrorTypeRepository());
   }
 
   public RoutingTableTestCase() {}

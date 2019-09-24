@@ -46,6 +46,7 @@
     </on-error-propagate>
     <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
       <set-payload value="{message: 'Not implemented'}"/>
+      <set-variable variableName="outboundHeaders" value="#[{'Content-Type':'application/json'}]"/>
       <set-variable variableName="httpStatus" value="501"/>
     </on-error-propagate>
   </error-handler>

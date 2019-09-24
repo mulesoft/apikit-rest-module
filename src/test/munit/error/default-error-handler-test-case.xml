@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <munit:config name="default-error-handler-test-suite">
+        <munit:parameterizations>
+            <munit:parameterization name="RAML">
+                <munit:parameters>
+                    <munit:parameter propertyName="parser.type" value="RAML"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="AMF">
+                <munit:parameters>
+                    <munit:parameter propertyName="parser.type" value="AMF"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="throw404">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+            <munit:enable-flow-source value="get:\raiseError:default-error-handler-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple" path="/error-handler/raiseError/notFound">
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(404)]"/>
+            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']" is="#[MunitTools::equalTo('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Resource not found')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="throw500">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+            <munit:enable-flow-source value="get:\raiseError:default-error-handler-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple" path="/error-handler/raiseError">
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(500)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="throw405">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+            <munit:enable-flow-source value="get:\raiseError:default-error-handler-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/error-handler/raiseError">
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(405)]"/>
+            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']" is="#[MunitTools::equalTo('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Method not allowed')]"/>
+        </munit:validation>
+    </munit:test>
+</mule>
