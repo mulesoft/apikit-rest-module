@@ -17,7 +17,6 @@ import static org.mule.apikit.model.ApiVendor.RAML_10;
 import static org.mule.parser.service.ParserMode.AUTO;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -32,6 +31,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.IOUtils;
 
+import org.apache.jena.base.Sys;
 import org.mule.amf.impl.model.AMFImpl;
 import org.mule.apikit.ApiType;
 import org.mule.module.apikit.StreamUtils;
@@ -79,14 +79,16 @@ public class RamlHandler {
                      boolean keepApiBaseUri,
                      ErrorTypeRepository errorTypeRepository,
                      ParserMode parserMode) throws IOException {
+    System.out.println("FALOPA 1");
     this.keepApiBaseUri = keepApiBaseUri;
     String rootRamlLocation = findRootRaml(ramlLocation);
-
+    System.out.println("FALOPA 2");
     if (rootRamlLocation == null) {
       throw new IOException("Raml not found at: " + ramlLocation);
     }
 
     result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode == null ? AUTO : parserMode);
+    System.out.println("FALOPA 3");
     if (result.success()) {
       this.api = result.get();
       int idx = rootRamlLocation.lastIndexOf("/");
@@ -102,6 +104,7 @@ public class RamlHandler {
       String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
       throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
     }
+    System.out.println("FALOPA 4");
   }
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
@@ -261,8 +264,9 @@ public class RamlHandler {
 
   private String findRootRaml(String ramlLocation) {
     try {
-      return new File(ramlLocation).getPath();
-    } catch (Exception e) {
+      final URL url = new URL(ramlLocation);
+      return url.toString();
+    } catch (MalformedURLException e) {
       String[] startingLocations = new String[] {"api/", "", "api"};
       for (String start : startingLocations) {
         URL ramlLocationUrl = Thread.currentThread().getContextClassLoader().getResource(start + ramlLocation);
