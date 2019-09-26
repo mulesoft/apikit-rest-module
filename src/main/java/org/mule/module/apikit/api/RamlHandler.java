@@ -17,6 +17,7 @@ import static org.mule.apikit.model.ApiVendor.RAML_10;
 import static org.mule.parser.service.ParserMode.AUTO;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -260,9 +261,8 @@ public class RamlHandler {
 
   private String findRootRaml(String ramlLocation) {
     try {
-      final URL url = new URL(ramlLocation.replaceAll(" ", "%20"));
-      return url.getPath();
-    } catch (MalformedURLException e) {
+      return new File(ramlLocation).getPath();
+    } catch (Exception e) {
       String[] startingLocations = new String[] {"api/", "", "api"};
       for (String start : startingLocations) {
         URL ramlLocationUrl = Thread.currentThread().getContextClassLoader().getResource(start + ramlLocation);
