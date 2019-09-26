@@ -54,7 +54,7 @@
   </flow>
 
   <flow name="post:\uploadImage:multipart\form-data:form-body-validation-config">
-    <set-payload value="#[output text/plain  --- sizeOf(payload.parts.image.content) == sizeOf(readUrl('classpath://org/mule/module/apikit/validation/formParameters/bbva.jpg', 'application/octet-stream'))]"/>
+    <set-payload value="#[output text/plain  --- sizeOf(payload.parts.image.content) == sizeOf(readUrl('classpath://munit/body/form/bbva.jpg', 'application/octet-stream'))]"/>
   </flow>
 
 </mule>
