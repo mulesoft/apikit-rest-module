@@ -260,7 +260,7 @@ public class RamlHandler {
 
   private String findRootRaml(String ramlLocation) {
     try {
-      final URL url = new URL(ramlLocation);
+      final URL url = new URL(ramlLocation.replaceAll(" ", "%20"));
       return url.getPath();
     } catch (MalformedURLException e) {
       String[] startingLocations = new String[] {"api/", "", "api"};
