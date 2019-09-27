@@ -8,6 +8,8 @@ package org.mule.module.apikit.validation.body.schema.v1.cache;
 
 import static org.mule.module.apikit.validation.body.schema.v1.cache.SchemaCacheUtils.resolveJsonSchema;
 
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 import org.mule.module.apikit.uri.URICoder;
 import org.mule.apikit.model.ApiSpecification;
@@ -75,7 +77,7 @@ public class JsonSchemaCacheLoader extends CacheLoader<String, JsonSchema> {
    * in order to find the resource in the application classpath
    *  the resource:/ url is translated to a file:/ url
    */
-  private String resolveLocationIfNecessary(String path) {
+  private String resolveLocationIfNecessary(String path) throws MalformedURLException {
     String encodedUri = getEncodedPath(path);
     URI uri = URI.create(encodedUri);
 
@@ -94,13 +96,8 @@ public class JsonSchemaCacheLoader extends CacheLoader<String, JsonSchema> {
     return URICoder.encode(path, ignoredCharacters);
   }
 
-  private URL openSchema(String path) {
-    URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-    if (url == null && path.startsWith("/")) {
-      return openSchema(path.substring(1));
-    }
-
-    return url;
+  private URL openSchema(String path) throws MalformedURLException {
+    return Paths.get(path).toUri().toURL();
   }
 
   private JsonSchema parseSchema(JsonNode jsonNode) {
