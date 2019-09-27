@@ -69,18 +69,9 @@ public class RamlHandler {
   private ErrorTypeRepository errorTypeRepository;
   private List<String> acceptedClasspathResources;
 
-  public RamlHandler(String ramlLocation, boolean keepApiBaseUri) throws IOException {
-    this(ramlLocation, keepApiBaseUri, null, null);
-  }
-
   // ramlLocation should be the root raml location, relative of the resources folder
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ErrorTypeRepository errorTypeRepository) throws IOException {
     this(ramlLocation, keepApiBaseUri, errorTypeRepository, null);
-  }
-
-  public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ParserMode parserType)
-    throws IOException {
-    this(ramlLocation, keepApiBaseUri, null, parserType);
   }
 
   public RamlHandler(String ramlLocation,

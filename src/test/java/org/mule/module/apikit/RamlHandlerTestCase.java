@@ -18,6 +18,7 @@ import static org.mule.apikit.ApiType.AMF;
 import static org.mule.apikit.ApiType.RAML;
 import static org.mule.parser.service.ParserMode.AUTO;
 
+import java.io.File;
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.ApiVendor;
 import org.mule.module.apikit.api.RamlHandler;
@@ -158,8 +159,9 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("unit/space in path api/api.raml", true, ParserMode.RAML);
     ApiSpecification api = handler.getApi();
     assertEquals(RAML, api.getType());
-    assertThat(api.getAllReferences(), hasItems("unit/space in path api/example.json",
-                                                "unit/space in path api/more spaces/schema.json"));
+    assertTrue(api.getAllReferences().stream().anyMatch(ref -> ref.endsWith("unit/space in path api/example.json".replaceAll("/",
+        File.separator))));
+    assertTrue(api.getAllReferences().stream().anyMatch(ref -> ref.endsWith("unit/space in path api/more spaces/schema.json".replaceAll("/", File.separator))));
   }
 
   private <A extends Exception, B> void assertException(String message, Supplier<B> supplier) {
