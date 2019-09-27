@@ -176,12 +176,12 @@ public class RamlHandler {
             apiResource = loader.getResourceAsStream(normalized.substring(apiResourcesRelativePath.length()));
           } else {
             // this normalized path should be controlled carefully since can scan all the classpath.
-            URL classpathResouce = Thread.currentThread().getContextClassLoader().getResource(normalized);
+            URL classpathResouce = Thread.currentThread().getContextClassLoader().getResource(normalized.replace("\\", "/"));
             if (classpathResouce != null) {
               String path = classpathResouce.getPath();
               // if is a console resource, the API raml or a resource of that raml
               if (CONSOLE_RESOURCE_PATTERN.asPredicate().test(path) ||
-                acceptedClasspathResources.stream().anyMatch(path::endsWith) ||
+                acceptedClasspathResources.stream().anyMatch(cr -> path.endsWith(cr.replace("\\", "/"))) ||
                 path.endsWith(api.getLocation())) {
                 apiResource = classpathResouce.openStream();
               }
@@ -264,7 +264,7 @@ public class RamlHandler {
     if (resourceRelativePath.endsWith("/") && resourceRelativePath.length() > 1) {
       resourceRelativePath = resourceRelativePath.substring(0, resourceRelativePath.length() - 1);
     }
-    return resourceRelativePath;
+    return Paths.get(resourceRelativePath).toString();
   }
 
   private String findRootRaml(String ramlLocation) {
