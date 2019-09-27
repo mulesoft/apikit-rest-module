@@ -195,5 +195,24 @@
 	  <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::containsString('Required query parameter sized not specified')]"/>
 	</munit:validation>
   </munit:test>
+
+  <munit:test name="query-parameter-without-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-params-main"/>
+      <munit:enable-flow-source value="get:\resource:query-params-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains?sized">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload]"
+      is="#[MunitTools::containsString('Invalid value \'\' for query parameter sized. expected minLength: 2, actual: 0')]"/>
+    </munit:validation>
+  </munit:test>
 </mule>
 
