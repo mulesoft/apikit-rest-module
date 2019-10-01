@@ -8,6 +8,8 @@ package org.mule.module.apikit.validation.body.schema.v1.cache;
 
 import static org.mule.module.apikit.validation.body.schema.v1.cache.SchemaCacheUtils.resolveJsonSchema;
 
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 import org.mule.module.apikit.uri.URICoder;
 import org.mule.apikit.model.ApiSpecification;
@@ -38,7 +40,7 @@ public class JsonSchemaCacheLoader extends CacheLoader<String, JsonSchema> {
   }
 
   @Override
-  public JsonSchema load(String schemaLocation) throws IOException {
+  public JsonSchema load(String schemaLocation) {
     Object pathOrSchema = resolveJsonSchema(schemaLocation, api);
 
     if (pathOrSchema == null) {
@@ -95,12 +97,11 @@ public class JsonSchemaCacheLoader extends CacheLoader<String, JsonSchema> {
   }
 
   private URL openSchema(String path) {
-    URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-    if (url == null && path.startsWith("/")) {
-      return openSchema(path.substring(1));
+    try {
+      return Paths.get(path).toUri().toURL();
+    } catch (MalformedURLException e) {
+      return null;
     }
-
-    return url;
   }
 
   private JsonSchema parseSchema(JsonNode jsonNode) {
