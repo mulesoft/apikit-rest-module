@@ -26,6 +26,7 @@ import org.mule.parser.service.ParserMode;
 import org.mule.runtime.core.api.MuleContext;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.junit.BeforeClass;
@@ -154,14 +155,12 @@ public class RamlHandlerTestCase {
 
   @Test
   public void ramlWithSpacesInPath() {
-    RamlHandler handler;
-
-    handler = createRamlHandler("unit/space in path api/api.raml", true, ParserMode.RAML);
+    RamlHandler handler = createRamlHandler("unit/space in path api/api.raml", true, ParserMode.RAML);
     ApiSpecification api = handler.getApi();
     assertEquals(RAML, api.getType());
-    assertTrue(api.getAllReferences().stream().anyMatch(ref -> ref.endsWith("unit/space in path api/example.json".replaceAll("/",
-        File.separator))));
-    assertTrue(api.getAllReferences().stream().anyMatch(ref -> ref.endsWith("unit/space in path api/more spaces/schema.json".replaceAll("/", File.separator))));
+    List<String> refs = api.getAllReferences();
+    assertTrue(refs.stream().anyMatch(ref -> ref.endsWith("unit/space%20in%20path%20api/example.json")));
+    assertTrue(refs.stream().anyMatch(ref -> ref.endsWith("unit/space%20in%20path%20api/more%20spaces/schema.json")));
   }
 
   private <A extends Exception, B> void assertException(String message, Supplier<B> supplier) {
