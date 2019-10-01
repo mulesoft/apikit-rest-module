@@ -20,6 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -104,10 +106,19 @@ public class RamlHandler {
   }
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
-    return api.getAllReferences().stream().map(ref -> {
+    return api.getAllReferences().stream()
+            .map(ref -> {
+              try {
+                return Paths.get(new URI(ref)).toString();
+              } catch (Exception e) {
+                return ref;
+              }
+            })
+            .map(ref -> {
               int index = ref.indexOf(apiResourcesRelativePath);
               return index > 0 ? ref.substring(index) : ref;
-            }).collect(toList());
+            })
+            .collect(toList());
   }
 
   /**
