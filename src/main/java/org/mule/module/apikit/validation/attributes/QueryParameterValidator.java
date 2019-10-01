@@ -97,7 +97,7 @@ public class QueryParameterValidator {
     StringBuilder builder = new StringBuilder();
 
     paramValues.forEach(paramValue -> {
-      final String value = String.valueOf(paramValue);
+      String value = String.valueOf(paramValue);
       builder.append("- ");
       builder.append(expected.surroundWithQuotesIfNeeded(value));
       builder.append("\n");
@@ -107,6 +107,7 @@ public class QueryParameterValidator {
   }
 
   private void validateQueryParam(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
+    paramValue = paramValue != null ? paramValue : "";
     validate(paramKey,expected,expected.surroundWithQuotesIfNeeded(paramValue));
   }
 
