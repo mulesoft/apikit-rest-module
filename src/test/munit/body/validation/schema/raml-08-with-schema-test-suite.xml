@@ -25,8 +25,18 @@
     </munit:parameterizations>
   </munit:config>
 
+  <!--TODO: READ THIS-->
+  <!--TODO: READ THIS-->
+  <!--TODO: READ THIS-->
+  <!--TODO: READ THIS-->
+  <!--TODO: TESTS IGNORED IN WINDOWS DUE TO THIS RAML PARSER ISSUE: https://github.com/raml-org/raml-java-parser/issues/661-->
+  <!--TODO: READ THIS-->
+  <!--TODO: READ THIS-->
+  <!--TODO: READ THIS-->
+  <!--TODO: READ THIS-->
+
   <!--JSON schemas-->
-  <munit:test name="raml-08-put-valid-json">
+  <munit:test name="raml-08-put-valid-json" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\schema"/>
@@ -46,7 +56,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-invalid-json">
+  <munit:test name="raml-08-put-invalid-json" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\schema"/>
@@ -65,7 +75,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-valid-json-schema-with-refs">
+  <munit:test name="raml-08-put-valid-json-schema-with-refs" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\include-json-schema"/>
@@ -85,7 +95,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-invalid-json-schema-with-refs">
+  <munit:test name="raml-08-put-invalid-json-schema-with-refs" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\include-json-schema"/>
@@ -104,7 +114,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-valid-json-global-schema">
+  <munit:test name="raml-08-put-valid-json-global-schema" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\global-json-schema"/>
@@ -124,7 +134,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-invalid-json-global-schema">
+  <munit:test name="raml-08-put-invalid-json-global-schema" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\global-json-schema"/>
@@ -143,7 +153,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-valid-json-include-global-schema">
+  <munit:test name="raml-08-put-valid-json-include-global-schema" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\global-json-schema-include"/>
@@ -163,7 +173,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-invalid-json-include-global-schema">
+  <munit:test name="raml-08-put-invalid-json-include-global-schema" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\global-json-schema-include"/>
@@ -183,7 +193,7 @@
   </munit:test>
 
   <!--XML schemas-->
-  <munit:test name="raml-08-put-valid-xml">
+  <munit:test name="raml-08-put-valid-xml" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\schema"/>
@@ -210,7 +220,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-invalid-xml">
+  <munit:test name="raml-08-put-invalid-xml" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\schema"/>
@@ -235,7 +245,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-valid-xml-xsd-with-refs">
+  <munit:test name="raml-08-put-valid-xml-xsd-with-refs" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\xsd-with-include"/>
@@ -256,7 +266,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-invalid-xml-xsd-with-refs">
+  <munit:test name="raml-08-put-invalid-xml-xsd-with-refs" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\xsd-with-include"/>
@@ -276,7 +286,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-08-put-valid-xml-global-xsd-with-refs">
+  <munit:test name="raml-08-put-valid-xml-global-xsd-with-refs" ignore="#[p(‘os.name’) contains 'windows']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="raml-08-with-schema-main"/>
       <munit:enable-flow-source value="put:\global-xsd-schema-include"/>
