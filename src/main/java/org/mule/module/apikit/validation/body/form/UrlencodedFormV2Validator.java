@@ -9,6 +9,8 @@ package org.mule.module.apikit.validation.body.form;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
+import org.mule.module.apikit.api.validation.ValidBody;
+import org.mule.module.apikit.validation.body.PayloadValidator;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
 import org.mule.apikit.model.MimeType;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -22,8 +24,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
+import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsTypedValue;
 
-public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
+public class UrlencodedFormV2Validator implements PayloadValidator {
 
   protected static final Logger logger = LoggerFactory.getLogger(UrlencodedFormV2Validator.class);
   Map<String, List<Parameter>> formParameters;
@@ -37,13 +40,13 @@ public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
   }
 
   @Override
-  public TypedValue validate(TypedValue originalPayload) throws BadRequestException {
-
+  public ValidBody validate(Object payload, String charset) throws BadRequestException {
+    TypedValue originalPayload = getPayloadAsTypedValue(payload);
     MultiMap<String, String> requestMap = dataWeaveTransformer.getMultiMapFromPayload(originalPayload);
 
     validateAndAddDefaults(requestMap);
 
-    return dataWeaveTransformer.getXFormUrlEncodedStream(requestMap, originalPayload.getDataType());
+    return new ValidBody(dataWeaveTransformer.getXFormUrlEncodedStream(requestMap, originalPayload.getDataType()));
   }
 
   private void validateAndAddDefaults(MultiMap<String, String> requestMap) throws InvalidFormParameterException {

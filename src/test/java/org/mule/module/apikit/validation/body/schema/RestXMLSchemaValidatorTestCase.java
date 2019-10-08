@@ -92,9 +92,9 @@ public class RestXMLSchemaValidatorTestCase {
     when(ramlHandler.getApi()).thenReturn(api);
     config.setRamlHandler(ramlHandler);
 
-    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), errorTypeRepository);
+    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), errorTypeRepository, "application/xml");
 
-    xmlValidator.validate(payload);
+    xmlValidator.validate(payload, null);
   }
 
   @Test(expected = TypedException.class)
@@ -107,8 +107,8 @@ public class RestXMLSchemaValidatorTestCase {
     when(ramlHandler.getApi()).thenReturn(api);
     config.setRamlHandler(ramlHandler);
 
-    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath));
-    xmlValidator.validate(payload);
+    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), null, "application/xml");
+    xmlValidator.validate(payload, null);
   }
 
   @Test
@@ -132,8 +132,8 @@ public class RestXMLSchemaValidatorTestCase {
     when(ramlHandler.getApi()).thenReturn(api);
     config.setRamlHandler(ramlHandler);
 
-    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), errorTypeRepository);
+    RestXmlSchemaValidator xmlValidator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), errorTypeRepository, "application/xml");
 
-    xmlValidator.validate(payload);
+    xmlValidator.validate(payload, null);
   }
 }

@@ -12,9 +12,13 @@ package org.mule.module.apikit.validation.body.form;
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
+import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsTypedValue;
+
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
+import org.mule.module.apikit.api.validation.ValidBody;
+import org.mule.module.apikit.validation.body.PayloadValidator;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.MultiMap;
@@ -23,7 +27,7 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 import java.util.List;
 import java.util.Map;
 
-public class UrlencodedFormV1Validator implements FormValidator<TypedValue> {
+public class UrlencodedFormV1Validator implements PayloadValidator {
 
   Map<String, List<Parameter>> formParameters;
   DataWeaveTransformer dataWeaveTransformer;
@@ -34,7 +38,8 @@ public class UrlencodedFormV1Validator implements FormValidator<TypedValue> {
   }
 
   @Override
-  public TypedValue validate(TypedValue originalPayload) throws BadRequestException {
+  public ValidBody validate(Object payload, String charset) throws BadRequestException {
+    TypedValue originalPayload = getPayloadAsTypedValue(payload);
     MultiMap<String, String> requestMap = dataWeaveTransformer.getMultiMapFromPayload(originalPayload);
 
     for (String expectedKey : formParameters.keySet()) {
@@ -63,7 +68,7 @@ public class UrlencodedFormV1Validator implements FormValidator<TypedValue> {
         }
       }
     }
-    return dataWeaveTransformer.getXFormUrlEncodedStream(requestMap, originalPayload.getDataType());
+    return new ValidBody(dataWeaveTransformer.getXFormUrlEncodedStream(requestMap, originalPayload.getDataType()));
   }
 
 

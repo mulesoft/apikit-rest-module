@@ -32,6 +32,26 @@ import org.mockito.Mockito;
 
 public class RestJsonSchemaValidatorTestCase {
 
+  private static final String VALIDATION_ERRORS_EXPECTED_MESSAGE =
+      "error: object has missing required properties ([\"name\"])\n" +
+          "    level: \"error\"\n" +
+          "    schema: {\"loadingURI\":\"#\",\"pointer\":\"\"}\n" +
+          "    instance: {\"pointer\":\"\"}\n" +
+          "    domain: \"validation\"\n" +
+          "    keyword: \"properties\"\n" +
+          "    required: [\"name\"]\n" +
+          "    missing: [\"name\"]\n" +
+          "\n" +
+          "error: instance type (integer) does not match any allowed primitive type (allowed: [\"string\"])\n" +
+          "    level: \"error\"\n" +
+          "    schema: {\"loadingURI\":\"#\",\"pointer\":\"/properties/id\"}\n" +
+          "    instance: {\"pointer\":\"/id\"}\n" +
+          "    domain: \"validation\"\n" +
+          "    keyword: \"type\"\n" +
+          "    found: \"integer\"\n" +
+          "    expected: [\"string\"]\n" +
+          "\n";
+
   private static final String jsonSchema = "{\n" +
       "    \"$schema\" : \"http://json-schema.org/draft-03/schema\",\n" +
       "    \"title\": \"League Schema\",\n" +
@@ -52,6 +72,7 @@ public class RestJsonSchemaValidatorTestCase {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
 
   @BeforeClass
   public static void mockApi() {
@@ -98,9 +119,9 @@ public class RestJsonSchemaValidatorTestCase {
     config.setRamlHandler(ramlHandler);
 
     RestJsonSchemaValidator JsonSchemavalidator =
-        new RestJsonSchemaValidator(config.getJsonSchema("/leagues,POST,application/json").getSchema());
+        new RestJsonSchemaValidator(config.getJsonSchema("/leagues,POST,application/json").getSchema(), "application/json");
 
-    JsonSchemavalidator.validate(payload);
+    JsonSchemavalidator.validate(payload, null);
   }
 
   @Test(expected = BadRequestException.class)
@@ -113,8 +134,8 @@ public class RestJsonSchemaValidatorTestCase {
     config.setRamlHandler(ramlHandler);
 
     RestJsonSchemaValidator jsonSchemavalidator =
-        new RestJsonSchemaValidator(config.getJsonSchema("/leagues,POST,application/json").getSchema());
-    jsonSchemavalidator.validate(payload);
+        new RestJsonSchemaValidator(config.getJsonSchema("/leagues,POST,application/json").getSchema(), "application/json");
+    jsonSchemavalidator.validate(payload, null);
   }
 
   @Test
@@ -130,27 +151,7 @@ public class RestJsonSchemaValidatorTestCase {
     config.setRamlHandler(ramlHandler);
 
     RestJsonSchemaValidator jsonSchemavalidator =
-        new RestJsonSchemaValidator(config.getJsonSchema("/leagues,POST,application/json").getSchema());
-    jsonSchemavalidator.validate(payload);
+        new RestJsonSchemaValidator(config.getJsonSchema("/leagues,POST,application/json").getSchema(), "application/json");
+    jsonSchemavalidator.validate(payload, null);
   }
-
-  private static final String VALIDATION_ERRORS_EXPECTED_MESSAGE =
-      "error: object has missing required properties ([\"name\"])\n" +
-          "    level: \"error\"\n" +
-          "    schema: {\"loadingURI\":\"#\",\"pointer\":\"\"}\n" +
-          "    instance: {\"pointer\":\"\"}\n" +
-          "    domain: \"validation\"\n" +
-          "    keyword: \"properties\"\n" +
-          "    required: [\"name\"]\n" +
-          "    missing: [\"name\"]\n" +
-          "\n" +
-          "error: instance type (integer) does not match any allowed primitive type (allowed: [\"string\"])\n" +
-          "    level: \"error\"\n" +
-          "    schema: {\"loadingURI\":\"#\",\"pointer\":\"/properties/id\"}\n" +
-          "    instance: {\"pointer\":\"/id\"}\n" +
-          "    domain: \"validation\"\n" +
-          "    keyword: \"type\"\n" +
-          "    found: \"integer\"\n" +
-          "    expected: [\"string\"]\n" +
-          "\n";
 }

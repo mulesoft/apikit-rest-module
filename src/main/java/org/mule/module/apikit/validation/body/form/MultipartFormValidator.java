@@ -7,9 +7,13 @@
 package org.mule.module.apikit.validation.body.form;
 
 
+import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsTypedValue;
+
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
+import org.mule.module.apikit.api.validation.ValidBody;
+import org.mule.module.apikit.validation.body.PayloadValidator;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -18,7 +22,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-public class MultipartFormValidator implements FormValidator<TypedValue> {
+public class MultipartFormValidator implements PayloadValidator {
 
   Map<String, List<Parameter>> formParameters;
 
@@ -27,9 +31,10 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
   }
 
   @Override
-  public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
-    final InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
-    final String boundary = getBoundary(originalPayload);
+  public ValidBody validate(Object payload, String charset) throws InvalidFormParameterException {
+    TypedValue originalPayload = getPayloadAsTypedValue(payload);
+    InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
+    String boundary = getBoundary(originalPayload);
     MultipartFormData multipartFormData = new MultipartFormData(inputStream, boundary);
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormData.getFormDataParameters();
 
@@ -50,7 +55,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
       }
     }
 
-    return TypedValue.of(multipartFormData.build());
+    return new ValidBody(TypedValue.of(multipartFormData.build()));
   }
 
   private String getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {

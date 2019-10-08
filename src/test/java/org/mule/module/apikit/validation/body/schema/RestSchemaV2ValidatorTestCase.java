@@ -30,7 +30,7 @@ public class RestSchemaV2ValidatorTestCase {
     expected.expectMessage("Message 0\nMessage 1");
 
     MimeType mimeTypeMock = mock(MimeType.class);
-    RestSchemaV2Validator validator = new RestSchemaV2Validator(mimeTypeMock);
+    RestSchemaV2Validator validator = new RestSchemaV2Validator(mimeTypeMock, "application/json");
 
     ApiValidationResult validationResult0 = mock(ApiValidationResult.class);
     when(validationResult0.getMessage()).thenReturn("Message 0");
@@ -40,7 +40,29 @@ public class RestSchemaV2ValidatorTestCase {
     when(mimeTypeMock.validate(any(String.class))).thenReturn(
         asList(validationResult0, validationResult1));
 
-    validator.validate("{\"test\" : \"test\"}");
+    validator.validate("{\"test\" : \"test\"}", null);
+  }
+
+  @Test
+  public void requestMimeTypeJsonWithBodyXml() throws Exception {
+    expected.expect(BadRequestException.class);
+    expected.expectMessage("Request Mime Type : application/json, body Type xml");
+
+    MimeType mimeTypeMock = mock(MimeType.class);
+    RestSchemaV2Validator validator = new RestSchemaV2Validator(mimeTypeMock, "application/json");
+
+    validator.validate("<>", null);
+  }
+
+  @Test
+  public void requestMimeTypeXMLWithBodyJSON() throws Exception {
+    expected.expect(BadRequestException.class);
+    expected.expectMessage("Request Mime Type : application/xml, body Type json");
+
+    MimeType mimeTypeMock = mock(MimeType.class);
+    RestSchemaV2Validator validator = new RestSchemaV2Validator(mimeTypeMock, "application/xml");
+
+    validator.validate("{}", null);
   }
 
 }

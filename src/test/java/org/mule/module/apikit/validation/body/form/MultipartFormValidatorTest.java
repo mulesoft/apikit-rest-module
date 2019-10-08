@@ -11,6 +11,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mule.module.apikit.StreamUtils;
+import org.mule.module.apikit.api.validation.ValidBody;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -46,8 +47,8 @@ public class MultipartFormValidatorTest {
   public void validate() throws Exception {
     MultipartFormValidator multipartFormValidator = new MultipartFormValidator(Collections.emptyMap());
     TypedValue typedValue = getTypedValue();
-    TypedValue  validatedTypedValue = multipartFormValidator.validate(typedValue);
-    InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
+    ValidBody validatedTypedValue = multipartFormValidator.validate(typedValue, null);
+    InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue.getPayload()));
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
 

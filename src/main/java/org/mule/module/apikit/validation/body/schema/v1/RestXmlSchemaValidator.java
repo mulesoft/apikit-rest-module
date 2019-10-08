@@ -20,7 +20,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 
 import org.mule.module.apikit.api.exception.BadRequestException;
-import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
+import org.mule.module.apikit.api.validation.ValidBody;
+import org.mule.module.apikit.validation.body.schema.RestSchemaValidator;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.core.api.util.xmlsecurity.XMLSecureFactories;
 import org.slf4j.Logger;
@@ -29,24 +30,21 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class RestXmlSchemaValidator implements IRestSchemaValidatorStrategy {
+public class RestXmlSchemaValidator extends RestSchemaValidator {
 
   protected static final Logger logger = LoggerFactory.getLogger(RestXmlSchemaValidator.class);
 
   private Schema schema;
   private ErrorTypeRepository errorTypeRepository;
 
-  public RestXmlSchemaValidator(Schema schemaCache) {
-    this(schemaCache, null);
-  }
-
-  public RestXmlSchemaValidator(Schema schemaCache, ErrorTypeRepository errorTypeRepository) {
+  public RestXmlSchemaValidator(Schema schemaCache, ErrorTypeRepository errorTypeRepository, String requestMimeType) {
+    super(requestMimeType);
     this.schema = schemaCache;
     this.errorTypeRepository = errorTypeRepository;
   }
 
   @Override
-  public void validate(String payload) throws BadRequestException {
+  public ValidBody validate(String payload) throws BadRequestException {
     try {
       Document data = loadDocument(new StringReader(payload));
 
@@ -57,7 +55,7 @@ public class RestXmlSchemaValidator implements IRestSchemaValidatorStrategy {
       logger.info("Schema validation failed: " + e.getMessage());
       throw throwErrorType(new BadRequestException(e), errorTypeRepository);
     }
-
+    return new ValidBody(payload);
   }
 
   private static Document loadDocument(Reader reader) throws IOException {

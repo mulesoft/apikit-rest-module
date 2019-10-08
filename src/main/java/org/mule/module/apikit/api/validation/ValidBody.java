@@ -11,41 +11,16 @@ import org.mule.runtime.api.metadata.TypedValue;
 public class ValidBody {
 
   private Object payload;
-  private Object formParameters;
 
   public ValidBody(Object payload) {
-    setPayload(payload);
-  }
-
-  public TypedValue getPayloadAsTypedValue() {
-    if (payload instanceof TypedValue) {
-      return (TypedValue) payload;
-    }
-    return new TypedValue(payload, null);
-  }
-
-  public Object getPayload() {
-    if (formParameters == null) {
-      if (payload instanceof TypedValue) {
-        return ((TypedValue) payload).getValue();
-      } else {
-        return payload;
-      }
-    } else {
-      return formParameters;
-    }
-  }
-
-  public void setPayload(Object payload) {
     this.payload = payload;
   }
 
-  public void setFormParameters(Object formParameters) {
-    if (formParameters instanceof TypedValue) {
-      this.formParameters = ((TypedValue) formParameters).getValue();
+  public Object getPayload() {
+    if (payload instanceof TypedValue) {
+      return ((TypedValue) payload).getValue();
     } else {
-      this.formParameters = formParameters;
+      return payload;
     }
   }
-
 }

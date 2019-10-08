@@ -14,7 +14,8 @@ import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import org.apache.commons.lang.StringUtils;
 import org.mule.module.apikit.api.exception.BadRequestException;
-import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
+import org.mule.module.apikit.api.validation.ValidBody;
+import org.mule.module.apikit.validation.body.schema.RestSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.io.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ import java.util.Iterator;
 import static com.github.fge.jsonschema.core.report.LogLevel.ERROR;
 import static com.github.fge.jsonschema.core.report.LogLevel.WARNING;
 
-public class RestJsonSchemaValidator implements IRestSchemaValidatorStrategy {
+public class RestJsonSchemaValidator extends RestSchemaValidator {
 
   private static final String JSON_SCHEMA_FAIL_ON_WARNING_KEY = "raml.json_schema.fail_on_warning";
 
@@ -34,13 +35,13 @@ public class RestJsonSchemaValidator implements IRestSchemaValidatorStrategy {
 
   private JsonSchema jsonSchema;
 
-  public RestJsonSchemaValidator(JsonSchema jsonSchema) {
+  public RestJsonSchemaValidator(JsonSchema jsonSchema, String requestMimeType) {
+    super(requestMimeType);
     this.jsonSchema = jsonSchema;
   }
 
   @Override
-  public void validate(String payload) throws BadRequestException {
-
+  public ValidBody validate(String payload) throws BadRequestException {
     if (jsonSchema != null) {
       JsonNode data;
       ProcessingReport report;
@@ -76,5 +77,6 @@ public class RestJsonSchemaValidator implements IRestSchemaValidatorStrategy {
         throw new BadRequestException(message);
       }
     }
+    return new ValidBody(payload);
   }
 }
