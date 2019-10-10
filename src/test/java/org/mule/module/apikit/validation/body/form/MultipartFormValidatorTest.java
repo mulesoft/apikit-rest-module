@@ -7,7 +7,6 @@
 package org.mule.module.apikit.validation.body.form;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mule.module.apikit.StreamUtils;
@@ -16,12 +15,11 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.OptionalLong;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class MultipartFormValidatorTest {
 
@@ -48,13 +46,14 @@ public class MultipartFormValidatorTest {
     TypedValue typedValue = getTypedValue();
     TypedValue  validatedTypedValue = multipartFormValidator.validate(typedValue);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
+    assertEquals(typedValue.getByteLength().getAsLong(),validatedTypedValue.getByteLength().getAsLong());
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
 
   private TypedValue getTypedValue() {
     DataType dataType = DataType.builder(DataType.INPUT_STREAM).mediaType(MediaType.parse("multipart/form-data; boundary=\""+BOUNDARY+"\"")).build();
-    InputStream in = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
-    return new TypedValue(in,dataType);
+    ByteArrayInputStream in = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
+    return new TypedValue(in,dataType, OptionalLong.of(in.available()));
   }
 
 }

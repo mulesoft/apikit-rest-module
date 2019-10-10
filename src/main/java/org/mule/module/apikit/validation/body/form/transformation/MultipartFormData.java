@@ -37,6 +37,7 @@ public class MultipartFormData {
   private final String boundary;
   private MultipartStream multipartStream;
   private MultipartEntityBuilder multipartEntityBuilder;
+  private HttpEntity multipartFormEntity;
 
   public MultipartFormData(InputStream inputStream, String boundary){
     this.inputStream = inputStream;
@@ -117,19 +118,25 @@ public class MultipartFormData {
     multipartEntityBuilder.addTextBody(key,value);
   }
 
-  public InputStream build() throws InvalidFormParameterException{
-    try {
-      return getInputStream(multipartEntityBuilder.build());
-    } catch (IOException e) {
-      throw new InvalidFormParameterException(e);
-    }
+  public MultipartFormData build() {
+    this.multipartFormEntity =multipartEntityBuilder.build();
+    return this;
+  }
+
+  public long getLength(){
+    return this.multipartFormEntity.getContentLength();
   }
 
   //TODO: Enhance performance using piped streams
-  private InputStream getInputStream(HttpEntity httpEntity) throws IOException {
-    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-    httpEntity.writeTo(outStream);
-    outStream.flush();
-    return new ByteArrayInputStream(outStream.toByteArray());
+  public InputStream getInputStream() throws InvalidFormParameterException {
+    try {
+      this.multipartFormEntity.getContent();
+      ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+      this.multipartFormEntity.writeTo(outStream);
+      outStream.flush();
+      return new ByteArrayInputStream(outStream.toByteArray());
+    } catch (IOException e) {
+        throw new InvalidFormParameterException(e);
+    }
   }
 }

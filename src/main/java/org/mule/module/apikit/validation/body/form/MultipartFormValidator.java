@@ -12,11 +12,13 @@ import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
+import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalLong;
 
 public class MultipartFormValidator implements FormValidator<TypedValue> {
 
@@ -50,7 +52,9 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
       }
     }
 
-    return TypedValue.of(multipartFormData.build());
+    multipartFormData.build();
+    InputStream is = multipartFormData.getInputStream();
+    return new TypedValue(is, DataType.fromObject(is), OptionalLong.of(multipartFormData.getLength()));
   }
 
   private String getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
