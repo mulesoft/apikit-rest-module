@@ -127,10 +127,13 @@ public class MultipartFormData {
     return this.multipartFormEntity.getContentLength();
   }
 
+  public String getContentType(){
+    return this.multipartFormEntity.getContentType().getValue();
+  }
+
   //TODO: Enhance performance using piped streams
   public InputStream getInputStream() throws InvalidFormParameterException {
     try {
-      this.multipartFormEntity.getContent();
       ByteArrayOutputStream outStream = new ByteArrayOutputStream();
       this.multipartFormEntity.writeTo(outStream);
       outStream.flush();

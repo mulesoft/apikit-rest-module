@@ -13,7 +13,10 @@ import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
 import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.metadata.DataTypeBuilder;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.core.internal.metadata.DefaultDataTypeBuilder;
 
 import java.io.InputStream;
 import java.util.List;
@@ -52,9 +55,14 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
       }
     }
 
-    multipartFormData.build();
+    return getTypedValue(multipartFormData.build());
+  }
+
+  private TypedValue getTypedValue(MultipartFormData multipartFormData) throws InvalidFormParameterException {
     InputStream is = multipartFormData.getInputStream();
-    return new TypedValue(is, DataType.fromObject(is), OptionalLong.of(multipartFormData.getLength()));
+    final MediaType mediaType = MediaType.parse(multipartFormData.getContentType());
+    DataType dataType = DataType.builder(DataType.INPUT_STREAM).mediaType(mediaType).build();
+    return new TypedValue(is, dataType, OptionalLong.of(multipartFormData.getLength()));
   }
 
   private String getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
