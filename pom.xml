@@ -31,7 +31,7 @@
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.0.1-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.0.2-SNAPSHOT</parser.service.version>
 
 
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
