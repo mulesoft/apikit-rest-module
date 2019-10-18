@@ -95,7 +95,7 @@
 	<munit:validation>
 	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
 	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('expected minLength: 2, actual: 1')]"/>
+							   is="#[MunitTools::containsString('Invalid value \'1\' for query parameter sized')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -121,7 +121,7 @@
 	<munit:validation>
 	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
 	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('expected maxLength: 3, actual: 17')]"/>
+							   is="#[MunitTools::containsString('Invalid value \'more-than-3-chars\' for query parameter sized')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -147,7 +147,7 @@
 	<munit:validation>
 	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
 	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('string [1st] does not match pattern ^[^0-9]')]"/>
+							   is="#[MunitTools::containsString('Invalid value \'1st\' for query parameter sized.')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -174,7 +174,7 @@
 	<munit:validation>
 	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
 	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('expected type: Boolean, found: String')]"/>
+							   is="#[MunitTools::containsString('Invalid value \'yes\' for query parameter optionalBoolean.')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -196,13 +196,13 @@
 	</munit:validation>
   </munit:test>
 
-  <munit:test name="query-parameter-without-value">
+  <munit:test name="query-parameter-string-non-nullable-without-value">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="query-params-main"/>
-      <munit:enable-flow-source value="get:\resource:query-params-config"/>
+      <munit:enable-flow-source value="get:\testNull:query-params-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/query-params/constrains?sized">
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nonNullableString">
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
         </http:response-validator>
@@ -211,8 +211,142 @@
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
       <munit-tools:assert-that expression="#[output text/plain --- payload]"
-      is="#[MunitTools::containsString('Invalid value \'\' for query parameter sized. expected minLength: 2, actual: 0')]"/>
+      is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableString')]"/>
     </munit:validation>
   </munit:test>
+
+	<munit:test name="query-parameter-string-non-nullable-with-null-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nonNullableString=null">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.nonNullableString]"
+				is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-parameter-string-nullable-without-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nullableString">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.nullableString]"
+				is="#[MunitTools::nullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-parameter-string-nullable-with-null-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nullableString=null">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.nullableString]"
+				is="#[MunitTools::nullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-parameter-integer-nullable-with-null-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nullableInteger=null">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.nullableInteger]"
+				is="#[MunitTools::nullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-parameter-integer-nullable-without-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nullableInteger">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.nullableInteger]"
+				is="#[MunitTools::nullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-parameter-integer-non-nullable-without-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nonNullableInteger">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+			<munit-tools:assert-that expression="#[output text/plain --- payload]"
+				is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableInteger')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-parameter-integer-non-nullable-with-null-value">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nonNullableInteger=null">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+			<munit-tools:assert-that expression="#[output text/plain --- payload]"
+				is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableInteger')]"/>
+		</munit:validation>
+	</munit:test>
+
 </mule>
 
