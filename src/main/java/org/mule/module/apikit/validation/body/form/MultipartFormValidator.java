@@ -11,12 +11,11 @@ import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
+import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataBuilder;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
 import org.mule.runtime.api.metadata.DataType;
-import org.mule.runtime.api.metadata.DataTypeBuilder;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
-import org.mule.runtime.core.internal.metadata.DefaultDataTypeBuilder;
 
 import java.io.InputStream;
 import java.util.List;
@@ -35,8 +34,8 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
   public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
     final InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
     final String boundary = getBoundary(originalPayload);
-    MultipartFormData multipartFormData = new MultipartFormData(inputStream, boundary);
-    Map<String, MultipartFormDataParameter> actualParameters = multipartFormData.getFormDataParameters();
+    MultipartFormDataBuilder multipartFormDataBuilder = new MultipartFormDataBuilder(inputStream, boundary);
+    Map<String, MultipartFormDataParameter> actualParameters = multipartFormDataBuilder.getFormDataParameters();
 
     for (String expectedKey : formParameters.keySet()) {
       List<Parameter> params = formParameters.get(expectedKey);
@@ -47,7 +46,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
           multipartFormDataParameter.validate(expected);
         } else {
           if (expected.getDefaultValue() != null) {
-            multipartFormData.addDefault(expectedKey,expected.getDefaultValue());
+            multipartFormDataBuilder.addDefault(expectedKey,expected.getDefaultValue());
           } else if (expected.isRequired()) {
             throw new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified");
           }
@@ -55,7 +54,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
       }
     }
 
-    return getTypedValue(multipartFormData.build());
+    return getTypedValue(multipartFormDataBuilder.build());
   }
 
   private TypedValue getTypedValue(MultipartFormData multipartFormData) throws InvalidFormParameterException {
