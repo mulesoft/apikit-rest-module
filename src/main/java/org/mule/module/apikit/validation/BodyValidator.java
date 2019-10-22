@@ -118,14 +118,16 @@ public class BodyValidator {
   }
 
   private static ValidBody validateAsMultiPart(ValidationConfig config, MimeType mimeType,
-      String requestMimeTypeName,
-      Object payload) throws BadRequestException {
+                                               String requestMimeTypeName,
+                                               Object payload)
+      throws BadRequestException {
     ValidBody validBody = new ValidBody(payload);
 
     if (mimeType.getFormParameters() != null) {
       TypedValue payloadAsTypedValue = validBody.getPayloadAsTypedValue();
       FormValidator formValidator = new FormValidatorFactory(mimeType,
-          config.getExpressionManager()).createValidator(requestMimeTypeName, config.isParserV2());
+                                                             config.getExpressionManager()).createValidator(requestMimeTypeName,
+                                                                                                            config.isParserV2());
       validBody.setFormParameters(formValidator.validate(payloadAsTypedValue));
     }
     return validBody;

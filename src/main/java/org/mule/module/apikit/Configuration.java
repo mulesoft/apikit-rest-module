@@ -301,7 +301,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
 
   @Override
   public ApiType getType() {
-    return ramlHandler.getApi().getType() ;
+    return ramlHandler.getApi().getType();
   }
 
   @Override

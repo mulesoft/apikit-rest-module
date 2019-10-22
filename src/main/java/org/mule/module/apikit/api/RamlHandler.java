@@ -79,7 +79,8 @@ public class RamlHandler {
   public RamlHandler(String ramlLocation,
                      boolean keepApiBaseUri,
                      ErrorTypeRepository errorTypeRepository,
-                     ParserMode parserMode) throws IOException {
+                     ParserMode parserMode)
+      throws IOException {
     this.keepApiBaseUri = keepApiBaseUri;
     String rootRamlLocation = findRootRaml(ramlLocation);
 
@@ -107,18 +108,18 @@ public class RamlHandler {
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
     return api.getAllReferences().stream()
-            .map(ref -> {
-              try {
-                return Paths.get(new URI(ref)).toString();
-              } catch (Exception e) {
-                return ref;
-              }
-            })
-            .map(ref -> {
-              int index = ref.indexOf(apiResourcesRelativePath);
-              return index > 0 ? ref.substring(index) : ref;
-            })
-            .collect(toList());
+        .map(ref -> {
+          try {
+            return Paths.get(new URI(ref)).toString();
+          } catch (Exception e) {
+            return ref;
+          }
+        })
+        .map(ref -> {
+          int index = ref.indexOf(apiResourcesRelativePath);
+          return index > 0 ? ref.substring(index) : ref;
+        })
+        .collect(toList());
   }
 
   /**
@@ -183,8 +184,8 @@ public class RamlHandler {
               String path = classpathResouce.getPath();
               // if is a console resource, the API raml or a resource of that raml
               if (CONSOLE_RESOURCE_PATTERN.asPredicate().test(path) ||
-                acceptedClasspathResources.stream().anyMatch(cr -> path.endsWith(cr.replace("\\", "/"))) ||
-                path.endsWith(api.getLocation())) {
+                  acceptedClasspathResources.stream().anyMatch(cr -> path.endsWith(cr.replace("\\", "/"))) ||
+                  path.endsWith(api.getLocation())) {
                 apiResource = classpathResouce.openStream();
               }
             }
@@ -229,10 +230,10 @@ public class RamlHandler {
     String postalistenerPath = UrlUtils.getListenerPath(listenerPath, requestPath);
 
     return (getApiVendor().equals(RAML_08) &&
-      (postalistenerPath.equals(requestPath) || (postalistenerPath + "/").equals(requestPath)) &&
-      ActionType.GET.toString().equals(method.toUpperCase()) &&
-      (APPLICATION_RAML.equals(acceptHeader)
-        || queryString.equals(RAML_QUERY_STRING)));
+        (postalistenerPath.equals(requestPath) || (postalistenerPath + "/").equals(requestPath)) &&
+        ActionType.GET.toString().equals(method.toUpperCase()) &&
+        (APPLICATION_RAML.equals(acceptHeader)
+            || queryString.equals(RAML_QUERY_STRING)));
   }
 
   public boolean isRequestingRamlV2(String listenerPath, String requestPath, String queryString, String method) {
@@ -249,8 +250,8 @@ public class RamlHandler {
       }
     }
     return getApiVendor().equals(RAML_10) && queryString.equals(RAML_QUERY_STRING)
-      && ActionType.GET.toString().equals(method.toUpperCase())
-      && requestPath.startsWith(resourcesFullPath);
+        && ActionType.GET.toString().equals(method.toUpperCase())
+        && requestPath.startsWith(resourcesFullPath);
   }
 
   private String uriPathToResourcePath(String resourceRelativePath) {

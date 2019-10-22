@@ -26,8 +26,8 @@ import static org.junit.Assert.*;
 public class MultipartFormValidatorTest {
 
   public static final String BOUNDARY = "test";
-  public static final String MULTIPART_BODY=
-          "--test\r\n" +
+  public static final String MULTIPART_BODY =
+      "--test\r\n" +
           "Content-Disposition: form-data; name=\"file\" filename=\"fileName\"\r\n" +
           "Content-Transfer-Encoding: 8bit\r\n" +
           "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
@@ -46,15 +46,16 @@ public class MultipartFormValidatorTest {
   public void validate() throws Exception {
     MultipartFormValidator multipartFormValidator = new MultipartFormValidator(Collections.emptyMap());
     TypedValue typedValue = getTypedValue();
-    TypedValue  validatedTypedValue = multipartFormValidator.validate(typedValue);
+    TypedValue validatedTypedValue = multipartFormValidator.validate(typedValue);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
 
   private TypedValue getTypedValue() {
-    DataType dataType = DataType.builder(DataType.INPUT_STREAM).mediaType(MediaType.parse("multipart/form-data; boundary=\""+BOUNDARY+"\"")).build();
+    DataType dataType = DataType.builder(DataType.INPUT_STREAM)
+        .mediaType(MediaType.parse("multipart/form-data; boundary=\"" + BOUNDARY + "\"")).build();
     InputStream in = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
-    return new TypedValue(in,dataType);
+    return new TypedValue(in, dataType);
   }
 
 }
