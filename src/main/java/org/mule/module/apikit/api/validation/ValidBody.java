@@ -40,6 +40,7 @@ public class ValidBody {
     this.payload = payload;
   }
 
+  @Deprecated
   public void setFormParameters(Object formParameters) {
     if (formParameters instanceof TypedValue) {
       this.formParameters = ((TypedValue) formParameters).getValue();
