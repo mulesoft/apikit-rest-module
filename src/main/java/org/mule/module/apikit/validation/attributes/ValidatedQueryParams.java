@@ -9,6 +9,7 @@ package org.mule.module.apikit.validation.attributes;
 import org.mule.runtime.api.util.MultiMap;
 
 public class ValidatedQueryParams {
+
   private final MultiMap<String, String> queryParams;
   private final String queryString;
 

@@ -38,7 +38,7 @@ public class RestSchemaV2ValidatorTestCase {
     when(validationResult1.getMessage()).thenReturn("Message 1");
 
     when(mimeTypeMock.validate(any(String.class))).thenReturn(
-        asList(validationResult0, validationResult1));
+                                                              asList(validationResult0, validationResult1));
 
     validator.validate("{\"test\" : \"test\"}");
   }

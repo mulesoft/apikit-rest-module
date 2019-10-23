@@ -25,6 +25,7 @@ import static org.mule.module.apikit.helpers.AttributesHelper.*;
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
 
 public class QueryParameterValidator {
+
   private final Action action;
 
   public QueryParameterValidator(Action action) {
@@ -32,7 +33,7 @@ public class QueryParameterValidator {
   }
 
   public ValidatedQueryParams validate(MultiMap<String, String> queryParams, String queryString,
-                                     boolean queryParamsStrictValidation)
+                                       boolean queryParamsStrictValidation)
       throws InvalidQueryParameterException {
 
     if (queryParamsStrictValidation) {
@@ -84,7 +85,8 @@ public class QueryParameterValidator {
       List<String> values = queryParams.getAll(queryParamKey);
       if (values.isEmpty() && queryParam.getValue().getDefaultValue() != null) {
         String queryParamDefaultValue = queryParam.getValue().getDefaultValue();
-        queryStringWithDefaults = addQueryString(queryStringWithDefaults, queryParams.size(), queryParamKey, queryParamDefaultValue);
+        queryStringWithDefaults =
+            addQueryString(queryStringWithDefaults, queryParams.size(), queryParamKey, queryParamDefaultValue);
         queryParamsWithDefaults = addParam(queryParamsWithDefaults, queryParamKey, queryParamDefaultValue);
       }
     }
@@ -115,7 +117,9 @@ public class QueryParameterValidator {
     validate(paramKey, expected, builder.toString());
   }
 
-  private void validateQueryParam(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition, List<String> values) throws InvalidQueryParameterException {
+  private void validateQueryParam(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition,
+                                  List<String> values)
+      throws InvalidQueryParameterException {
     for (String value : values) {
       // if query param value is "null" as String, we check if that query param is nullable(in raml nil type)
       if ("null".equals(value) && isNullable(parameterDefinition)) {
@@ -134,7 +138,7 @@ public class QueryParameterValidator {
   private void validate(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
       String msg = String.format("\"Invalid value '%s' for query parameter %s. %s\"",
-              paramValue, paramKey, expected.message(paramValue));
+                                 paramValue, paramKey, expected.message(paramValue));
       throw new InvalidQueryParameterException(msg);
     }
   }

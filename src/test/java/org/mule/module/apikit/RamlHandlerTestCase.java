@@ -134,7 +134,7 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("unit/raml-handler/amf-only.raml", keepRamlBaseUri, ParserMode.AMF);
     assertEquals(AMF, handler.getApi().getType());
 
-    assertException( "Unresolved reference 'SomeTypo'",
+    assertException("Unresolved reference 'SomeTypo'",
                     () -> createRamlHandler("unit/raml-handler/failing-api.raml", keepRamlBaseUri, ParserMode.AMF));
   }
 

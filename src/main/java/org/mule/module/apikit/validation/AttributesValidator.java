@@ -43,8 +43,9 @@ public class AttributesValidator {
     // queryparams
     QueryParameterValidator queryParamValidator =
         new QueryParameterValidator(action);
-    ValidatedQueryParams validatedQueryParams = queryParamValidator.validate(attributes.getQueryParams(), attributes.getQueryString(),
-                                               config.isQueryParamsStrictValidation());
+    ValidatedQueryParams validatedQueryParams =
+        queryParamValidator.validate(attributes.getQueryParams(), attributes.getQueryString(),
+                                     config.isQueryParamsStrictValidation());
     queryParams = validatedQueryParams.getQueryParams();
     queryString = validatedQueryParams.getQueryString();
 
@@ -55,7 +56,8 @@ public class AttributesValidator {
     headers = headersValidator.getNewHeaders();
 
     // regenerate attributes
-    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString, new MultiMap<>(attributes.getUriParams()));
+    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString,
+                                          new MultiMap<>(attributes.getUriParams()));
   }
 
 }
