@@ -8,7 +8,7 @@
 						  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
   <apikit:config name="query-params-config" raml="munit/parameters/query-parameters.raml"
-				 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+				 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
   <flow name="query-params-main">
 	<http:listener config-ref="http-listener-simple" path="/query-params/*">
@@ -32,5 +32,13 @@
   <flow name="get:\constrains:query-params-config">
 	<set-payload value="#[output application/json --- attributes.queryParams]"/>
   </flow>
+
+	<flow name="get:\testNull:query-params-config">
+		<set-payload value="#[output application/json --- attributes.queryParams]"/>
+	</flow>
+
+	<flow name="get:\defaultValue:query-params-config">
+		<set-payload value="#[output application/json --- attributes.queryParams]"/>
+	</flow>
 
 </mule>

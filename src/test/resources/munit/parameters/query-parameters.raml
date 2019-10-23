@@ -41,3 +41,27 @@ baseUri: http://localhost:8081
         optionalBoolean:
             type: boolean
             required: false
+
+/testNull:
+  get:
+    queryParameters:
+        nullableString:
+            type: string | nil
+            required: false
+        nonNullableString:
+            type: string
+            required: false
+        nullableInteger:
+            type: integer | nil
+            required: false
+        nonNullableInteger:
+            type: integer
+            required: false
+
+/defaultValue:
+  get:
+    queryParameters:
+        withDefaultValue:
+          type: string
+          required: false
+          default: 'f4l0p4'

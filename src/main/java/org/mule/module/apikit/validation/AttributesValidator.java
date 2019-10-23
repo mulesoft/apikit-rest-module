@@ -17,6 +17,7 @@ import org.mule.module.apikit.validation.attributes.QueryStringValidator;
 import org.mule.module.apikit.validation.attributes.UriParametersValidator;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Resource;
+import org.mule.module.apikit.validation.attributes.ValidatedQueryParams;
 import org.mule.runtime.api.util.MultiMap;
 
 public class AttributesValidator {
@@ -42,10 +43,10 @@ public class AttributesValidator {
     // queryparams
     QueryParameterValidator queryParamValidator =
         new QueryParameterValidator(action);
-    queryParamValidator.validateAndAddDefaults(attributes.getQueryParams(), attributes.getQueryString(),
+    ValidatedQueryParams validatedQueryParams = queryParamValidator.validate(attributes.getQueryParams(), attributes.getQueryString(),
                                                config.isQueryParamsStrictValidation());
-    queryParams = queryParamValidator.getQueryParams();
-    queryString = queryParamValidator.getQueryString();
+    queryParams = validatedQueryParams.getQueryParams();
+    queryString = validatedQueryParams.getQueryString();
 
     // headers
     HeadersValidator headersValidator = new HeadersValidator();
