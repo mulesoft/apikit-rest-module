@@ -30,8 +30,8 @@ public class Utils {
     @Override
     public Message getErrorMessage() {
       return Message.builder()
-        .payload(new TypedValue<>("Payload value", DataType.STRING))
-        .attributes(new TypedValue<>("Attributes value", DataType.STRING)).build();
+          .payload(new TypedValue<>("Payload value", DataType.STRING))
+          .attributes(new TypedValue<>("Attributes value", DataType.STRING)).build();
     }
   }
 

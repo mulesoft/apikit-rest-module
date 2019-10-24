@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class MultipartFormData {
+
   private final HttpEntity multipartFormEntity;
 
   public MultipartFormData(HttpEntity multipartFormEntity) {
@@ -33,11 +34,11 @@ public class MultipartFormData {
     }
   }
 
-  public long getLength(){
+  public long getLength() {
     return this.multipartFormEntity.getContentLength();
   }
 
-  public String getContentType(){
+  public String getContentType() {
     return this.multipartFormEntity.getContentType().getValue();
   }
 }

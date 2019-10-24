@@ -83,7 +83,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     this.routingStrategy = getRoutingStrategy();
     if (!url.isPresent()) {
       LOGGER
-        .error("There was an error retrieving Api Source. Console will work only if the keepApiBaseUri property is set to true.");
+          .error("There was an error retrieving Api Source. Console will work only if the keepApiBaseUri property is set to true.");
     } else {
       String configName = configuration.getName();
       registry.setApiSource(configName, url.get().toString().replace("*", ""));
@@ -93,9 +93,8 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
   private FlowRoutingStrategy getRoutingStrategy() {
     // privileged API should only be used in MULE 4.1.x versions, since 4.2.0 we start using the ExecutableComponent public API
-    return MuleVersionUtils.isAtLeast("4.2.0") ?
-      new DefaultFlowRoutingStrategy() :
-      new PrivilegedFlowRoutingStrategy(getLocation());
+    return MuleVersionUtils.isAtLeast("4.2.0") ? new DefaultFlowRoutingStrategy()
+        : new PrivilegedFlowRoutingStrategy(getLocation());
   }
 
   @Override
@@ -135,7 +134,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   }
 
   private Publisher<CoreEvent> doRoute(CoreEvent mainEvent, Configuration config, HttpRequestAttributes attributes)
-    throws MuleRestException {
+      throws MuleRestException {
 
     String path = getRequestPath(attributes);
     // Get uriPattern, uriResolver, and the resolvedVariables
@@ -149,15 +148,15 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     CoreEvent subflowEvent = buildSubflowEvent(mainEvent, request, config.getOutboundHeadersMapName());
 
     return Mono.from(routingStrategy.route(flow, mainEvent, subflowEvent))
-      .map(result -> {
-        if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
-          // If status code is missing, a default one is added
-          RamlHandler handler = config.getRamlHandler();
-          String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
-          return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
-        }
-        return result;
-      });
+        .map(result -> {
+          if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
+            // If status code is missing, a default one is added
+            RamlHandler handler = config.getRamlHandler();
+            String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
+            return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
+          }
+          return result;
+        });
   }
 
   private String getRequestPath(HttpRequestAttributes attributes) {

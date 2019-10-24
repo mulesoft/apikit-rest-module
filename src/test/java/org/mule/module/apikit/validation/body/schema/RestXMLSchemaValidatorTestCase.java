@@ -117,10 +117,10 @@ public class RestXMLSchemaValidatorTestCase {
     expectedException.expectMessage("An internal operation failed.");
 
     String payload = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-      + "<!DOCTYPE leagues [\n"
-      + "<!ENTITY mls \"MLS\">"
-      + "]>\n"
-      + "<league xmlns=\"http://mulesoft.com/schemas/soccer\"><name>&mls;</name></league>";
+        + "<!DOCTYPE leagues [\n"
+        + "<!ENTITY mls \"MLS\">"
+        + "]>\n"
+        + "<league xmlns=\"http://mulesoft.com/schemas/soccer\"><name>&mls;</name></league>";
 
     String schemaPath = "/leagues,POST,application/xml";
 

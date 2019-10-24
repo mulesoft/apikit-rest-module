@@ -29,7 +29,7 @@ public class StreamUtils {
     return count;
   }
 
-  public static InputStream unwrapCursorStream(Object object){
+  public static InputStream unwrapCursorStream(Object object) {
     return object instanceof CursorProvider ? ((CursorStreamProvider) object).openCursor() : ((InputStream) object);
   }
 }
