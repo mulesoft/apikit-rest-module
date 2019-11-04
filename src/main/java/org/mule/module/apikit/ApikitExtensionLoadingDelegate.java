@@ -21,6 +21,7 @@ import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectType;
+import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.meta.model.ImportedTypeModel;
 import org.mule.runtime.api.meta.model.ParameterDslConfiguration;
@@ -137,13 +138,16 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
 
   // This code below is taken from ConfigRefDeclarationEnricher in mule-extensions-api
   private void addConfigRefParameter(OperationDeclarer declarer, final StereotypeModel apikitConfigStereotype) {
-    declarer.onDefaultParameterGroup().withRequiredParameter("config-ref")
-        .describedAs("The name of the configuration to be used to execute this component")
-        .withRole(BEHAVIOUR)
-        .withDsl(ParameterDslConfiguration.builder().allowsReferences(true).build())
-        .ofType(buildConfigRefType())
-        .withExpressionSupport(NOT_SUPPORTED)
-        .withAllowedStereotypes(singletonList(apikitConfigStereotype));
+    // For plder versions, the generated schema would have the parameter duplicated
+    if (MuleVersionUtils.isAtLeast("4.3.0")) {
+      declarer.onDefaultParameterGroup().withRequiredParameter("config-ref")
+          .describedAs("The name of the configuration to be used to execute this component")
+          .withRole(BEHAVIOUR)
+          .withDsl(ParameterDslConfiguration.builder().allowsReferences(true).build())
+          .ofType(buildConfigRefType())
+          .withExpressionSupport(NOT_SUPPORTED)
+          .withAllowedStereotypes(singletonList(apikitConfigStereotype));
+    }
   }
 
   private static MetadataType buildConfigRefType() {
