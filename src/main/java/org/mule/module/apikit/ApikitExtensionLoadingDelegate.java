@@ -93,7 +93,7 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .withErrorModel(notImplementedErrorModel);
     extensionDeclarer.withImportedType(new ImportedTypeModel((ObjectType) typeLoader.load(HttpRequestAttributes.class)));
 
-    //config
+    // config
     final StereotypeModel apikitConfigStereotype = newStereotype("APIKIT_CONFIG", EXTENSION_NAMESPACE).withParent(CONFIG).build();
     ConfigurationDeclarer apikitConfig = extensionDeclarer.withConfig("config")
         .describedAs(PREFIX_NAME)
@@ -112,9 +112,11 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .ofType(typeLoader.load(String.class));
     parameterGroupDeclarer.withOptionalParameter("parser").defaultingTo(AUTO).ofType(typeLoader.load(ParserMode.class));
     parameterGroupDeclarer.withOptionalParameter("flowMappings")
+        .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
+        .withExpressionSupport(NOT_SUPPORTED)
         .ofType(typeBuilder.arrayType().of(typeLoader.load(FlowMapping.class)).build());
 
-    //router
+    // router
     OperationDeclarer routerDeclarer = apikitConfig.withOperation("router");
     routerDeclarer.withOutputAttributes().ofType(typeLoader.load(HttpRequestAttributes.class));
     routerDeclarer.withOutput().ofType(typeLoader.load(Object.class));
@@ -125,7 +127,7 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .withErrorModel(notFoundErrorModel);
     addConfigRefParameter(routerDeclarer, apikitConfigStereotype);
 
-    //console
+    // console
     OperationDeclarer consoleDeclarer = apikitConfig.withOperation("console");
     consoleDeclarer.withOutputAttributes().ofType(typeLoader.load(HttpRequestAttributes.class));
     consoleDeclarer.withOutput().ofType(typeLoader.load(Object.class));
