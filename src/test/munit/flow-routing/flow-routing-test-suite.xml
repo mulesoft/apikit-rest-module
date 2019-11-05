@@ -25,7 +25,7 @@
       <http:request method="GET" config-ref="http-requester-simple" path="/api/getOrder"/>
     </munit:execution>
     <munit:validation>
-      <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('2006-03-03')]"/>
+      <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('routing with flow mapping')]"/>
     </munit:validation>
   </munit:test>
 
