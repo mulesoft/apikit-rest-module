@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="query-string-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
+
+  <munit:test name="valid-query-string">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\simple-type:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-string/simple-type?property=ARG"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="valid-empty-query-string">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\simple-type:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-string/simple-type"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="array-property">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\type-property-array:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-string/type-property-array?property1=ARG,USA"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="array-repeated-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\type-property-array:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-string/type-property-array?property1=ARG&amp;property1=USA"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="required-array-not-present">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\type-property-array:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/query-string/type-property-array">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="valid-object-property">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\type-property-type:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path='/query-string/type-property-type?property=%7B%22firstname%22%3A%22Lionel%22%2C%22lastname%22%3A%22Messi%22%7D'/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-nickname-object-property">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="query-string-main"/>
+      <munit:enable-flow-source value="get:\type-property-type:query-string-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path='/query-string/type-property-type?property=%7B%22firstname%22%3A%22Lionel%22%2C%22nickname%22%3A%22Messi%22%7D'>
+      <http:response-validator>
+        <http:success-status-code-validator values="1..500"/>
+      </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>
+
