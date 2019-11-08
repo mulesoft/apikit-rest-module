@@ -44,15 +44,6 @@ public class MimeTypeParser {
     // !a dictionary of all the parameters for the media range
     Map<String, String> params;
 
-    @Override
-    public String toString() {
-      StringBuffer s = new StringBuffer("('" + type + "', '" + subType
-          + "', {");
-      for (String k : params.keySet()) {
-        s.append("'" + k + "':'" + params.get(k) + "',");
-      }
-      return s.append("})").toString();
-    }
   }
 
   /**
@@ -151,54 +142,6 @@ public class MimeTypeParser {
    * the best match, or (-1, 0) if no match was found. Just as for
    * quality_parsed(), 'parsed_ranges' must be a list of parsed media ranges.
    *
-   * @param target
-   * @param parsedRanges
-   * @deprecated used by apikit1 only
-   */
-  protected static FitnessAndQuality fitnessAndQualityParsed(MediaType target,
-                                                             List<MediaType> parsedRanges) {
-    int bestFitness = -1;
-    float bestFitQ = 0;
-
-    for (MediaType range : parsedRanges) {
-      if ((target.type().equals(range.type()) || range.type().equals("*") || target.type()
-          .equals("*"))
-          && (target.subtype().equals(range.subtype())
-              || range.subtype().equals("*") || target.subtype()
-                  .equals("*"))) {
-        for (String k : target.parameters().keySet()) {
-          int paramMatches = 0;
-          if (!k.equals("q") && range.parameters().containsKey(k)
-              && target.parameters().get(k).equals(range.parameters().get(k))) {
-            paramMatches++;
-          }
-          int fitness = (range.type().equals(target.type())) ? 100 : 0;
-          fitness += (range.subtype().equals(target.subtype())) ? 10 : 0;
-          fitness += paramMatches;
-          if (fitness > bestFitness) {
-            bestFitness = fitness;
-
-            if (range.type().equals("*") && range.subtype().equals("*")) {
-              bestFitQ = NumberUtils
-                  .toFloat(target.parameters().get("q").get(0), 0);
-            } else {
-              bestFitQ = NumberUtils
-                  .toFloat(range.parameters().get("q").get(0), 0);
-            }
-          }
-        }
-      }
-    }
-    return new FitnessAndQuality(bestFitness, bestFitQ);
-  }
-
-  /**
-   * Find the best match for a given mimeType against a list of media_ranges
-   * that have already been parsed by MimeParse.parseMediaRange(). Returns a
-   * tuple of the fitness value and the value of the 'q' quality parameter of
-   * the best match, or (-1, 0) if no match was found. Just as for
-   * quality_parsed(), 'parsed_ranges' must be a list of parsed media ranges.
-   *
    * @param mimeType
    * @param parsedRanges
    */
@@ -238,17 +181,6 @@ public class MimeTypeParser {
       }
     }
     return new FitnessAndQuality(bestFitness, bestFitQ);
-  }
-
-
-  /**
-   * Returns the quality 'q' of a mime-type when compared against the
-   * mediaRanges in ranges. For example:
-   *
-   * @param mimeType
-   */
-  public static float quality(MediaType mimeType, List<MediaType> ranges) {
-    return fitnessAndQualityParsed(mimeType, ranges).quality;
   }
 
   /**

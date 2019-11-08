@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Christophe Lauret
  * @version 30 December 2008
  */
-public interface Token extends Expandable {
+public interface Token {
 
   /**
    * The expression corresponding to this token.
@@ -49,6 +49,6 @@ public interface Token extends Expandable {
    * @param values   The variables mapped to their values as a result of resolution.
    * @return <code>true</code> this operation was successful; <code>false</code> otherwise.
    */
-  public boolean resolve(String expanded, Map<Variable, Object> values);
+  boolean resolve(String expanded, Map<Variable, Object> values);
 
 }

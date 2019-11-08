@@ -16,8 +16,6 @@ import java.util.Set;
 
 public class UrlUtils {
 
-  public static final String HTTP_CONTEXT_PATH_PROPERTY = "http.context.path";
-  public static final String HTTP_REQUEST_PATH_PROPERTY = "http.request.path";
   private static final String BIND_TO_ALL_INTERFACES = "0.0.0.0";
   public static final String FULL_DOMAIN = "fullDomain";
   private static final String HTTP = "http://";
@@ -129,21 +127,6 @@ public class UrlUtils {
       }
     }
     return StringUtils.join(split, "\n");
-  }
-
-  public static String getCompletePathFromBasePathAndPath(String basePath, String listenerPath) {
-
-    String path = basePath + listenerPath;
-    if (path.contains("/*")) {
-      path = path.replace("/*", "");
-    }
-    if (path.endsWith("/")) {
-      path = path.substring(0, path.length() - 1);
-    }
-    if (path.contains("//")) {
-      path = path.replace("//", "/");
-    }
-    return path;
   }
 
   /**

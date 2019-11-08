@@ -62,20 +62,6 @@ public class URICoder {
    * Encodes the string as valid URI fragment.
    * <p/>
    * <p/>
-   * This encoder will encode all but unreserved characters using the escape sequence.
-   *
-   * @param s The string to encode.
-   * @return The corresponding encoded string.
-   */
-  public static String encode(String s) {
-    // invoke encode method with character that we know does not require encoding
-    return encode(s, '0');
-  }
-
-  /**
-   * Encodes the string as valid URI fragment.
-   * <p/>
-   * <p/>
    * This encoder will percent-encode all but <em>unreserved</em> characters.
    *
    * @param s     The string to encode.
@@ -91,28 +77,6 @@ public class URICoder {
     return ascii ? encode_ASCII(s, chars) : encode_UTF8(s, chars);
   }
 
-  public static String encode(String s, char c) {
-    return encode(s, new HashSet<Character>(Arrays.asList(c)));
-  }
-
-  /**
-   * Encodes the string as valid URI fragment.
-   * <p/>
-   * <p/>
-   * This encoder will percent-encode all but <em>illegal</em> characters.
-   *
-   * @param s The string to encode.
-   * @return The corresponding encoded string.
-   */
-  public static String minimalEncode(String s) {
-    if (s.length() == 0) {
-      return s;
-    }
-    // Check whether we need to use UTF-8 encoder
-    boolean ascii = isASCII(s);
-    return ascii ? minimalEncode_ASCII(s) : minimalEncode_UTF8(s);
-  }
-
   /**
    * Encodes a string containing only ASCII characters.
    *
@@ -123,23 +87,6 @@ public class URICoder {
     StringBuffer sb = new StringBuffer();
     for (char c : s.toCharArray()) {
       if (isUnreserved((int) c) || chars.contains(c)) {
-        sb.append(c);
-      } else {
-        appendEscape(sb, c);
-      }
-    }
-    return sb.toString();
-  }
-
-  /**
-   * Encodes a string containing only ASCII characters.
-   *
-   * @param s The string the encode (assuming ASCII characters only)
-   */
-  private static String minimalEncode_ASCII(String s) {
-    StringBuffer sb = new StringBuffer();
-    for (char c : s.toCharArray()) {
-      if (isLegal((int) c)) {
         sb.append(c);
       } else {
         appendEscape(sb, c);
@@ -164,29 +111,6 @@ public class URICoder {
     while (bb.hasRemaining()) {
       int b = bb.get() & 0xff;
       if (isUnreserved(b) || chars.contains((char) b)) {
-        sb.append((char) b);
-      } else {
-        appendEscape(sb, (byte) b);
-      }
-    }
-    return sb.toString();
-  }
-
-  /**
-   * Encodes a string containing non ASCII characters using an UTF-8 encoder.
-   *
-   * @param s The string the encode (assuming ASCII characters only)
-   */
-  private static String minimalEncode_UTF8(String s) {
-    // TODO: Normalizer requires Java 6!
-    String n = (Normalizer.isNormalized(s, Form.NFKC)) ? s : Normalizer.normalize(s, Form.NFKC);
-    // convert String to UTF-8
-    ByteBuffer bb = UTF8.encode(n);
-    // URI encode
-    StringBuffer sb = new StringBuffer();
-    while (bb.hasRemaining()) {
-      int b = bb.get() & 0xff;
-      if (isLegal(b)) {
         sb.append((char) b);
       } else {
         appendEscape(sb, (byte) b);
@@ -302,26 +226,6 @@ public class URICoder {
       return true;
     }
     return false;
-  }
-
-  /**
-   * Indicates whether the character is unreserved of not.
-   *
-   * @param c The character to test.
-   * @return <code>true</code> if it is unreserved; <code>false</code> otherwise.
-   */
-  private static boolean isLegal(int c) {
-    // Filter out [<26]
-    if (c < '&' && c != '!' && c != '#' && c != '$') {
-      return false;
-      // Filter out [>7A]
-    } else if (c >= '{' && c != '~') {
-      return false;
-      // Handle [26-7A] and '!', '#', '$', '~'
-    } else if (c == '`' || c == '<' || c == '>' || c == '\\' || c == '^') {
-      return false;
-    }
-    return true;
   }
 
   /**

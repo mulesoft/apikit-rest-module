@@ -33,18 +33,6 @@ public class TokenVariable extends TokenBase implements Token, Matchable {
   /**
    * Creates a new variable token.
    *
-   * @param exp The expression to create a new.
-   * @throws NullPointerException       If the specified expression is <code>null</code>.
-   * @throws URITemplateSyntaxException If the specified expression could not be parsed as a
-   *                                    variable.
-   */
-  public TokenVariable(String exp) throws NullPointerException, URITemplateSyntaxException {
-    this(Variable.parse(exp));
-  }
-
-  /**
-   * Creates a new variable token.
-   *
    * @param var The variable this token corresponds to.
    * @throws NullPointerException If the specified text is <code>null</code>.
    */
@@ -60,13 +48,6 @@ public class TokenVariable extends TokenBase implements Token, Matchable {
    */
   public Variable getVariable() {
     return _var;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public String expand(Parameters variables) {
-    return URICoder.encode(this._var.value(variables));
   }
 
   /**
