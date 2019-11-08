@@ -64,13 +64,16 @@ public class QueryParameterValidator {
 
     for (String paramKey : queryParams.keySet()) {
       Parameter parameterDefinition = queryParamsDefinition.get(paramKey);
-      List<String> values = queryParams.getAll(paramKey);
+      // additional query param not defined in raml(wont validate), or defined in queryString
+      if (parameterDefinition != null) {
+        List<String> values = queryParams.getAll(paramKey);
 
-      if (parameterDefinition.isArray()) {
-        validateQueryParamArray(paramKey, parameterDefinition, values);
+        if (parameterDefinition.isArray()) {
+          validateQueryParamArray(paramKey, parameterDefinition, values);
 
-      } else {
-        validateQueryParam(queryParams, paramKey, parameterDefinition, values);
+        } else {
+          validateQueryParam(queryParams, paramKey, parameterDefinition, values);
+        }
       }
     }
   }
