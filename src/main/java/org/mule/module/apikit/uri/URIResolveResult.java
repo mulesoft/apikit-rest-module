@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mule.module.apikit.api.uri.ResolvedVariables;
-import org.mule.module.apikit.api.uri.URIPattern;
 
 
 /**
@@ -41,18 +40,6 @@ public class URIResolveResult implements ResolvedVariables {
   private final Map<String, Object> values = new HashMap<String, Object>();
 
   /**
-   * The URI Pattern that was used to produce this result.
-   */
-  private final URIPattern _pattern;
-
-  /**
-   * Constructs an instance of this class with fields initialised to null.
-   */
-  public URIResolveResult(URIPattern pattern) {
-    this._pattern = pattern;
-  }
-
-  /**
    * {@inheritDoc}
    */
   public Set<String> names() {
@@ -75,16 +62,6 @@ public class URIResolveResult implements ResolvedVariables {
     return this._status;
   }
 
-  /**
-   * Returns the URI Pattern that was used to produce this result.
-   *
-   * @return The URI Pattern that was used to produce this result.
-   */
-  public URIPattern getURIPattern() {
-    return this._pattern;
-  }
-
-  // protected methods --------------------------------------------------------
 
   /**
    * Puts the object corresponding to the specified variable name in the results.

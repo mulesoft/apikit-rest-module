@@ -139,26 +139,6 @@ public class Variable {
   }
 
   /**
-   * Indicate that the variable's value should be processed as a list ("@") or an associative array ("%").
-   * <p/>
-   * This variable type is an instruction for the template processor.
-   * It is not an indication of language or implementation type.
-   */
-  public enum Modifier {
-
-    /**
-     * Indicate that this variable can be expanded as a simple string (default).
-     */
-    SUBSTRING,
-
-    /**
-     * Indicate that this variable can be expanded as a list of strings.
-     */
-    REMAINDER;
-
-  }
-
-  /**
    * The pattern for a valid variable name.
    */
   private static final Pattern VALID_NAME = Pattern.compile("[a-zA-Z0-9][\\w.-]*");
@@ -216,17 +196,6 @@ public class Variable {
    * Creates a new untyped variable.
    *
    * @param name The name of the variable.
-   * @throws NullPointerException     If the specified name is <code>null</code>.
-   * @throws IllegalArgumentException If the specified name is an empty string.
-   */
-  public Variable(String name) throws NullPointerException, IllegalArgumentException {
-    this(name, DEFAULT_VALUE);
-  }
-
-  /**
-   * Creates a new untyped variable.
-   *
-   * @param name The name of the variable.
    * @param def  The default value for the variable.
    * @throws NullPointerException     If the specified name is <code>null</code>.
    * @throws IllegalArgumentException If the specified name is an empty string.
@@ -256,29 +225,6 @@ public class Variable {
     this._default = def != null ? def : DEFAULT_VALUE;
     this._type = type;
     this._form = Form.getType(name);
-  }
-
-  /**
-   * Creates a new variable.
-   *
-   * @param name The name of the variable.
-   * @param def  The default value for the variable.
-   * @param type The type of the variable.
-   * @throws NullPointerException     If the specified name is <code>null</code>.
-   * @throws IllegalArgumentException If the specified name is an empty string.
-   */
-  public Variable(String name, String def, VariableType type, Form form) throws NullPointerException,
-      IllegalArgumentException {
-    if (name == null) {
-      throw new NullPointerException("A variable must have a name, but was null");
-    }
-    if (!isValidName(name)) {
-      throw new IllegalArgumentException("The variable name is not valid: " + name);
-    }
-    this._name = name;
-    this._default = def != null ? def : DEFAULT_VALUE;
-    this._type = type;
-    this._form = form != null ? form : Form.STRING;
   }
 
   /**
@@ -328,51 +274,6 @@ public class Variable {
     return this._type;
   }
 
-  /**
-   * Returns the expanded value of this variable.
-   * <p/>
-   * If no value is specified for this variable, the default value is returned instead.
-   *
-   * @param parameters The parameters.
-   * @return The value.
-   */
-  public String value(Parameters parameters) {
-    // No parameters: use the default value
-    if (parameters == null) {
-      return this._default;
-    }
-    // Defined and non-empty: return the first value in a list
-    String[] values = parameters.getValues(this._name);
-    if (values != null && values.length > 0 && values[0] != null) {
-      return values[0];
-      // Empty or undefined: return the default
-    } else {
-      return this._default;
-    }
-  }
-
-  /**
-   * Returns the expanded value of this variable.
-   * <p/>
-   * If no values are specified for this variable, the default value is returned instead.
-   *
-   * @param parameters The parameters.
-   * @return The values.
-   */
-  public String[] values(Parameters parameters) {
-    // No parameters: use the default value
-    if (parameters == null) {
-      return new String[] {this._default};
-    }
-    String[] values = parameters.getValues(this._name);
-    // Defined and non-empty: return the values
-    if (values != null && values.length > 0 && values[0].length() > 0) {
-      return values;
-      // Empty or undefined: return the default
-    } else {
-      return new String[] {this._default};
-    }
-  }
 
   /**
    * {@inheritDoc}

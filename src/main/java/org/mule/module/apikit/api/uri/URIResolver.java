@@ -142,7 +142,7 @@ public class URIResolver {
    * @return The URI pattern that best matches the given URI.
    */
   public URIResolveResult resolve(URIPattern pattern) {
-    URIResolveResult result = new URIResolveResult(pattern);
+    URIResolveResult result = new URIResolveResult();
     Matcher mx = pattern.pattern().matcher(this._uri);
     boolean match = mx.matches();
     // it is an error condition if there is no match
