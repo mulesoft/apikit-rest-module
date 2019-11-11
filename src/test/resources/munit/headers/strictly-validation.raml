@@ -1,0 +1,12 @@
+#%RAML 1.0
+title: Strict validation Test Case
+
+/resource:
+  get:
+    headers:
+      header1:
+        type: string
+        required: false
+      x-correlation-id:
+        type: string
+        required: false

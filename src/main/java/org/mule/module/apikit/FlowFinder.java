@@ -51,11 +51,6 @@ public class FlowFinder {
   private ErrorTypeRepository errorTypeRepository;
 
   public FlowFinder(RamlHandler ramlHandler, String configName, ConfigurationComponentLocator locator,
-                    List<FlowMapping> flowMappings) {
-    this(ramlHandler, configName, locator, flowMappings, null);
-  }
-
-  public FlowFinder(RamlHandler ramlHandler, String configName, ConfigurationComponentLocator locator,
                     List<FlowMapping> flowMappings, ErrorTypeRepository errorTypeRepository) {
     this.ramlHandler = ramlHandler;
     this.configName = configName;

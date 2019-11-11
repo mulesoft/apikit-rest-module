@@ -24,7 +24,7 @@ import java.util.OptionalLong;
 
 public class MultipartFormValidator implements FormValidator<TypedValue> {
 
-  Map<String, List<Parameter>> formParameters;
+  private final Map<String, List<Parameter>> formParameters;
 
   public MultipartFormValidator(Map<String, List<Parameter>> formParameters) {
     this.formParameters = formParameters;
