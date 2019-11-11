@@ -8,21 +8,12 @@ package org.mule.module.apikit.helpers;
 
 
 import org.mule.extension.http.api.HttpRequestAttributes;
-import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.event.CoreEvent;
-
-import java.nio.charset.Charset;
-import java.util.Optional;
 
 public class EventHelper {
 
   private EventHelper() {
 
-  }
-
-  public static <T> Charset getEncoding(TypedValue<T> payload) {
-    Optional<Charset> payloadEncoding = payload.getDataType().getMediaType().getCharset();
-    return payloadEncoding.orElse(Charset.defaultCharset());// TODO Should we get default charset from mule?
   }
 
   public static HttpRequestAttributes getHttpRequestAttributes(CoreEvent event) {

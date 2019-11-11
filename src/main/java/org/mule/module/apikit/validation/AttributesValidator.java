@@ -22,15 +22,13 @@ import org.mule.runtime.api.util.MultiMap;
 
 public class AttributesValidator {
 
-  public static HttpRequestAttributes validateAndAddDefaults(HttpRequestAttributes attributes, Resource resource,
+  public static HttpRequestAttributes validateAndAddDefaults(HttpRequestAttributes attributes, Action action,
                                                              ResolvedVariables resolvedVariables, ValidationConfig config)
       throws MuleRestException {
 
     MultiMap<String, String> headers;
     MultiMap<String, String> queryParams;
     String queryString;
-
-    final Action action = resource.getAction(attributes.getMethod().toLowerCase());
 
     // uriparams
     UriParametersValidator uriParametersValidator = new UriParametersValidator(action);
