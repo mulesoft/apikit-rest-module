@@ -8,10 +8,8 @@
 package org.mule.module.apikit.uri;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -38,223 +36,12 @@ import java.util.regex.Pattern;
  * @see <a href="http://lists.w3.org/Archives/Public/uri/2008Sep/0007.html">Re: URI Templates? from
  *      Roy T. Fielding on 2008-09-16 (uri@w3.org)</a>
  */
-public class TokenOperatorPS extends TokenBase implements TokenOperator, Matchable {
-
-  /**
-   * The pattern for the URI defined pchar:
-   * <p/>
-   * <pre>
-   * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-   * pct-encoded = "%" HEXDIG HEXDIG
-   * unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
-   * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-   * </pre>
-   * <p/>
-   * To avoid side-effects with the resolvers non-capturing groups are used.
-   *
-   * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">Uniform Resource Identifier (URI): Generic
-   *      Syntax</a>
-   */
-  protected static final Pattern PCHAR = Pattern
-      .compile("(?:[a-zA-Z_0-9-_.~!$&'()*+,;=:@]|(?:%[0-9A-F]{2}))");
+public class TokenOperatorPS extends TokenBase implements Matchable {
 
   /**
    * The list of operators currently supported.
    */
   public enum Operator {
-
-    /**
-     * The '?' operator for query parameters.
-     * <p/>
-     * Example:
-     * <p/>
-     * <pre>
-     *  undef = null;
-     *  empty = &quot;&quot;;
-     *  x     = &quot;1024&quot;;
-     *  y     = &quot;768&quot;;
-     *
-     * {?x,y}                    ?x=1024&amp;y=768
-     * {?x,y,empty}              ?x=1024&amp;y=768&amp;empty=
-     * {?x,y,undef}              ?x=1024&amp;y=768
-     * </pre>
-     */
-    QUERY_PARAMETER('?') {
-
-      @Override
-      public String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        boolean first = true;
-        for (Variable var : vars) {
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append(first ? '?' : '&');
-              first = false;
-              expansion.append(var.name()).append('=').append(URICoder.encode(value));
-            }
-          }
-        }
-        return expansion.toString();
-      }
-
-      @Override
-      boolean isResolvable(List<Variable> arg0) {
-        return true;
-      }
-
-      @Override
-      boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values) {
-        for (Variable var : vars) {
-          Pattern p = Pattern.compile("(?<=[&?]" + var.namePatternString() + "=)([^&#]*)");
-          Matcher m = p.matcher(value);
-          while (m.find()) {
-            values.put(var, m.group());
-          }
-        }
-        return true;
-      }
-
-      @Override
-      Pattern pattern(List<Variable> vars) {
-        StringBuffer pattern = new StringBuffer();
-        pattern.append("\\?(");
-        for (Variable var : vars) {
-          pattern.append('(');
-          pattern.append(var.namePatternString());
-          pattern.append("=[^&#]*)|");
-        }
-        pattern.append("&)*");
-        return Pattern.compile(pattern.toString());
-      }
-    },
-
-    /**
-     * The ';' operator for path parameters.
-     * <p/>
-     * Example:
-     * <p/>
-     * <pre>
-     *  undef = null;
-     *  empty = &quot;&quot;;
-     *  x     = &quot;1024&quot;;
-     *  y     = &quot;768&quot;;
-     *
-     * {;x,y}                    ;x=1024;y=768
-     * {;x,y,empty}              ;x=1024;y=768;empty
-     * {;x,y,undef}              ;x=1024;y=768
-     * </pre>
-     */
-    PATH_PARAMETER(';') {
-
-      @Override
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Iterator<Variable> i = vars.iterator(); i.hasNext();) {
-          Variable var = i.next();
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append(';');
-              expansion.append(var.name());
-              if (value.length() > 0) {
-                expansion.append('=').append(URICoder.encode(value));
-              }
-            }
-          }
-        }
-        return expansion.toString();
-      }
-
-      @Override
-      boolean isResolvable(List<Variable> vars) {
-        return true;
-      }
-
-      @Override
-      boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values) {
-        for (Variable var : vars) {
-          Pattern p = Pattern.compile("(?<=;" + var.namePatternString() + "=)([^;/?#]*)");
-          Matcher m = p.matcher(value);
-          while (m.find()) {
-            values.put(var, m.group());
-          }
-        }
-        return true;
-      }
-
-      @Override
-      Pattern pattern(List<Variable> vars) {
-        StringBuffer pattern = new StringBuffer();
-        pattern.append("(?:");
-        for (Variable var : vars) {
-          pattern.append("(?:;");
-          pattern.append(var.namePatternString());
-          pattern.append("=[^;/?#]*)|");
-        }
-        pattern.append(";)*");
-        return Pattern.compile(pattern.toString());
-      }
-    },
-
-    /**
-     * The '/' operator for path segments.
-     * <p/>
-     * Example:
-     * <p/>
-     * <pre>
-     *  list  = [ &quot;val1&quot;, &quot;val2&quot;, &quot;val3&quot; ];
-     *  x     = &quot;1024&quot;;
-     *
-     *  {/list,x}                 /val1/val2/val3/1024
-     * </pre>
-     */
-    PATH_SEGMENT('/') {
-
-      @Override
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Variable var : vars) {
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append('/');
-              expansion.append(URICoder.encode(value));
-            }
-          }
-        }
-        return expansion.toString();
-      }
-
-      @Override
-      boolean isResolvable(List<Variable> arg0) {
-        return true;
-      }
-
-      @Override
-      boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values) {
-        if (vars.size() != 1) {
-          throw new UnsupportedOperationException("Operator + cannot be resolved with multiple variables.");
-        }
-        values.put(vars.get(0), URICoder.decode(value));
-        return true;
-      }
-
-      @Override
-      Pattern pattern(List<Variable> vars) {
-        return Pattern.compile("(?:/[^/?#]*)*");
-      }
-    },
-
     /**
      * The '+' operator for URI inserts.
      * <p/>
@@ -272,26 +59,6 @@ public class TokenOperatorPS extends TokenBase implements TokenOperator, Matchab
      * </pre>
      */
     URI_INSERT('+') {
-
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Iterator<Variable> i = vars.iterator(); i.hasNext();) {
-          Variable var = i.next();
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append(URICoder.minimalEncode(value));
-            }
-          }
-          if (i.hasNext()) {
-            expansion.append(',');
-          }
-        }
-        return expansion.toString();
-      }
 
       @Override
       boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values) {
@@ -345,15 +112,6 @@ public class TokenOperatorPS extends TokenBase implements TokenOperator, Matchab
     abstract boolean isResolvable(List<Variable> vars);
 
     /**
-     * Apply the expansion rules defined for the operator given the specified argument, variable and
-     * parameters.
-     *
-     * @param vars   The variables for the operator.
-     * @param params The parameters to use.
-     */
-    abstract String expand(List<Variable> vars, Parameters params);
-
-    /**
      * Returns the pattern for this operator given the specified list of variables.
      *
      * @param vars   The variables for the operator.
@@ -401,48 +159,12 @@ public class TokenOperatorPS extends TokenBase implements TokenOperator, Matchab
   }
 
   /**
-   * Creates a new operator token.
-   *
-   * @param op   The operator to use.
-   * @param vars The variables for this operator.
-   * @throws NullPointerException If any of the argument is <code>null</code>.
-   */
-  public TokenOperatorPS(Operator op, List<Variable> vars) throws NullPointerException {
-    super(toExpression(op, vars));
-    if (op == null || vars == null) {
-      throw new NullPointerException("The operator must have a value");
-    }
-    this._operator = op;
-    this._vars = vars;
-    this._pattern = op.pattern(vars);
-  }
-
-  /**
-   * Expands the token operator using the specified parameters.
-   *
-   * @param parameters The parameters for variable substitution.
-   * @return The corresponding expanded string.
-   */
-  public String expand(Parameters parameters) {
-    return this._operator.expand(this._vars, parameters);
-  }
-
-  /**
    * Returns the operator part of this token.
    *
    * @return the operator.
    */
   public Operator operator() {
     return this._operator;
-  }
-
-  /**
-   * Returns the list of variables used in this token.
-   *
-   * @return the list of variables.
-   */
-  public List<Variable> variables() {
-    return this._vars;
   }
 
   /**
@@ -480,46 +202,6 @@ public class TokenOperatorPS extends TokenBase implements TokenOperator, Matchab
   }
 
   /**
-   * Returns the operator if it is defined in this class.
-   *
-   * @param c The character representation of the operator.
-   * @return The corresponding operator instance.
-   */
-  public static Operator toOperator(char c) {
-    for (Operator o : Operator.values()) {
-      if (o.character() == c) {
-        return o;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Parses the specified string and returns the corresponding token.
-   * <p/>
-   * This method accepts both the raw expression or the expression wrapped in curly brackets.
-   *
-   * @param exp The expression to get.
-   * @return The corresponding token.
-   * @throws URITemplateSyntaxException If the string cannot be parsed as a valid
-   */
-  public static TokenOperatorPS parse(String exp) throws URITemplateSyntaxException {
-    String sexp = strip(exp);
-    if (sexp.length() < 2) {
-      throw new URITemplateSyntaxException(exp, "Cannot produce a valid token operator.");
-    }
-    char c = sexp.charAt(0);
-    Operator operator = TokenOperatorPS.toOperator(c);
-    if (operator == null) {
-      throw new URITemplateSyntaxException(String.valueOf(c), "This operator is not supported");
-    }
-    List<Variable> variables = toVariables(sexp.substring(1));
-    return new TokenOperatorPS(operator, variables);
-  }
-
-  // private helpers --------------------------------------------------------------------------------
-
-  /**
    * Generate the expression corresponding to the specified operator and variable.
    *
    * @param op  The operator.
@@ -528,28 +210,4 @@ public class TokenOperatorPS extends TokenBase implements TokenOperator, Matchab
   private static String toExpression(Operator op, Variable var) {
     return "{" + op.character() + var.name() + '}';
   }
-
-  /**
-   * Generate the expression corresponding to the specified operator, argument and variables.
-   *
-   * @param op   The operator.
-   * @param arg  the argument.
-   * @param vars The variables.
-   */
-  private static String toExpression(Operator op, List<Variable> vars) {
-    StringBuffer exp = new StringBuffer();
-    exp.append('{');
-    exp.append(op.character());
-    boolean first = true;
-    for (Variable v : vars) {
-      if (!first) {
-        exp.append(',');
-      }
-      exp.append(v.toString());
-      first = false;
-    }
-    exp.append('}');
-    return exp.toString();
-  }
-
 }

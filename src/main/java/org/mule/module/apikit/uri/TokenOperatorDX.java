@@ -7,8 +7,6 @@
 
 package org.mule.module.apikit.uri;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -35,24 +33,7 @@ import java.util.regex.Pattern;
  * @see <a href="http://code.google.com/p/uri-templates/source/browse/trunk/spec/draft-gregorio-uritemplate.xml">URI
  *      Template Library draft specifications at Google Code</a>
  */
-public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchable {
-
-  /**
-   * The pattern for the URI defined pchar:
-   * <p/>
-   * <pre>
-   * pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
-   * pct-encoded = "%" HEXDIG HEXDIG
-   * unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
-   * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
-   * </pre>
-   * <p/>
-   * To avoid side-effects with the resolvers non-capturing groups are used.
-   *
-   * @see <a href="http://www.ietf.org/rfc/rfc3986.txt">Uniform Resource Identifier (URI): Generic
-   *      Syntax</a>
-   */
-  protected static final Pattern PCHAR = Pattern.compile("(?:[\\w-_.~!$&'()*+,;=:@]|(?:%[0-9A-F]{2}))");
+public class TokenOperatorDX extends TokenBase implements Matchable {
 
   /**
    * The list of operators currently supported.
@@ -76,55 +57,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
      * </pre>
      */
     QUERY_PARAMETER('?') {
-
-      @Override
-      public String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        boolean first = true;
-        for (Variable var : vars) {
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            // Associative Array: odd indexed values are names, even are values
-            if (var.form() == Variable.Form.MAP) {
-              for (int i = 0; i < values.length; i++) {
-                expansion.append(first ? '?' : '&');
-                expansion.append(URICoder.encode(values[i])).append('=');
-                if (values.length > i + 1) {
-                  expansion.append(URICoder.encode(values[++i]));
-                }
-                first = false;
-              }
-              // List: names, automatically number the names
-            } else if (var.form() == Variable.Form.LIST) {
-              for (int i = 0; i < values.length; i++) {
-                expansion.append(first ? '?' : '&');
-                expansion.append(var.name());
-                if (i > 0) {
-                  expansion.append(i + 1);
-                }
-                expansion.append('=').append(URICoder.encode(values[i]));
-                first = false;
-              }
-              // String: join the values with a comma
-            } else {
-              expansion.append(first ? '?' : '&');
-              expansion.append(var.name()).append('=');
-              for (int i = 0; i < values.length; i++) {
-                if (i > 0) {
-                  expansion.append(',');
-                }
-                expansion.append(URICoder.encode(values[i]));
-              }
-              first = false;
-            }
-
-          }
-        }
-        return expansion.toString();
-      }
 
       @Override
       boolean isResolvable(List<Variable> arg0) {
@@ -176,49 +108,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
     PATH_PARAMETER(';') {
 
       @Override
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Variable var : vars) {
-          if (parameters.exists(var.name())) {
-            // An associative array: odd index for names, even index for values
-            if (var.form() == Variable.Form.MAP) {
-              String[] values = var.values(parameters);
-              for (int i = 0; i < values.length; i++) {
-                expansion.append(';').append(URICoder.encode(values[i]));
-                if (values.length > i + 1) {
-                  expansion.append('=').append(URICoder.encode(values[++i]));
-                }
-              }
-              // A list
-            } else if (var.form() == Variable.Form.LIST) {
-              // TODO: what should it be?
-              String[] values = var.values(parameters);
-              for (String value : values) {
-                expansion.append(';');
-                expansion.append(var.name());
-                if (value.length() > 0) {
-                  expansion.append('=').append(URICoder.encode(value));
-                }
-              }
-              // A string
-            } else {
-              String[] values = var.values(parameters);
-              for (String value : values) {
-                expansion.append(';').append(var.name());
-                if (value.length() > 0) {
-                  expansion.append('=').append(URICoder.encode(value));
-                }
-              }
-            }
-          }
-        }
-        return expansion.toString();
-      }
-
-      @Override
       boolean isResolvable(List<Variable> vars) {
         return true;
       }
@@ -264,24 +153,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
     PATH_SEGMENT('/') {
 
       @Override
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Variable var : vars) {
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append('/');
-              expansion.append(URICoder.encode(value));
-            }
-          }
-        }
-        return expansion.toString();
-      }
-
-      @Override
       boolean isResolvable(List<Variable> arg0) {
         return true;
       }
@@ -320,27 +191,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
     URI_INSERT('+') {
 
       @Override
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Iterator<Variable> i = vars.iterator(); i.hasNext();) {
-          Variable var = i.next();
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append(URICoder.minimalEncode(value));
-            }
-          }
-          if (i.hasNext()) {
-            expansion.append(',');
-          }
-        }
-        return expansion.toString();
-      }
-
-      @Override
       boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values) {
         // TODO: should we return false instead??
         if (vars.size() != 1) {
@@ -365,27 +215,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
      * The substitution operator is only used to aggregate variables.
      */
     SUBSTITUTION(' ') {
-
-      @Override
-      String expand(List<Variable> vars, Parameters parameters) {
-        if (parameters == null) {
-          return "";
-        }
-        StringBuffer expansion = new StringBuffer();
-        for (Iterator<Variable> i = vars.iterator(); i.hasNext();) {
-          Variable var = i.next();
-          if (parameters.exists(var.name())) {
-            String[] values = var.values(parameters);
-            for (String value : values) {
-              expansion.append(URICoder.encode(value));
-            }
-          }
-          if (i.hasNext()) {
-            expansion.append(',');
-          }
-        }
-        return expansion.toString();
-      }
 
       @Override
       boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values) {
@@ -440,15 +269,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
     abstract boolean isResolvable(List<Variable> vars);
 
     /**
-     * Apply the expansion rules defined for the operator given the specified argument, variable and
-     * parameters.
-     *
-     * @param vars   The variables for the operator.
-     * @param params The parameters to use.
-     */
-    abstract String expand(List<Variable> vars, Parameters params);
-
-    /**
      * Returns the pattern for this operator given the specified list of variables.
      *
      * @param vars   The variables for the operator.
@@ -477,23 +297,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
    */
   private Pattern _pattern;
 
-  /**
-   * Creates a new operator token for one variable only.
-   *
-   * @param op  The operator to use.
-   * @param var The variable for this operator.
-   * @throws NullPointerException If any of the argument is <code>null</code>.
-   */
-  public TokenOperatorDX(Operator op, Variable var) throws NullPointerException {
-    super(toExpression(op, var));
-    if (op == null || var == null) {
-      throw new NullPointerException("The operator must have a value");
-    }
-    this._operator = op;
-    this._vars = new ArrayList<Variable>(1);
-    this._vars.add(var);
-    this._pattern = op.pattern(this._vars);
-  }
 
   /**
    * Creates a new operator token.
@@ -513,31 +316,12 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
   }
 
   /**
-   * Expands the token operator using the specified parameters.
-   *
-   * @param parameters The parameters for variable substitution.
-   * @return The corresponding expanded string.
-   */
-  public String expand(Parameters parameters) {
-    return this._operator.expand(this._vars, parameters);
-  }
-
-  /**
    * Returns the operator part of this token.
    *
    * @return the operator.
    */
   public Operator operator() {
     return this._operator;
-  }
-
-  /**
-   * Returns the list of variables used in this token.
-   *
-   * @return the list of variables.
-   */
-  public List<Variable> variables() {
-    return this._vars;
   }
 
   /**
@@ -611,18 +395,6 @@ public class TokenOperatorDX extends TokenBase implements TokenOperator, Matchab
     }
     List<Variable> variables = toVariables(operator == Operator.SUBSTITUTION ? sexp : sexp.substring(1));
     return new TokenOperatorDX(operator, variables);
-  }
-
-  // private helpers --------------------------------------------------------------------------------
-
-  /**
-   * Generate the expression corresponding to the specified operator and variable.
-   *
-   * @param op  The operator.
-   * @param var The variable.
-   */
-  private static String toExpression(Operator op, Variable var) {
-    return "{" + op.character() + var.name() + '}';
   }
 
   /**

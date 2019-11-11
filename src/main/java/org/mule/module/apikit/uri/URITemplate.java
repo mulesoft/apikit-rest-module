@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  *      href="http://bitworking.org/projects/URI-Templates/spec/draft-gregorio-uritemplate-03.html">URI
  *      Template (draft 3)</a>
  */
-public class URITemplate implements Expandable {
+public class URITemplate {
 
   /**
    * The regular expression pattern to identify template expansions within the template.
@@ -57,56 +57,6 @@ public class URITemplate implements Expandable {
     }
     this._tokens = digest(template);
     this._template = template;
-  }
-
-  // TODO: method to indicate how many variables are used involved in the template
-
-  /**
-   * Creates a new URI Template instance using the specified token factory.
-   * <p/>
-   * <p>If the specified factory is <code>null</code>, the default is used.
-   *
-   * @param template A String following the URI template syntax.
-   * @param factory  A token factory in order to choose the URI template syntax to use.
-   * @throws NullPointerException       If the specified template is <code>null</code>.
-   * @throws URITemplateSyntaxException If the string provided does not follow the proper syntax.
-   */
-  public URITemplate(String template, TokenFactory factory) throws IllegalArgumentException {
-    if (template == null) {
-      throw new NullPointerException("Cannot create a URI template with a null template");
-    }
-    this._tokens = digest(template, factory != null ? factory : TokenFactory.getInstance());
-    this._template = template;
-  }
-
-  /**
-   * Expands the template to produce a URI as defined by the URI Template specifications.
-   *
-   * @param parameters The list of variables and their values for substitution.
-   */
-  public String expand(Parameters parameters) {
-    StringBuffer uri = new StringBuffer();
-    for (Token t : this._tokens) {
-      uri.append(t.expand(parameters));
-    }
-    return uri.toString();
-  }
-
-  /**
-   * Method provided for convenience.
-   * <p/>
-   * It returns the same as:
-   * <p/>
-   * <pre>
-   * return new URITemplate(template).expand(variables);
-   * </pre>
-   *
-   * @param template   The URI template.
-   * @param parameters The parameter values to use for substitution.
-   * @return The corresponding expanded URI.
-   */
-  public static String expand(String template, Parameters parameters) {
-    return new URITemplate(template).expand(parameters);
   }
 
   /**

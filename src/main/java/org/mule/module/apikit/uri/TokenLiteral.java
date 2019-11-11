@@ -38,13 +38,6 @@ public class TokenLiteral extends TokenBase implements Token, Matchable {
   /**
    * {@inheritDoc}
    */
-  public String expand(Parameters parameters) {
-    return this.expression();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   public boolean match(String part) {
     return this.expression().equals(part);
   }
