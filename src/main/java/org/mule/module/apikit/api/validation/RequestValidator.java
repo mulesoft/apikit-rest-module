@@ -38,12 +38,26 @@ public class RequestValidator {
   private static Logger LOGGER = LoggerFactory.getLogger(RequestValidator.class);
 
   public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
+                                      ResolvedVariables resolvedVariables, Object payload)
+      throws MuleRestException {
+
+    return validate(config, resource, attributes, resolvedVariables, payload, null, null);
+
+  }
+
+  public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
                                       ResolvedVariables resolvedVariables, Object payload,
                                       ErrorTypeRepository errorTypeRepository)
       throws MuleRestException {
 
     return validate(config, resource, attributes, resolvedVariables, payload, null, errorTypeRepository);
 
+  }
+
+  public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,
+                                      ResolvedVariables resolvedVariables, Object payload, String charset)
+      throws MuleRestException {
+    return validate(config, resource, attributes, resolvedVariables, payload, charset, null);
   }
 
   public static ValidRequest validate(ValidationConfig config, Resource resource, HttpRequestAttributes attributes,

@@ -6,8 +6,6 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import com.google.common.base.Joiner;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -20,10 +18,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Joiner.*;
+import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
-import static java.lang.String.*;
-import static org.mule.module.apikit.helpers.AttributesHelper.*;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
+import static org.mule.module.apikit.helpers.AttributesHelper.addParam;
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
 
 public class QueryParameterValidator {
