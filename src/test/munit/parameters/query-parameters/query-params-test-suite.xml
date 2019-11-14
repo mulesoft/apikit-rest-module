@@ -212,6 +212,8 @@
 			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
 			<munit-tools:assert-that expression="#[output application/json --- payload.withDefaultValue]"
 				is="#[MunitTools::equalTo('f4l0p4')]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.otherWithDefaultValue]"
+				is="#[MunitTools::equalTo('agasdg')]"/>
 		</munit:validation>
 	</munit:test>
 
