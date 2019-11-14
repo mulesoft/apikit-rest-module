@@ -24,7 +24,9 @@
         "org.mule.module.apikit.api.uri",
         "org.mule.module.apikit.api.validation",
         "org.mule.module.apikit.api.console",
-        "org.mule.module.apikit.spi"
+        "org.mule.module.apikit.spi",
+        "org.mule.apikit.model",
+        "org.mule.parser.service"
       ],
       "exportedResources":[
         "/META-INF/",
