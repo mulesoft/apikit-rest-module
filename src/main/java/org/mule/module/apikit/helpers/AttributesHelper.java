@@ -42,8 +42,8 @@ public class AttributesHelper {
     return mapParam;
   }
 
-  public static String addQueryString(String oldQueryString, int queryStringSize, String key, String value) {
-    String newParam = queryStringSize != 0 ? "&" : "";
+  public static String addQueryString(String oldQueryString, String key, String value) {
+    String newParam = oldQueryString.length() != 0 ? "&" : "";
     try {
       newParam += URLEncoder.encode(key, "UTF-8");
       if (value != null) {
