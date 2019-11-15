@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.api;
 
-import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.mule.apikit.ApiType.AMF;
 import static org.mule.apikit.ApiType.RAML;
@@ -21,16 +20,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.IOUtils;
 
 import org.mule.amf.impl.model.AMFImpl;

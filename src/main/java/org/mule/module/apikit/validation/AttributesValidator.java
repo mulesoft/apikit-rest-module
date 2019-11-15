@@ -33,8 +33,8 @@ public class AttributesValidator {
     final Action action = resource.getAction(attributes.getMethod().toLowerCase());
 
     // uriparams
-    UriParametersValidator uriParametersValidator = new UriParametersValidator(action, resolvedVariables);
-    uriParametersValidator.validate(attributes.getUriParams());
+    UriParametersValidator uriParametersValidator = new UriParametersValidator(action);
+    uriParametersValidator.validate(resolvedVariables);
 
     // queryStrings
     QueryStringValidator queryStringValidator = new QueryStringValidator(action);
@@ -49,8 +49,8 @@ public class AttributesValidator {
     queryString = validatedQueryParams.getQueryString();
 
     // headers
-    HeadersValidator headersValidator = new HeadersValidator();
-    headersValidator.validateAndAddDefaults(attributes.getHeaders(), action,
+    HeadersValidator headersValidator = new HeadersValidator(action);
+    headersValidator.validateAndAddDefaults(attributes.getHeaders(),
                                             config.isHeadersStrictValidation());
     headers = headersValidator.getNewHeaders();
 

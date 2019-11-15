@@ -26,12 +26,10 @@ import static java.util.stream.Collectors.joining;
 public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
 
   protected static final Logger logger = LoggerFactory.getLogger(UrlencodedFormV2Validator.class);
-  Map<String, List<Parameter>> formParameters;
-  MimeType actionMimeType;
-  DataWeaveTransformer dataWeaveTransformer;
+  private final MimeType actionMimeType;
+  private final DataWeaveTransformer dataWeaveTransformer;
 
   public UrlencodedFormV2Validator(MimeType actionMimeType, ExpressionManager expressionManager) {
-    this.formParameters = actionMimeType.getFormParameters();
     this.actionMimeType = actionMimeType;
     this.dataWeaveTransformer = new DataWeaveTransformer(expressionManager);
   }
