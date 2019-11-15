@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="strictly-validation-test-suite"/>
+
+  <munit:test name="without-additional-headers">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="strictly-validation-main"/>
+      <munit:enable-flow-source value="get:\resource:strictly-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/strictly/resource">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-equals actual="#[payload.message]" expected="#['is all good']"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="with-additional-headers">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="strictly-validation-main"/>
+      <munit:enable-flow-source value="get:\resource:strictly-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/strictly/resource">
+        <http:headers>#[
+          output application/java
+          ---
+          {
+          'X-MaxRows': 'JEJE'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload]"
+        is="#[MunitTools::containsString('[x-maxrows] headers are not defined in RAML strict headers validation property is true.')]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>

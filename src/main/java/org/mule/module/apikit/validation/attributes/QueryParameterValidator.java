@@ -6,8 +6,6 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import com.google.common.base.Joiner;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -20,8 +18,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
-import static org.mule.module.apikit.helpers.AttributesHelper.*;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
+import static org.mule.module.apikit.helpers.AttributesHelper.addParam;
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
 
 public class QueryParameterValidator {
@@ -99,8 +100,8 @@ public class QueryParameterValidator {
     //check that query parameters are defined in the RAML
     Set notDefinedQueryParameters = difference(queryParams.keySet(), action.getQueryParameters().keySet());
     if (!notDefinedQueryParameters.isEmpty()) {
-      throw new InvalidQueryParameterException(Joiner.on(", ").join(notDefinedQueryParameters)
-          + " parameters are not defined in RAML.");
+      throw new InvalidQueryParameterException(format("\"[%s] %s\"", on(", ").join(notDefinedQueryParameters),
+                                                      "parameters are not defined in RAML."));
     }
   }
 
@@ -110,7 +111,7 @@ public class QueryParameterValidator {
     StringBuilder builder = new StringBuilder();
 
     paramValues.forEach(paramValue -> {
-      String value = String.valueOf(paramValue);
+      String value = valueOf(paramValue);
       builder.append("- ");
       builder.append(expected.surroundWithQuotesIfNeeded(value));
       builder.append("\n");
@@ -139,8 +140,8 @@ public class QueryParameterValidator {
 
   private void validate(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
-      String msg = String.format("\"Invalid value '%s' for query parameter %s. %s\"",
-                                 paramValue, paramKey, expected.message(paramValue));
+      String msg = format("\"Invalid value '%s' for query parameter %s. %s\"",
+                          paramValue, paramKey, expected.message(paramValue));
       throw new InvalidQueryParameterException(msg);
     }
   }

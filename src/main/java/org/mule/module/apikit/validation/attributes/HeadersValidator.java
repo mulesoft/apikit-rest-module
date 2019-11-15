@@ -28,6 +28,7 @@ import java.util.Set;
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.union;
+import static java.lang.String.valueOf;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
@@ -39,17 +40,20 @@ public class HeadersValidator {
   private static final Logger logger = LoggerFactory.getLogger(HeadersValidator.class);
 
   private MultiMap<String, String> headers;
+  private final Action action;
 
-  public HeadersValidator() {}
-
-  public void validateAndAddDefaults(MultiMap<String, String> incomingHeaders, Action action, boolean headersStrictValidation)
-      throws InvalidHeaderException, NotAcceptableException {
-    this.headers = incomingHeaders;
-    analyseRequestHeaders(action, headersStrictValidation);
-    analyseAcceptHeader(incomingHeaders, action);
+  public HeadersValidator(Action action) {
+    this.action = action;
   }
 
-  private void analyseRequestHeaders(Action action, boolean headersStrictValidation) throws InvalidHeaderException {
+  public void validateAndAddDefaults(MultiMap<String, String> incomingHeaders, boolean headersStrictValidation)
+      throws InvalidHeaderException, NotAcceptableException {
+    this.headers = incomingHeaders;
+    analyseRequestHeaders(headersStrictValidation);
+    analyseAcceptHeader(incomingHeaders);
+  }
+
+  private void analyseRequestHeaders(boolean headersStrictValidation) throws InvalidHeaderException {
     if (headersStrictValidation)
       validateHeadersStrictly(action);
 
@@ -98,8 +102,8 @@ public class HeadersValidator {
     final Set<String> undefinedHeaders = difference(unmatchedHeaders, union(ramlHeaders, standardHeaders));
 
     if (!undefinedHeaders.isEmpty()) {
-      throw new InvalidHeaderException(on(", ").join(undefinedHeaders)
-          + " headers are not defined in RAML and strict headers validation property is true.");
+      throw new InvalidHeaderException(format("\"[%s] %s\"", on(", ").join(undefinedHeaders),
+                                              "headers are not defined in RAML strict headers validation property is true."));
     }
   }
 
@@ -134,7 +138,7 @@ public class HeadersValidator {
     }
   }
 
-  private void analyseAcceptHeader(MultiMap<String, String> incomingHeaders, Action action) throws NotAcceptableException {
+  private void analyseAcceptHeader(MultiMap<String, String> incomingHeaders) throws NotAcceptableException {
     List<String> mimeTypes = getResponseMimeTypes(action);
     if (action == null || action.getResponses() == null || mimeTypes.isEmpty()) {
       //no response media-types defined, return no body
@@ -151,7 +155,7 @@ public class HeadersValidator {
     List<String> mimeTypes = new ArrayList<>();
     int status = getSuccessStatus(action);
     if (status != -1) {
-      Response response = action.getResponses().get(String.valueOf(status));
+      Response response = action.getResponses().get(valueOf(status));
       if (response != null && response.hasBody()) {
         Map<String, MimeType> interfacesOfTypes = response.getBody();
         for (Map.Entry<String, MimeType> entry : interfacesOfTypes.entrySet()) {

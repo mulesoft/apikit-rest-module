@@ -25,8 +25,8 @@ import java.util.Map;
 
 public class UrlencodedFormV1Validator implements FormValidator<TypedValue> {
 
-  Map<String, List<Parameter>> formParameters;
-  DataWeaveTransformer dataWeaveTransformer;
+  private final Map<String, List<Parameter>> formParameters;
+  private final DataWeaveTransformer dataWeaveTransformer;
 
   public UrlencodedFormV1Validator(Map<String, List<Parameter>> formParameters, ExpressionManager expressionManager) {
     this.formParameters = formParameters;
