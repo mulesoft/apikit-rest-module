@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit;
 
+import static java.lang.String.format;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
 import static org.mule.module.apikit.api.FlowUtils.getFlowsList;
 import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
@@ -40,7 +41,6 @@ public class FlowFinder {
 
   private Map<String, Resource> flatResourceTree = new HashMap<>();
   private Map<String, Flow> restFlowMap;
-  private Map<String, Flow> restFlowMapUnwrapped;
 
   protected RoutingTable routingTable;
 
@@ -89,8 +89,6 @@ public class FlowFinder {
       }
 
       logMissingMappings(api.getVersion());
-
-      restFlowMapUnwrapped = new HashMap<>(restFlowMap);
     }
   }
 
@@ -157,7 +155,7 @@ public class FlowFinder {
     String method = coords[0];
     String resource = coords[1];
     String type = coords.length == 3 ? coords[2] : null;
-    String key = String.format("%s:%s", method, resource);
+    String key = format("%s:%s", method, resource);
 
     if (type != null) {
       key = key + ":" + type;
@@ -175,7 +173,7 @@ public class FlowFinder {
       }
     }
 
-    logger.warn(String.format("Flow named \"%s\" does not match any RAML descriptor resource", key));
+    logger.warn(format("Flow named \"%s\" does not match any RAML descriptor resource", key));
     return null;
   }
 
@@ -191,21 +189,14 @@ public class FlowFinder {
         if (action.hasBody()) {
           for (String contentType : action.getBody().keySet()) {
             if (restFlowMap.get(key + ":" + getMediaType(contentType)) == null) {
-              logger.warn(String.format("Action-Resource-ContentType triplet has no implementation -> %s:%s:%s ",
-                                        method, fullResource, getMediaType(contentType)));
+              logger.warn(format("Action-Resource-ContentType triplet has no implementation -> %s:%s:%s ",
+                                 method, fullResource, getMediaType(contentType)));
             }
           }
         } else {
-          logger.warn(String.format("Action-Resource pair has no implementation -> %s:%s ",
-                                    method, fullResource));
+          logger.warn(format("Action-Resource pair has no implementation -> %s:%s ",
+                             method, fullResource));
         }
-      }
-    }
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("==== RestFlows defined:");
-      for (String key : restFlowMap.keySet()) {
-        logger.debug("\t\t" + key);
       }
     }
   }
@@ -242,8 +233,8 @@ public class FlowFinder {
   private boolean isFlowDeclaredWithDifferentMediaType(Map<String, Flow> map, String baseKey) {
     for (String flowName : map.keySet()) {
       String[] split = flowName.split(":");
-      String methodAndResoruce = split[0] + ":" + split[1];
-      if (methodAndResoruce.equals(baseKey))
+      String methodAndResource = split[0] + ":" + split[1];
+      if (methodAndResource.equals(baseKey))
         return true;
     }
     return false;

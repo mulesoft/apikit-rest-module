@@ -51,4 +51,8 @@
     <set-payload value="#[output application/json --- { message: 'mapped' }]"/>
   </flow>
 
+  <flow name="put:\implementOnlyOneMediaType:application\xml:api-routing-config">
+    <set-payload value="#[output application/json --- { test:'hola' }]"/>
+  </flow>
+
 </mule>
