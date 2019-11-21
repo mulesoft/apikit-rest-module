@@ -9,9 +9,8 @@ package org.mule.module.apikit.helpers;
 import org.apache.commons.io.IOUtils;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.input.stream.RewindableInputStream;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,15 +20,13 @@ import static org.mule.module.apikit.CharsetUtils.trimBom;
 
 public class PayloadHelper {
 
-  protected static final Logger logger = LoggerFactory.getLogger(PayloadHelper.class);
+  private PayloadHelper() {}
 
   public static String getPayloadAsString(Object input, String charset) throws BadRequestException {
 
     try {
-      final byte[] bytes = getPayloadAsByteArray(input);
-
+      byte[] bytes = getPayloadAsByteArray(input);
       return IOUtils.toString(trimBom(bytes), charset);
-
     } catch (IOException e) {
       throw new BadRequestException("Error processing request: " + e.getMessage());
     }
@@ -53,6 +50,21 @@ public class PayloadHelper {
       throw new IOException("Don't know how to get " + input.getClass().getName());
     else
       throw new IOException("Don't know how to get payload");
+  }
+
+  public static Object makePayloadRepeatable(Object payload) {
+    if (payload instanceof TypedValue) {
+      TypedValue typedValue = (TypedValue) payload;
+      Object payloadValue = typedValue.getValue();
+      if (payloadValue instanceof InputStream) {
+        RewindableInputStream rewindable = new RewindableInputStream((InputStream) payloadValue);
+        return new TypedValue<>(rewindable, typedValue.getDataType());
+      }
+    } else if (payload instanceof InputStream && !(payload instanceof RewindableInputStream)) {
+      return new RewindableInputStream((InputStream) payload);
+    }
+
+    return payload;
   }
 
 }

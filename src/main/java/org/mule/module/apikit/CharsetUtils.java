@@ -6,27 +6,44 @@
  */
 package org.mule.module.apikit;
 
-import org.mule.module.apikit.helpers.EventHelper;
+import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
-import org.raml.parser.utils.StreamUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
-
-import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsByteArray;
+import org.mule.runtime.api.util.MultiMap;
 
 public class CharsetUtils {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CharsetUtils.class);
+  private CharsetUtils() {}
 
+  public static String getCharset(MultiMap<String, String> headers, Object payload) {
+    String charset = getHeaderCharset(headers);
+    if (charset == null) {
+      if (payload instanceof TypedValue) {
+        return normalizeCharset(getEncoding((TypedValue) payload));
+      }
+    }
+    return normalizeCharset(charset);
+  }
+
+  private static String getHeaderCharset(MultiMap<String, String> headers) {
+    return getCharset(AttributesHelper.getParamIgnoreCase(headers, "Content-Type"));
+  }
+
+  public static String getCharset(String contentType) {
+    if (contentType == null) {
+      return null;
+    }
+    MediaType mediaType = MediaType.parse(contentType);
+    Optional<Charset> charset = mediaType.getCharset();
+    return charset.map(Charset::name).orElse(null);
+  }
 
   private static String normalizeCharset(String encoding) {
     if (encoding != null && encoding.matches("(?i)UTF-16.+")) {
-      encoding = "UTF-16";
+      return "UTF-16";
     }
     return encoding;
   }
@@ -38,53 +55,11 @@ public class CharsetUtils {
    *  - return the mule message encoding
    *
    * @param typedValue mule typed value
-   * @param input payload that would be instrospected
-   * @param logger where to log
+  
    * @return payload encoding
    */
-  public static <T> String getEncoding(TypedValue<T> typedValue, Object input, Logger logger) throws IOException {
-    String encoding = getEncoding(input, logger);
-
-    if (encoding == null) {
-      encoding = normalizeCharset(EventHelper.getEncoding(typedValue).toString());
-      logger.debug("Defaulting to mule message encoding: " + logEncoding(encoding));
-    }
-
-    return encoding;
-  }
-
-  /**
-   * Tries to figure out the encoding of the request in the following order
-   *  - Determine what type is payload
-   *  - detects the payload encoding using BOM, or tries to auto-detect it
-   *  - return the mule message encoding
-   *
-   * @param input payload that would be instrospected
-   * @param logger where to log
-   * @return payload encoding
-   */
-  public static String getEncoding(Object input, Logger logger) throws IOException {
-    String encoding;
-
-    byte[] bytes = getPayloadAsByteArray(input);
-
-    if (bytes == null) {
-      return null;
-    }
-    encoding = normalizeCharset(StreamUtils.detectEncoding(bytes));
-    logger.debug("Detected payload encoding: " + logEncoding(encoding));
-
-    return encoding;
-  }
-
-  public static String getCharset(String contentType) {
-    if (contentType == null)
-      return null;
-
-    MediaType mediaType = MediaType.parse(contentType);
-
-    Optional<Charset> charset = mediaType.getCharset();
-    return charset.map(Charset::name).orElse(null);
+  private static <T> String getEncoding(TypedValue<T> typedValue) {
+    return typedValue.getDataType().getMediaType().getCharset().orElse(Charset.defaultCharset()).toString();
   }
 
   /**
@@ -116,18 +91,12 @@ public class CharsetUtils {
     }
 
     if (bomSize > 0) {
-      LOGGER.debug("Trimming {}-byte BOM", bomSize);
       int trimmedSize = content.length - bomSize;
       byte[] trimmedArray = new byte[trimmedSize];
       System.arraycopy(content, bomSize, trimmedArray, 0, trimmedSize);
       return trimmedArray;
     }
     return content;
-  }
-
-
-  private static String logEncoding(String encoding) {
-    return encoding != null ? encoding : "not specified";
   }
 
 }
