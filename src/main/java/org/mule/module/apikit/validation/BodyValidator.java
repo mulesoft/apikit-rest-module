@@ -7,6 +7,7 @@
 package org.mule.module.apikit.validation;
 
 import static java.lang.String.format;
+import static org.mule.module.apikit.CharsetUtils.getCharset;
 import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsString;
 
 import java.util.Map.Entry;
@@ -29,14 +30,18 @@ import org.mule.apikit.model.Action;
 import org.mule.apikit.model.MimeType;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.metadata.TypedValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
+import static org.mule.module.apikit.helpers.PayloadHelper.makePayloadRepeatable;
 
 public class BodyValidator {
 
-  protected final static Logger logger = LoggerFactory.getLogger(BodyValidator.class);
+  private static final String JSON = "json";
+  private static final String XML = "xml";
+  private static final String MULTIPART = "multipart/";
+  private static final String URL_ENCODED = "application/x-www-form-urlencoded";
+
+  private BodyValidator() {}
 
   public static ValidBody validate(Action action, HttpRequestAttributes attributes, Object payload,
                                    ValidationConfig config, String charset)
@@ -50,33 +55,31 @@ public class BodyValidator {
 
     ValidBody validBody = new ValidBody(payload);
 
-    if (action == null || !action.hasBody()) {
-      logger.debug("=== no body types defined: accepting any request content-type");
+    if (!action.hasBody()) {
       return validBody;
     }
 
-    final String requestMimeTypeName = getMediaType(attributes);
+    String requestMimeTypeName = getMediaType(attributes);
 
-    final Entry<String, MimeType> foundMimeType = action.getBody().entrySet().stream()
-        .peek(entry -> {
-          if (logger.isDebugEnabled())
-            logger.debug(format("comparing request media type %s with expected %s\n", requestMimeTypeName, entry.getKey()));
-        })
+    Entry<String, MimeType> foundMimeType = action.getBody().entrySet().stream()
         .filter(entry -> getMediaType(entry.getKey()).equals(requestMimeTypeName))
         .findFirst()
         .orElseThrow(UnsupportedMediaTypeException::new);
 
 
-    final MimeType mimeType = foundMimeType.getValue();
+    MimeType mimeType = foundMimeType.getValue();
 
-    if (requestMimeTypeName.contains("json") || requestMimeTypeName.contains("xml")) {
+    Object repeatableBody = makePayloadRepeatable(payload);
 
-      validBody = validateAsString(config, mimeType, action, requestMimeTypeName, payload, charset, errorTypeRepository);
+    if (requestMimeTypeName.contains(JSON) || requestMimeTypeName.contains(XML)) {
+      return validateAsString(config, mimeType, action, requestMimeTypeName, repeatableBody,
+                              charset != null ? charset : getCharset(attributes.getHeaders(), repeatableBody),
+                              errorTypeRepository);
 
-    } else if ((requestMimeTypeName.contains("multipart/")
-        || requestMimeTypeName.contains("application/x-www-form-urlencoded"))) {
+    } else if ((requestMimeTypeName.contains(MULTIPART)
+        || requestMimeTypeName.contains(URL_ENCODED))) {
 
-      validBody = validateAsMultiPart(config, mimeType, requestMimeTypeName, payload);
+      return validateAsMultiPart(config, mimeType, requestMimeTypeName, repeatableBody);
 
     }
 
@@ -95,10 +98,10 @@ public class BodyValidator {
       String schemaPath = SchemaCacheUtils.getSchemaCacheKey(action, requestMimeTypeName);
 
       try {
-        if (requestMimeTypeName.contains("json")) {
+        if (requestMimeTypeName.contains(JSON)) {
           ApiKitJsonSchema schema = config.getJsonSchema(schemaPath);
           validator = new RestJsonSchemaValidator(schema != null ? schema.getSchema() : null);
-        } else if (requestMimeTypeName.contains("xml")) {
+        } else if (requestMimeTypeName.contains(XML)) {
           validator = new RestXmlSchemaValidator(config.getXmlSchema(schemaPath), errorTypeRepository);
         }
       } catch (ExecutionException e) {

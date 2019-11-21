@@ -79,4 +79,13 @@ public class PayloadHelperTestCase {
 
     assertThat(payload, is(getPayloadAsString(utf8BOM + payload, "UTF-8")));
   }
+
+  @Test(expected = BadRequestException.class)
+  public void unknownPayloadClass() throws Exception {
+    getPayloadAsString(new UnknownPayload(), "UTF-8");
+  }
+
+  public class UnknownPayload {
+  }
+
 }
