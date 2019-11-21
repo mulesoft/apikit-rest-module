@@ -248,7 +248,7 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
      *
      * @param c The character used to represent this operator.
      */
-    private Operator(char c) {
+    Operator(char c) {
       this._c = c;
     }
 
@@ -390,9 +390,6 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
     }
     char c = sexp.charAt(0);
     Operator operator = TokenOperatorDX.toOperator(c);
-    if (operator == null) {
-      throw new URITemplateSyntaxException(String.valueOf(c), "This operator is not supported");
-    }
     List<Variable> variables = toVariables(operator == Operator.SUBSTITUTION ? sexp : sexp.substring(1));
     return new TokenOperatorDX(operator, variables);
   }
