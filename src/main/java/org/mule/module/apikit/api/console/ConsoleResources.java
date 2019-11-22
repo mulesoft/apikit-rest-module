@@ -64,6 +64,8 @@ public class ConsoleResources {
     try {
       if (resourceRelativePath.equals(ROOT_CONSOLE_PATH)) {
         consoleResourcePath = CONSOLE_RESOURCES_BASE + INDEX_RESOURCE_RELATIVE_PATH;
+      } else if (resourceRelativePath.endsWith(".map")) {
+        throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
       } else {
         consoleResourcePath = CONSOLE_RESOURCES_BASE + resourceRelativePath;
       }
