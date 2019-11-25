@@ -33,6 +33,8 @@
         <!-- PARSERS -->
         <parser.service.version>2.1.0-SNAPSHOT</parser.service.version>
 
+        <!-- API Console -->
+        <apiconsole.version>6.0.29</apiconsole.version>
 
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.6</commons.io.version>
@@ -41,7 +43,7 @@
         <jackson.version>2.10.0</jackson.version>
         <libthrift.version>0.12.0</libthrift.version>
         <libthrift.version>0.12.0</libthrift.version>
-        <apiconsole.version>6.0.28</apiconsole.version>
+
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
@@ -576,7 +578,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://nexus3.build.msap.io/repository/npm-internal/@mulesoft/anypoint-api-console/-/anypoint-api-console-${apiconsole.version}.tgz</url>
+                            <url>https://repository-master.mulesoft.org/nexus/service/local/repositories/releases/content/org/mule/apikit/anypoint-api-console/${apiconsole.version}/anypoint-api-console-${apiconsole.version}.tar.gz</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.outputDirectory}/console-resources-amf</outputDirectory>
                             <serverId>mulesoft-npm-private</serverId>
