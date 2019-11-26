@@ -34,7 +34,7 @@
         <parser.service.version>2.1.0-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
-        <apiconsole.version>6.0.29</apiconsole.version>
+        <apiconsole.version>6.0.31</apiconsole.version>
 
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.6</commons.io.version>
@@ -578,10 +578,10 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://repository-master.mulesoft.org/nexus/service/local/repositories/releases/content/org/mule/apikit/anypoint-api-console/${apiconsole.version}/anypoint-api-console-${apiconsole.version}.tar.gz</url>
+                            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/org/mule/apikit/anypoint-api-console/${apiconsole.version}/anypoint-api-console-${apiconsole.version}.tar.gz</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.outputDirectory}/console-resources-amf</outputDirectory>
-                            <serverId>mulesoft-npm-private</serverId>
+                            <serverId>mulesoft-releases</serverId>
                         </configuration>
                     </execution>
                 </executions>
