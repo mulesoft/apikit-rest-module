@@ -12,7 +12,7 @@ APIKit Rest is a toolkit that facilitates the REST APIs development through MULE
 ## Team
 * **Engineering Manager:** Pablo Angelani: [pablo.angelani@mulesoft.com](mailto:pablo.angelani@mulesoft.com)
 * **Developers / Juanes:**  
-  * Juan Desimoni: [juan.desimoni@mulesoft.com](mailto:juan.desimoni@mulesoft.com)
+  * Damián Courtil: [dcourtil@mulesoft.com](mailto:dcourtil@mulesoft.com)
   * Juan Brasca: [juan.brasca@mulesoft.com](mailto:juan.brasca@mulesoft.com)
   * Juan Aller: [juan.aller@mulesoft.com](mailto:juan.aller@mulesoft.com)
 
