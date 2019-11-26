@@ -546,6 +546,26 @@
                 <artifactId>formatter-maven-plugin</artifactId>
                 <version>1.9.2</version>
             </plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.4.2</version>
+                <executions>
+                    <execution>
+                        <id>download-api-console</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/org/mule/apikit/anypoint-api-console/${apiconsole.version}/anypoint-api-console-${apiconsole.version}.tar.gz</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.outputDirectory}/console-resources-amf</outputDirectory>
+                            <serverId>mulesoft-releases</serverId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

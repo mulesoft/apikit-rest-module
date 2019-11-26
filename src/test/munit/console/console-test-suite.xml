@@ -57,7 +57,7 @@
     <munit:validation>
       <munit-tools:assert-that expression="#[vars.consoleAmfInclude]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[output text/plain --- vars.console.payload]"
-                               is="#[MunitTools::containsString('&lt;title>API console bundle inspector&lt;/title>')]"/>
+                               is="#[MunitTools::containsString('&lt;title&gt;APIkit Console&lt;/title&gt;')]"/>
     </munit:validation>
   </munit:test>
 
@@ -74,7 +74,7 @@
     <munit:validation>
       <munit-tools:assert-that expression="#[vars.consoleRamlInclude]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[output text/plain --- vars.console.payload]"
-                               is="#[MunitTools::containsString('&lt;title>API Console&lt;/title>')]"/>
+                               is="#[MunitTools::containsString('&lt;title&gt;API Console&lt;/title&gt;')]"/>
     </munit:validation>
   </munit:test>
 
