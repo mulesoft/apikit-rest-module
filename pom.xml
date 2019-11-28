@@ -41,7 +41,7 @@
         <guava.version>28.1-jre</guava.version>
         <jackson.databind.version>2.10.0</jackson.databind.version>
         <jackson.version>2.10.0</jackson.version>
-        <libthrift.version>0.12.0</libthrift.version>
+        <libthrift.version>0.13.0</libthrift.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
