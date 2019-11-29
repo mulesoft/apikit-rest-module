@@ -51,7 +51,7 @@
         <munit.tools.version>2.2.3-SNAPSHOT</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.5.1</mockServerVersion>
-        <jacoco.version>0.7.9</jacoco.version>
+        <jacoco.version>0.8.5</jacoco.version>
         <allureJunitVersion>2.0-BETA17</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.8</allure.maven.plugin.version>
