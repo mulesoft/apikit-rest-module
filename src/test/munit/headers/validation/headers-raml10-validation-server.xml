@@ -30,6 +30,6 @@
   </flow>
 
   <flow name="post:\datetime2616:headers-10-validation-config">
-    <set-payload value="#[attributes.headers['x-maxrows']]" />
+    <set-payload value="#[attributes.headers['defaultHeaderValue']]" />
   </flow>
 </mule>

@@ -25,21 +25,11 @@ public class UrlUtils {
   private UrlUtils() {}
 
   private static int getEndOfBasePathIndex(String baseAndApiPath, String requestPath) {
-    int amountOfSlashesInBasePath = 0;
-    for (int i = 0; i < baseAndApiPath.length(); i++) {
-      if (Character.compare(baseAndApiPath.charAt(i), '/') == 0) {
-        amountOfSlashesInBasePath++;
-      }
+    int index = baseAndApiPath.lastIndexOf('/') + 1;
+    if (index > requestPath.length()) {
+      return requestPath.length();
     }
-    int amountOfSlashesInRequestPath = 0;
-    int character = 0;
-    for (; character < requestPath.length() && amountOfSlashesInRequestPath < amountOfSlashesInBasePath; character++) {
-      if (Character.compare(requestPath.charAt(character), '/') == 0) {
-        amountOfSlashesInRequestPath++;
-      }
-    }
-
-    return character;
+    return index;
   }
 
   public static String encode(String url) {

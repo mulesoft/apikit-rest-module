@@ -44,7 +44,7 @@ public class RestRequestValidator {
     HttpRequestAttributes validAttributes = AttributesValidator.validateAndAddDefaults(attributes, action, uriParams, config);
     ValidBody validBody = BodyValidator.validate(action, attributes, body, config, payloadCharset, errorTypeRepository);
     return ValidRequest.builder()
-        .withAttributes(addUriParams(uriParams, validAttributes))
+        .withAttributes(validAttributes)
         .withBody(validBody)
         .build();
   }

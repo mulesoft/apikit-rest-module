@@ -14,11 +14,8 @@ import org.mule.module.apikit.api.exception.InvalidHeaderException;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.apikit.model.Action;
-import org.mule.apikit.model.MimeType;
 import org.mule.apikit.model.Response;
 import org.mule.runtime.api.util.MultiMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +25,6 @@ import java.util.Set;
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.union;
-import static java.lang.String.valueOf;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
@@ -36,26 +32,29 @@ import static java.util.stream.Collectors.toSet;
 
 public class HeadersValidator {
 
-
-  private static final Logger logger = LoggerFactory.getLogger(HeadersValidator.class);
-
-  private MultiMap<String, String> headers;
   private final Action action;
+  private final List<String> mimeTypes;
 
   public HeadersValidator(Action action) {
     this.action = action;
+    this.mimeTypes = getResponseMimeTypes(action);
   }
 
-  public void validateAndAddDefaults(MultiMap<String, String> incomingHeaders, boolean headersStrictValidation)
+  public MultiMap<String, String> validateAndAddDefaults(MultiMap<String, String> incomingHeaders,
+                                                         boolean headersStrictValidation)
       throws InvalidHeaderException, NotAcceptableException {
-    this.headers = incomingHeaders;
-    analyseRequestHeaders(headersStrictValidation);
-    analyseAcceptHeader(incomingHeaders);
+    MultiMap<String, String> headersWithDefaults = analyseRequestHeaders(incomingHeaders, headersStrictValidation);
+    analyseAcceptHeader(headersWithDefaults);
+    return headersWithDefaults;
   }
 
-  private void analyseRequestHeaders(boolean headersStrictValidation) throws InvalidHeaderException {
-    if (headersStrictValidation)
-      validateHeadersStrictly(action);
+  private MultiMap<String, String> analyseRequestHeaders(MultiMap<String, String> incomingHeaders,
+                                                         boolean headersStrictValidation)
+      throws InvalidHeaderException {
+    if (headersStrictValidation) {
+      validateHeadersStrictly(incomingHeaders);
+    }
+    MultiMap<String, String> copyIncomingHeaders = incomingHeaders;
 
     for (Map.Entry<String, Parameter> entry : action.getHeaders().entrySet()) {
       final String ramlHeader = entry.getKey();
@@ -63,24 +62,26 @@ public class HeadersValidator {
 
       if (ramlHeader.contains("{?}")) {
         final String regex = ramlHeader.replace("{?}", ".*");
-        for (String incomingHeader : headers.keySet()) {
+        for (String incomingHeader : copyIncomingHeaders.keySet()) {
           if (incomingHeader.matches(regex))
-            validateHeader(headers.getAll(incomingHeader), ramlHeader, ramlType);
+            validateHeader(copyIncomingHeaders.getAll(incomingHeader), ramlHeader, ramlType);
         }
       } else {
-        final List<String> values = AttributesHelper.getParamsIgnoreCase(headers, ramlHeader);
+        final List<String> values = AttributesHelper.getParamsIgnoreCase(copyIncomingHeaders, ramlHeader);
         if (values.isEmpty() && ramlType.isRequired()) {
           throw new InvalidHeaderException("\"Required header '" + ramlHeader + "' not specified\"");
         }
         if (values.isEmpty() && ramlType.getDefaultValue() != null) {
-          headers = AttributesHelper.addParam(headers, ramlHeader, ramlType.getDefaultValue());
+          copyIncomingHeaders = AttributesHelper.copyImmutableMap(copyIncomingHeaders, ramlHeader, ramlType.getDefaultValue());
         }
         validateHeader(values, ramlHeader, ramlType);
       }
     }
+    return copyIncomingHeaders;
+
   }
 
-  private void validateHeadersStrictly(Action action) throws InvalidHeaderException {
+  private void validateHeadersStrictly(Map<String, String> headers) throws InvalidHeaderException {
     //checks that headers are defined in the RAML
     final Set<String> ramlHeaders = action.getHeaders().keySet().stream()
         .map(String::toLowerCase)
@@ -139,7 +140,6 @@ public class HeadersValidator {
   }
 
   private void analyseAcceptHeader(MultiMap<String, String> incomingHeaders) throws NotAcceptableException {
-    List<String> mimeTypes = getResponseMimeTypes(action);
     if (action == null || action.getResponses() == null || mimeTypes.isEmpty()) {
       //no response media-types defined, return no body
       return;
@@ -148,40 +148,29 @@ public class HeadersValidator {
     if (bestMatch == null) {
       throw new NotAcceptableException();
     }
-    logger.debug("=== negotiated response content-type: " + bestMatch.toString());
   }
 
   private List<String> getResponseMimeTypes(Action action) {
-    List<String> mimeTypes = new ArrayList<>();
-    int status = getSuccessStatus(action);
-    if (status != -1) {
-      Response response = action.getResponses().get(valueOf(status));
-      if (response != null && response.hasBody()) {
-        Map<String, MimeType> interfacesOfTypes = response.getBody();
-        for (Map.Entry<String, MimeType> entry : interfacesOfTypes.entrySet()) {
-          mimeTypes.add(entry.getValue().getType());
-        }
-        logger.debug(format("=== adding response mimeTypes for status %d : %s", status, mimeTypes));
-      }
+    String status = getSuccessStatus(action);
+    Response response = action.getResponses().get(status);
+    if (response != null && response.hasBody()) {
+      return new ArrayList<>(response.getBody().keySet());
     }
-    return mimeTypes;
+    return new ArrayList<>();
   }
 
-  protected int getSuccessStatus(Action action) {
+  protected String getSuccessStatus(Action action) {
     for (String status : action.getResponses().keySet()) {
-      if ("default".equalsIgnoreCase(status))
-        break;
-
+      if ("default".equalsIgnoreCase(status)) {
+        return "200";
+      }
       int code = Integer.parseInt(status);
       if (code >= 200 && code < 300) {
-        return code;
+        return status;
       }
     }
     //default success status
-    return 200;
+    return "200";
   }
 
-  public MultiMap<String, String> getNewHeaders() {
-    return headers;
-  }
 }
