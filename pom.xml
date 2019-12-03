@@ -271,7 +271,7 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
-            <version>3.3.1</version>
+            <version>20041228.180559</version>
             <scope>test</scope>
         </dependency>
         <dependency>
