@@ -84,8 +84,9 @@ public class URICoder {
    * @param chars A set of characters that does not require encoding if found in the string.
    */
   private static String encode_ASCII(String s, Set<Character> chars) {
-    StringBuffer sb = new StringBuffer();
-    for (char c : s.toCharArray()) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
       if (isUnreserved((int) c) || chars.contains(c)) {
         sb.append(c);
       } else {
@@ -200,7 +201,7 @@ public class URICoder {
    * @param sb The string buffer.
    * @param c  The byte to escape.
    */
-  private static void appendEscape(StringBuffer sb, char c) {
+  private static void appendEscape(StringBuilder sb, char c) {
     sb.append('%');
     sb.append(HEX_DIGITS[(c >> 4) & 0x0f]);
     sb.append(HEX_DIGITS[(c >> 0) & 0x0f]);
