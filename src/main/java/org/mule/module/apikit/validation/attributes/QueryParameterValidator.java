@@ -22,8 +22,8 @@ import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
-import static org.mule.module.apikit.helpers.AttributesHelper.addParam;
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
+import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 
 public class QueryParameterValidator {
   private final Action action;
@@ -89,7 +89,7 @@ public class QueryParameterValidator {
       if (values.isEmpty() && queryParam.getValue().getDefaultValue() != null) {
         String queryParamDefaultValue = queryParam.getValue().getDefaultValue();
         queryStringWithDefaults = addQueryString(queryStringWithDefaults, queryParamKey, queryParamDefaultValue);
-        queryParamsWithDefaults = addParam(queryParamsWithDefaults, queryParamKey, queryParamDefaultValue);
+        queryParamsWithDefaults = copyImmutableMap(queryParamsWithDefaults, queryParamKey, queryParamDefaultValue);
       }
     }
     return new ValidatedQueryParams(queryParamsWithDefaults, queryStringWithDefaults);

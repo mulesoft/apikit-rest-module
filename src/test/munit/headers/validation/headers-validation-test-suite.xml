@@ -115,4 +115,29 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="success-with-default-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-10-main"/>
+      <munit:enable-flow-source value="post:\datetime2616:headers-10-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
+        <http:headers>#[
+          output application/java
+          ---
+          {
+          'X-MaxRows': '123',
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload]" is="#[MunitTools::equalTo('hola-header')]"/>
+    </munit:validation>
+  </munit:test>
+
 </mule>

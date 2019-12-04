@@ -30,16 +30,13 @@ public class AttributesHelper {
   private AttributesHelper() {
   }
 
-  public static MultiMap<String, String> addParam(MultiMap<String, String> oldParams, String key, String value) {
+  public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap, String key, String value) {
     MultiMap<String, String> mapParam = new MultiMap<>();
-    LinkedList<String> valueList = new LinkedList<>();
-    valueList.add(value);
-    mapParam.put(key, valueList);
-    for (Map.Entry<String, String> entry : oldParams.entrySet()) {
-      LinkedList<String> list = new LinkedList<>();
-      list.add(entry.getValue());
-      mapParam.put(entry.getKey(), list);
-    }
+    immutableMap.entrySet().stream().forEach(entry -> {
+      mapParam.put(entry.getKey(), entry.getValue());
+    });
+
+    mapParam.put(key, value);
     return mapParam;
   }
 
@@ -59,7 +56,7 @@ public class AttributesHelper {
 
   public static HttpRequestAttributes replaceParams(HttpRequestAttributes attributes, MultiMap<String, String> headers,
                                                     MultiMap<String, String> queryParams, String queryString,
-                                                    MultiMap<String, String> uriParams) {
+                                                    Map<String, String> uriParams) {
     return new HttpRequestAttributesBuilder(attributes)
         .headers(headers)
         .queryParams(queryParams)

@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.validation;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.MuleRestException;
@@ -16,7 +18,6 @@ import org.mule.module.apikit.validation.attributes.QueryParameterValidator;
 import org.mule.module.apikit.validation.attributes.QueryStringValidator;
 import org.mule.module.apikit.validation.attributes.UriParametersValidator;
 import org.mule.apikit.model.Action;
-import org.mule.apikit.model.Resource;
 import org.mule.module.apikit.validation.attributes.ValidatedQueryParams;
 import org.mule.runtime.api.util.MultiMap;
 
@@ -35,25 +36,31 @@ public class AttributesValidator {
     uriParametersValidator.validate(resolvedVariables);
 
     // queryStrings
-    QueryStringValidator queryStringValidator = new QueryStringValidator(action);
+    QueryStringValidator queryStringValidator = ValidatorsCache.INSTANCE.getQueryStringValidator(action);
     queryStringValidator.validate(attributes.getQueryParams());
 
     // queryparams
     QueryParameterValidator queryParamValidator =
-        new QueryParameterValidator(action);
-    ValidatedQueryParams validatedQueryParams = queryParamValidator.validate(attributes.getQueryParams(), attributes.getQueryString(),
-                                               config.isQueryParamsStrictValidation());
+        ValidatorsCache.INSTANCE.getQueryParameterValidator(action);
+    ValidatedQueryParams validatedQueryParams =
+        queryParamValidator.validate(attributes.getQueryParams(), attributes.getQueryString(),
+                                     config.isQueryParamsStrictValidation());
     queryParams = validatedQueryParams.getQueryParams();
     queryString = validatedQueryParams.getQueryString();
 
     // headers
-    HeadersValidator headersValidator = new HeadersValidator(action);
-    headersValidator.validateAndAddDefaults(attributes.getHeaders(),
-                                            config.isHeadersStrictValidation());
-    headers = headersValidator.getNewHeaders();
+    HeadersValidator headersValidator = ValidatorsCache.INSTANCE.getHeadersValidator(action);
+    headers = headersValidator.validateAndAddDefaults(attributes.getHeaders(),
+                                                      config.isHeadersStrictValidation());
 
+    Map<String, String> uriParamsMap = new HashMap<>();
+    resolvedVariables.names().stream().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));
     // regenerate attributes
-    return AttributesHelper.replaceParams(attributes, headers, queryParams, queryString, new MultiMap<>(attributes.getUriParams()));
+    return AttributesHelper.replaceParams(attributes,
+                                          headers,
+                                          queryParams,
+                                          queryString,
+                                          uriParamsMap);
   }
 
 }
