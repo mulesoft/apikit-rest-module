@@ -51,6 +51,11 @@ public class URICoder {
       'B', 'C', 'D', 'E', 'F'};
 
   /**
+   * extra capacity, reserved for escape chars
+   */
+  private final static int ENCODE_INITIAL_CAPACITY = 16;
+
+  /**
    * Prevents creation of instances.
    */
   private URICoder() {}
@@ -84,7 +89,7 @@ public class URICoder {
    * @param chars A set of characters that does not require encoding if found in the string.
    */
   private static String encode_ASCII(String s, Set<Character> chars) {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder(s.length() + ENCODE_INITIAL_CAPACITY);
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
       if (isUnreserved((int) c) || chars.contains(c)) {
