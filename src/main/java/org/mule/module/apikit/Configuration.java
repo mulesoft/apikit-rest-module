@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import javax.inject.Inject;
 import javax.xml.validation.Schema;
@@ -32,8 +35,11 @@ import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoa
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.scheduler.Scheduler;
+import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
@@ -45,7 +51,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class Configuration implements Initialisable, ValidationConfig, ConsoleConfig {
+public class Configuration implements Disposable, Initialisable, ValidationConfig, ConsoleConfig {
 
   private static final String DEFAULT_OUTBOUND_HEADERS_MAP_NAME = "outboundHeaders";
   private static final String DEFAULT_HTTP_STATUS_VAR_NAME = "httpStatus";
@@ -93,12 +99,33 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   @Inject
   private ConfigurationComponentLocator locator;
 
+  /*@Inject
+  private SchedulerService schedulerService;
+  
+  private Scheduler scheduler;*/
+  private ScheduledExecutorService scheduler;
+
   @Override
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
     this.routerService = findExtension();
+    /* final Scheduler scheduler = schedulerService.ioScheduler();
+    this.scheduler = scheduler;*/
+    this.scheduler = Executors.newScheduledThreadPool(30, new ThreadFactory() {
+
+      int i = 0;
+
+      @Override
+      public Thread newThread(Runnable r) {
+        i = i + 1;
+        final Thread thread = new Thread(r);
+        thread.setName("AMF-" + i);
+        return thread;
+      }
+    });
     try {
-      ramlHandler = new RamlHandler(getApi(), isKeepApiBaseUri(), errorRepositoryFrom(muleContext), parserMode.get());
+      ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
+                                    errorRepositoryFrom(muleContext), parserMode.get());
       this.routerService.ifPresent(rs -> {
         try {
           rs.initialise(ramlHandler.getApi().getUri());
@@ -353,4 +380,10 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     System.setProperty("amf.plugins.xml.expandInternalEntities", internalEntities);
   }
 
+  @Override
+  public void dispose() {
+    if (this.scheduler != null) {
+      scheduler.shutdownNow();
+    }
+  }
 }

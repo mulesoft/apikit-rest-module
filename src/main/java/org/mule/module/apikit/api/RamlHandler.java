@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class RamlHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RamlHandler.class);
   private static final String RAML_QUERY_STRING = "raml";
-  private static final ParserService parserService = new ParserService();
+  private final ParserService parserService;
   private String apiResourcesRelativePath = "";
 
   private boolean keepApiBaseUri;
@@ -69,14 +70,16 @@ public class RamlHandler {
 
   // ramlLocation should be the root raml location, relative of the resources folder
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ErrorTypeRepository errorTypeRepository) throws IOException {
-    this(ramlLocation, keepApiBaseUri, errorTypeRepository, null);
+    this(null, ramlLocation, keepApiBaseUri, errorTypeRepository, null);
   }
 
-  public RamlHandler(String ramlLocation,
+  public RamlHandler(ScheduledExecutorService executor,
+                     String ramlLocation,
                      boolean keepApiBaseUri,
                      ErrorTypeRepository errorTypeRepository,
                      ParserMode parserMode)
       throws IOException {
+    this.parserService = new ParserService(executor);
     this.keepApiBaseUri = keepApiBaseUri;
     String rootRamlLocation = findRootRaml(ramlLocation);
 
