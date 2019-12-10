@@ -25,23 +25,23 @@
         <mule.http.service.version>1.1.7</mule.http.service.version>
         <mule.service.scheduler.version>1.1.7</mule.service.scheduler.version>
         <project.reactor.version>3.2.0.M1</project.reactor.version>
-        <rest.assured.version>3.2.0</rest.assured.version>
+        <rest.assured.version>3.3.0</rest.assured.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>
-        <httpmime.version>4.5.8</httpmime.version>
+        <httpmime.version>4.5.10</httpmime.version>
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
 
         <!-- PARSERS -->
         <parser.service.version>2.1.0-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
-        <apiconsole.version>6.0.31</apiconsole.version>
+        <apiconsole.version>6.0.38</apiconsole.version>
 
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.6</commons.io.version>
         <guava.version>28.1-jre</guava.version>
-        <jackson.databind.version>2.10.0</jackson.databind.version>
+        <jackson.databind.version>2.10.1</jackson.databind.version>
         <jackson.version>2.10.0</jackson.version>
-        <libthrift.version>0.12.0</libthrift.version>
+        <libthrift.version>0.13.0</libthrift.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -50,11 +50,11 @@
         <munit.version>2.2.3-SNAPSHOT</munit.version>
         <munit.tools.version>2.2.3-SNAPSHOT</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
-        <mockServerVersion>5.5.1</mockServerVersion>
+        <mockServerVersion>5.8.0</mockServerVersion>
         <jacoco.version>0.8.5</jacoco.version>
-        <allureJunitVersion>2.0-BETA17</allureJunitVersion>
+        <allureJunitVersion>2.13.0</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
-        <allure.maven.plugin.version>2.8</allure.maven.plugin.version>
+        <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
 
     </properties>
 
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
+            <version>3.9</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -133,7 +133,7 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.3.1</version>
+            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
@@ -277,7 +277,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
+            <version>1.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -531,7 +531,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
