@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mule.module.apikit.StreamUtils;
+import org.mule.module.apikit.input.stream.RewindableInputStream;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
@@ -46,6 +47,7 @@ public class MultipartFormValidatorTest {
     TypedValue typedValue = getTypedValue();
     TypedValue validatedTypedValue = multipartFormValidator.validate(typedValue);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
+    ((RewindableInputStream) validatedInputStream).rewind();
     assertEquals(typedValue.getByteLength().getAsLong(), validatedTypedValue.getByteLength().getAsLong());
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
@@ -54,7 +56,7 @@ public class MultipartFormValidatorTest {
     DataType dataType = DataType.builder(DataType.INPUT_STREAM)
         .mediaType(MediaType.parse("multipart/form-data; boundary=\"" + BOUNDARY + "\"")).build();
     ByteArrayInputStream in = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
-    return new TypedValue(in, dataType, OptionalLong.of(in.available()));
+    return new TypedValue(new RewindableInputStream(in), dataType, OptionalLong.of(in.available()));
   }
 
 }

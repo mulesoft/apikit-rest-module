@@ -10,6 +10,7 @@ package org.mule.module.apikit.validation.body.form;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
+import org.mule.module.apikit.input.stream.RewindableInputStream;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataBuilder;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
@@ -36,7 +37,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
     final String boundary = getBoundary(originalPayload);
     MultipartFormDataBuilder multipartFormDataBuilder = new MultipartFormDataBuilder(inputStream, boundary);
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormDataBuilder.getFormDataParameters();
-
+    boolean hasDefaultValues = false;
     for (String expectedKey : formParameters.keySet()) {
       List<Parameter> params = formParameters.get(expectedKey);
       if (params != null && params.size() == 1) {
@@ -47,13 +48,16 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
         } else {
           if (expected.getDefaultValue() != null) {
             multipartFormDataBuilder.addDefault(expectedKey, expected.getDefaultValue());
+            hasDefaultValues = true;
           } else if (expected.isRequired()) {
             throw new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified");
           }
         }
       }
     }
-
+    if (!hasDefaultValues) {
+      return originalPayload;
+    }
     return getTypedValue(multipartFormDataBuilder.build());
   }
 
