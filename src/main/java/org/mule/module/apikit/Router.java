@@ -92,8 +92,10 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   }
 
   private FlowRoutingStrategy getRoutingStrategy() {
-    // privileged API should only be used in MULE 4.1.x versions, since 4.2.0 we start using the ExecutableComponent public API
-    return MuleVersionUtils.isAtLeast("4.2.0") ? new DefaultFlowRoutingStrategy()
+    // privileged API should only be used in MULE 4.1.x versions, in MULE 4.2.0 and 4.2.1 there is not way to propagate
+    // an event to the main flow when an error occur so, for backward compatibility, we we start using the
+    // ExecutableComponent public API since 4.2.2
+    return MuleVersionUtils.isAtLeast("4.2.2") ? new DefaultFlowRoutingStrategy()
         : new PrivilegedFlowRoutingStrategy(getLocation());
   }
 

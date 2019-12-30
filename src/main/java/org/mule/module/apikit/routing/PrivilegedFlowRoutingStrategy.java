@@ -8,11 +8,13 @@ package org.mule.module.apikit.routing;
 
 import static java.util.Optional.ofNullable;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processWithChildContext;
+import static reactor.core.publisher.Mono.from;
 
 import org.mule.runtime.api.component.location.ComponentLocation;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 
+import org.mule.runtime.core.privileged.event.BaseEventContext;
 import org.reactivestreams.Publisher;
 
 /**
@@ -28,6 +30,8 @@ public class PrivilegedFlowRoutingStrategy implements FlowRoutingStrategy {
   }
 
   public Publisher<CoreEvent> route(Flow flow, CoreEvent mainEvent, CoreEvent subFlowEvent) {
-    return processWithChildContext(subFlowEvent, flow, ofNullable(location), flow.getExceptionListener());
+    final Publisher<CoreEvent> coreEventPublisher =
+        processWithChildContext(subFlowEvent, flow, ofNullable(location), flow.getExceptionListener());
+    return from(coreEventPublisher).doOnError(e -> ((BaseEventContext) mainEvent.getContext()).error(e));
   }
 }
