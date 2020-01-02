@@ -22,6 +22,7 @@
       </http:error-response>
     </http:listener>
     <apikit:router config-ref="form-body-validation-config"/>
+    <logger level="INFO" message="#[payload]" />
     <error-handler ref="global-server-error-handler"/>
   </flow>
 
@@ -38,7 +39,10 @@
   </flow>
 
   <flow name="post:\multipart:multipart\form-data:form-body-validation-config">
+    <!--check payload is repeatable after validation with default values (SE-14200)-->
+    <logger level="INFO" message="#[payload]" />
     <set-payload value="#[output application/json --- {(payload.parts pluck {'$$': $.content})}]" />
+    <logger level="INFO" message="#[payload]" />
   </flow>
 
   <flow name="post:\uploadFile:multipart\form-data:form-body-validation-config">

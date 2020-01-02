@@ -16,6 +16,8 @@ import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatM
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
 import static reactor.core.publisher.Mono.error;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.Resource;
 import org.mule.extension.http.api.HttpRequestAttributes;
@@ -50,6 +52,8 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import com.google.common.cache.LoadingCache;
+import org.mule.runtime.core.api.streaming.StreamingManager;
+import org.mule.runtime.core.api.streaming.bytes.CursorStreamProviderFactory;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +75,11 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
   private String name;
 
   @Inject
+  private StreamingManager streamingManager;
+
+  private CursorStreamProviderFactory streamProviderFactory;
+
+  @Inject
   public Router(ApikitRegistry registry, ConfigurationComponentLocator locator) {
     this.registry = registry;
     this.locator = locator;
@@ -89,6 +98,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
       registry.setApiSource(configName, url.get().toString().replace("*", ""));
       LOGGER.info(getBoilerPlate("APIKit Router '" + configName + "' started using Parser: " + configuration.getType()));
     }
+    this.streamProviderFactory = streamingManager.forBytes().getDefaultCursorProviderFactory();
   }
 
   private FlowRoutingStrategy getRoutingStrategy() {
@@ -143,21 +153,31 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     URIResolver uriResolver = findInCache(path, config.getUriResolverCache());
     ResolvedVariables resolvedVariables = uriResolver.resolve(uriPattern);
     Resource resource = config.getFlowFinder().getResource(uriPattern);
-    TypedValue<Object> payload = mainEvent.getMessage().getPayload();
-    ValidRequest request = validate(config, resource, attributes, resolvedVariables, payload, errorRepositoryFrom(muleContext));
-    Flow flow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(), getMediaType(attributes));
-    CoreEvent subflowEvent = buildSubflowEvent(mainEvent, request, config.getOutboundHeadersMapName());
 
-    return Mono.from(routingStrategy.route(flow, mainEvent, subflowEvent))
-      .map(result -> {
-        if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
-          // If status code is missing, a default one is added
-          RamlHandler handler = config.getRamlHandler();
-          String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
-          return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
-        }
-        return result;
-      });
+    TypedValue<Object> payload = mainEvent.getMessage().getPayload();
+
+    ValidRequest request = validate(config, resource, attributes, resolvedVariables,
+                                    makeInputBodyRepeatable(config.isDisableValidations(), mainEvent, payload),
+                                    errorRepositoryFrom(muleContext));
+
+    Flow flow = config.getFlowFinder().getFlow(resource,
+                                               attributes.getMethod().toLowerCase(),
+                                               getMediaType(attributes));
+
+    CoreEvent subFlowEvent = buildSubFlowEvent(config.isDisableValidations(),
+                                               mainEvent, request,
+                                               config.getOutboundHeadersMapName());
+
+    return Mono.from(routingStrategy.route(flow, mainEvent, subFlowEvent))
+        .map(result -> {
+          if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
+            // If status code is missing, a default one is added
+            RamlHandler handler = config.getRamlHandler();
+            String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
+            return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
+          }
+          return result;
+        });
   }
 
   private String getRequestPath(HttpRequestAttributes attributes) {
@@ -195,13 +215,37 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     this.name = name;
   }
 
-  private CoreEvent buildSubflowEvent(CoreEvent parent, ValidRequest request, String outboundHeadersMapName) {
+  private CoreEvent buildSubFlowEvent(boolean disableValidations, CoreEvent parent,
+                                      ValidRequest request, String outboundHeadersMapName) {
+
     CoreEvent.Builder eventBuilder = CoreEvent.builder(parent);
     eventBuilder.addVariable(outboundHeadersMapName, new HashMap<>());
 
     Message.Builder messageBuilder = Message.builder(parent.getMessage());
-    messageBuilder.value(request.getBody().getPayload());
+    messageBuilder.value(makeRepeatable(disableValidations, request.getBody().getPayload(), parent));
     messageBuilder.attributesValue(request.getAttributes());
     return eventBuilder.message(messageBuilder.build()).build();
+  }
+
+  private TypedValue<Object> makeInputBodyRepeatable(boolean disableValidations, CoreEvent event,
+                                                     TypedValue<Object> inputBody) {
+    return new TypedValue<>(makeRepeatable(disableValidations, inputBody.getValue(), event),
+                            inputBody.getDataType(),
+                            inputBody.getByteLength());
+  }
+
+
+  private Object makeRepeatable(boolean disableValidations, Object body, CoreEvent event) {
+    try {
+      if (disableValidations) {
+        return body;
+      }
+      // available > 0, avoid make repeatable an empty InputStream (request without body)
+      return body instanceof InputStream && ((InputStream) body).available() > 0
+          ? streamProviderFactory.of(event.getContext(), (InputStream) body)
+          : body;
+    } catch (IOException e) {
+      return body;
+    }
   }
 }

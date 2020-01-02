@@ -27,6 +27,7 @@
   </flow>
 
   <flow name="post:\multipart:multipart\form-data:non-repeatable-streaming-config">
+    <logger level="INFO" message="#[payload]"/>
     <set-payload value="#[output application/json --- {(payload.parts pluck {'$$': $.content})}]" />
   </flow>
 
