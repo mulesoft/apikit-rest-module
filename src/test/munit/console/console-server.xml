@@ -17,6 +17,9 @@
   <apikit:config parser="${parser.type}" name="console-api-without-base-uri-config" raml="munit/console/console-api-without-base-uri.raml"
                  outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" keepApiBaseUri="${keepBaseUri}"/>
 
+  <apikit:config parser="${parser.type}" name="console-with-cors-config" raml="munit/console/console-with-cors.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+
 
   <flow name="console-router">
     <http:listener config-ref="http-listener-simple" path="/api/*">
@@ -34,6 +37,20 @@
       </http:response>
     </http:listener>
     <apikit:router config-ref="console-api-without-base-uri-config"/>
+  </flow>
+
+  <flow name="console-with-cors">
+    <http:listener config-ref="http-listener-cors" path="/console/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:console config-ref="console-with-cors-config"/>
+    <error-handler ref="global-server-error-handler"/>
   </flow>
 
   <flow name="console-without-base-uri">

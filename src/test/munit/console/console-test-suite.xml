@@ -25,7 +25,7 @@
     </munit:parameterizations>
   </munit:config>
 
-  <munit:test name="succes-hitting-console">
+  <munit:test name="success-hitting-console">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="console"/>
     </munit:enable-flow-sources>
@@ -40,6 +40,26 @@
       <munit-tools:assert-that expression="#[vars.example]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[vars.console.payload.^mimeType]" is="#[MunitTools::equalTo('text/html')]"/>
       <munit-tools:assert-that expression="#[vars.console.attributes.Headers.expires]" is="#[MunitTools::equalTo('-1')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="success-hitting-console-with-cors" ignore="#['${parser.type}' == 'RAML']">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="console-with-cors"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-cors" path="/console/package/build/apic-import.js" target="console" targetValue="#[message]">
+        <http:headers>#[
+          output application/java
+          ---
+          {
+          Origin: 'http://localhost:8081'
+          }]
+        </http:headers>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[vars.console.attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
       <munit-tools:assert-that expression="#[vars.console.attributes.Headers.'access-control-allow-origin']" is="#[MunitTools::equalTo('*')]"/>
     </munit:validation>
   </munit:test>
