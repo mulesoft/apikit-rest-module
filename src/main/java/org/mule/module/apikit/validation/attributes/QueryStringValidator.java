@@ -7,11 +7,10 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.collect.Maps;
-
-import org.mule.apikit.model.parameter.Parameter;
-import org.mule.module.apikit.api.exception.InvalidQueryStringException;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.QueryString;
+import org.mule.apikit.model.parameter.Parameter;
+import org.mule.module.apikit.api.exception.InvalidQueryStringException;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.HashMap;
@@ -35,7 +34,7 @@ public class QueryStringValidator {
     String queryString = buildQueryString(expected, queryParams);
 
     if (!expected.validate(queryString)) {
-      throw new InvalidQueryStringException("\"Invalid value for query string\"");
+      throw new InvalidQueryStringException("Invalid value for query string");
     }
   }
 

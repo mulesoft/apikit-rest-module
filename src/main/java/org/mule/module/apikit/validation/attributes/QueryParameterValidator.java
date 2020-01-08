@@ -53,7 +53,7 @@ public class QueryParameterValidator {
       Parameter parameterDefinition = queryParam.getValue();
       List<String> values = queryParams.getAll(paramKey);
       if (values.isEmpty() && parameterDefinition.isRequired()) {
-        throw new InvalidQueryParameterException("\"Required query parameter " + paramKey + " not specified\"");
+        throw new InvalidQueryParameterException("Required query parameter " + paramKey + " not specified");
       }
       if (values.size() > 1 && !(parameterDefinition.isRepeat() || parameterDefinition.isArray())) {
         throw new InvalidQueryParameterException("Query parameter " + paramKey + " is not repeatable");
@@ -100,7 +100,7 @@ public class QueryParameterValidator {
     //check that query parameters are defined in the RAML
     Set notDefinedQueryParameters = difference(queryParams.keySet(), action.getQueryParameters().keySet());
     if (!notDefinedQueryParameters.isEmpty()) {
-      throw new InvalidQueryParameterException(format("\"[%s] %s\"", on(", ").join(notDefinedQueryParameters),
+      throw new InvalidQueryParameterException(format("[%s] %s", on(", ").join(notDefinedQueryParameters),
                                                       "parameters are not defined in RAML."));
     }
   }
@@ -140,7 +140,7 @@ public class QueryParameterValidator {
 
   private void validate(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
-      String msg = format("\"Invalid value '%s' for query parameter %s. %s\"",
+      String msg = format("Invalid value '%s' for query parameter %s. %s",
                           paramValue, paramKey, expected.message(paramValue));
       throw new InvalidQueryParameterException(msg);
     }

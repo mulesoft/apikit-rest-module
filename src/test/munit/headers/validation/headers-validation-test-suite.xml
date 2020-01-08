@@ -26,7 +26,7 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-equals actual="#[payload]" expected="#['Required header \'one\' not specified']"/>
+      <munit-tools:assert-equals actual="#[payload.description]" expected="#['Required header \'one\' not specified']"/>
     </munit:validation>
   </munit:test>
 
@@ -51,7 +51,8 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-equals actual="#[payload]" expected="#['Invalid value \'invalid\' for header \'one\'']"/>
+      <munit-tools:assert-equals actual="#[payload.description]"
+                                 expected="#['Invalid value \'invalid\' for header \'one\'']"/>
     </munit:validation>
   </munit:test>
 
@@ -111,7 +112,8 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('Invalid value \'JEJE\' for header \'X-MaxRows\'')]"/>
+      <munit-tools:assert-that expression="#[payload.description]"
+                               is="#[MunitTools::equalTo('Invalid value \'JEJE\' for header \'X-MaxRows\'')]"/>
     </munit:validation>
   </munit:test>
 

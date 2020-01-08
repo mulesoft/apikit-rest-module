@@ -75,8 +75,61 @@
         </munit:execution>
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(405)]"/>
-            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']" is="#[MunitTools::equalTo('application/json')]"/>
+            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']"
+                                     is="#[MunitTools::equalTo('application/json')]"/>
             <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Method not allowed')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="throw415">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+            <munit:enable-flow-source value="post:\unsupportedMediaType:application\json:api-errors-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/error-handler/unsupportedMediaType">
+                <http:body>
+                    <![CDATA[#[
+                    %dw 2.0
+                    output application/x-www-form-urlencoded
+                    ---
+                    {
+                        "firstName" : "John",
+                        "lastName": "Doe"
+                    }
+                    ]]]>
+                </http:body>
+                <http:headers>#[{'Content-Type': 'application/x-www-form-urlencoded'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']"
+                                     is="#[MunitTools::equalTo('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload.message]"
+                                     is="#[MunitTools::equalTo('Unsupported media type')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="throw501">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple" path="/error-handler/raiseNotImplemented">
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..501"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(501)]"/>
+            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']"
+                                     is="#[MunitTools::equalTo('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Not implemented')]"/>
         </munit:validation>
     </munit:test>
 </mule>
