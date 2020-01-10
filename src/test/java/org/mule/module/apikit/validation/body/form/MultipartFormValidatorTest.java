@@ -47,7 +47,6 @@ public class MultipartFormValidatorTest {
     TypedValue typedValue = getTypedValue();
     TypedValue validatedTypedValue = multipartFormValidator.validate(typedValue);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
-    ((RewindableInputStream) validatedInputStream).rewind();
     assertEquals(typedValue.getByteLength().getAsLong(), validatedTypedValue.getByteLength().getAsLong());
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
