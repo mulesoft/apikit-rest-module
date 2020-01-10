@@ -55,7 +55,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
         }
       }
     }
-    if (!hasDefaultValues) {
+    if (!hasDefaultValues && !(originalPayload.getValue() instanceof InputStream)) {
       return originalPayload;
     }
     return getTypedValue(multipartFormDataBuilder.build());
