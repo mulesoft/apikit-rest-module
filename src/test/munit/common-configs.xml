@@ -10,12 +10,29 @@
 
   <munit:dynamic-port propertyName="free.port.simple.http" min="1024" max="64000"/>
 
+  <munit:dynamic-port propertyName="free.port.cors.http" min="1024" max="64000"/>
+
   <http:listener-config name="http-listener-simple">
     <http:listener-connection host="0.0.0.0" port="${free.port.simple.http}"/>
   </http:listener-config>
 
+  <http:listener-config name="http-listener-cors">
+    <http:listener-connection host="0.0.0.0" port="${free.port.cors.http}"/>
+    <http:listener-interceptors>
+      <http:cors-interceptor>
+        <http:origins>
+          <http:public-resource />
+        </http:origins>
+      </http:cors-interceptor>
+    </http:listener-interceptors>
+  </http:listener-config>
+
   <http:request-config name="http-requester-simple">
     <http:request-connection host="localhost" port="${free.port.simple.http}"/>
+  </http:request-config>
+
+  <http:request-config name="http-requester-cors">
+    <http:request-connection host="localhost" port="${free.port.cors.http}"/>
   </http:request-config>
 
   <error-handler name="global-server-error-handler">
