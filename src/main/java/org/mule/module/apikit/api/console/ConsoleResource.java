@@ -28,7 +28,6 @@ public class ConsoleResource implements Resource {
   public MultiMap<String, String> getHeaders() {
     MediaType mediaType = getMediaType();
     MultiMap<String, String> headers = new MultiMap<>();
-    headers.put(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
     if (mediaType.equals(MediaType.HTML)) {
       headers.put(HttpHeaders.Names.EXPIRES, "-1");
