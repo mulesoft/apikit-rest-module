@@ -138,7 +138,157 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload]" is="#[MunitTools::equalTo('hola-header')]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload]"
+                               is="#[MunitTools::equalTo('hola-header')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="success-with-multiple-accept-header-values">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-10-main"/>
+      <munit:enable-flow-source value="get:\multiplicity:headers-10-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'Accept': 'Application/json',
+          'Accept': 'Application/xml'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="success-with-valid-comma-separated-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-10-main"/>
+      <munit:enable-flow-source value="get:\multiplicity:headers-10-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'Accept': 'application/json,application/xml'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="unsupported-media-type-with-multiple-content-type-header-values">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-10-main"/>
+      <munit:enable-flow-source value="post:\multiplicity:headers-10-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+        <http:body>#[
+          output application/json
+          ---
+          {
+          'id': 'test'
+          }]
+        </http:body>
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'Content-type': 'application/json',
+          'Content-type': 'application/xml'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
+                               is="#[MunitTools::equalTo('Unsupported media type')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="unsupported-media-type-with-invalid-content-type-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-10-main"/>
+      <munit:enable-flow-source value="post:\multiplicity:headers-10-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+        <http:body>#[
+          output application/json
+          ---
+          {
+          'id': 'test'
+          }]
+        </http:body>
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'Content-type': 'application/json,application/xml'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
+                               is="#[MunitTools::equalTo('Unsupported media type')]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-content-type-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-10-main"/>
+      <munit:enable-flow-source value="post:\multiplicity:headers-10-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+        <http:body>#[
+          output application/json
+          ---
+          {
+          'id': 'test'
+          }]
+        </http:body>
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'Content-type': 'application/xml'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
+                               is="#[MunitTools::equalTo('Unsupported media type')]"/>
     </munit:validation>
   </munit:test>
 
@@ -179,7 +329,7 @@
           output application/json
           ---
           {
-          'array-header': '{"type": "username", "value": "testvalue"}' ,
+          'array-header': '{"type": "username", "value": "testvalue"}',
           'array-header': '{"type": "password", "value": "testvalue"}'
           }]
         </http:headers>

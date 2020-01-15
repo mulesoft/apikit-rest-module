@@ -2,13 +2,12 @@
 <mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-      xmlns:test-module="http://www.mulesoft.org/schema/mule/test"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                           http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-                          http://www.mulesoft.org/schema/mule/test http://www.mulesoft.org/schema/mule/test/current/mule-test.xsd
+
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
   <apikit:config name="headers-10-validation-config" raml="munit/headers/validation10.raml"
@@ -43,6 +42,14 @@
   </flow>
 
   <flow name="post:\datetime2616:headers-10-validation-config">
-    <set-payload value="#[attributes.headers['defaultHeaderValue']]" />
+    <set-payload value="#[attributes.headers['defaultHeaderValue']]"/>
+  </flow>
+
+  <flow name="get:\multiplicity:headers-10-validation-config">
+    <set-payload value="#[payload]"/>
+  </flow>
+
+  <flow name="post:\multiplicity:headers-10-validation-config">
+    <set-payload value="#[payload]"/>
   </flow>
 </mule>
