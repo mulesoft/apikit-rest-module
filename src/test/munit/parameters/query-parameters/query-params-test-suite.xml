@@ -249,6 +249,8 @@
 															 is="#[MunitTools::equalTo('Rafael')]"/>
 			<munit-tools:assert-that expression="#[output application/json --- payload.*optionalArray[1]]"
 															 is="#[MunitTools::equalTo('Santos')]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.*optionalArray[2]]"
+															 is="#[MunitTools::equalTo('Borre')]"/>
 		</munit:validation>
 	</munit:test>
 
