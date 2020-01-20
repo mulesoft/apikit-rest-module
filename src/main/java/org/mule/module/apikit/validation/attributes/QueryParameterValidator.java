@@ -6,17 +6,17 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import org.mule.apikit.model.Action;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidQueryParameterException;
-import org.mule.apikit.model.Action;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
