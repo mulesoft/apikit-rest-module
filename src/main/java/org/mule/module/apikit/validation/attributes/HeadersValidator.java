@@ -7,14 +7,13 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.net.MediaType;
-
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.module.apikit.helpers.AttributesHelper;
-import org.mule.apikit.model.Action;
-import org.mule.apikit.model.Response;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.ArrayList;
@@ -69,7 +68,7 @@ public class HeadersValidator {
       } else {
         final List<String> values = AttributesHelper.getParamsIgnoreCase(copyIncomingHeaders, ramlHeader);
         if (values.isEmpty() && ramlType.isRequired()) {
-          throw new InvalidHeaderException("\"Required header '" + ramlHeader + "' not specified\"");
+          throw new InvalidHeaderException("Required header '" + ramlHeader + "' not specified");
         }
         if (values.isEmpty() && ramlType.getDefaultValue() != null) {
           copyIncomingHeaders = AttributesHelper.copyImmutableMap(copyIncomingHeaders, ramlHeader, ramlType.getDefaultValue());
@@ -103,7 +102,7 @@ public class HeadersValidator {
     final Set<String> undefinedHeaders = difference(unmatchedHeaders, union(ramlHeaders, standardHeaders));
 
     if (!undefinedHeaders.isEmpty()) {
-      throw new InvalidHeaderException(format("\"[%s] %s\"", on(", ").join(undefinedHeaders),
+      throw new InvalidHeaderException(format("[%s] %s", on(", ").join(undefinedHeaders),
                                               "headers are not defined in RAML strict headers validation property is true."));
     }
   }
@@ -135,7 +134,7 @@ public class HeadersValidator {
 
   private void validateType(String name, String value, Parameter type) throws InvalidHeaderException {
     if (!type.validate(value)) {
-      throw new InvalidHeaderException(format("\"Invalid value '%s' for header '%s'\"", value, name));
+      throw new InvalidHeaderException(format("Invalid value '%s' for header '%s'", value, name));
     }
   }
 

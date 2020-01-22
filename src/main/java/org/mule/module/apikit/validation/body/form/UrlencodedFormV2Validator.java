@@ -6,11 +6,11 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import org.mule.apikit.model.MimeType;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.DataWeaveTransformer;
-import org.mule.apikit.model.MimeType;
 import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -73,7 +73,7 @@ public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
 
   private void validate(String expectedKey, Parameter parameter, String value) throws InvalidFormParameterException {
     if (!parameter.validate(value))
-      throw new InvalidFormParameterException("\"Invalid value '" + value + "' for parameter\"" + expectedKey);
+      throw new InvalidFormParameterException("Invalid value '" + value + "' for parameter" + expectedKey);
   }
 
   private void validateAsArray(String expectedKey, Parameter parameter, List<String> values)
@@ -82,7 +82,7 @@ public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
     if (!parameter.validate(valueToValidate)) {
       // Numeric values are always parsed as number, this is a workaround to validate them as string
       if (!parameter.validate(values.stream().map(v -> "- '" + v + "'").collect(joining("\n")))) {
-        throw new InvalidFormParameterException("\"Invalid value '" + valueToValidate + "' for parameter\"" + expectedKey);
+        throw new InvalidFormParameterException("Invalid value '" + valueToValidate + "' for parameter" + expectedKey);
       }
     }
   }
