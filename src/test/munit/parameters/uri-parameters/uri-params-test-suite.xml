@@ -97,8 +97,9 @@
 	  </http:request>
 	</munit:execution>
 	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('Invalid value \'0\' for uri parameter id')]"/>
+		<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		<munit-tools:assert-that expression="#[payload.description]"
+								 is="#[MunitTools::containsString('Invalid value \'0\' for uri parameter id')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -114,10 +115,11 @@
 		</http:response-validator>
 	  </http:request>
 	</munit:execution>
-	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('Invalid value \'1110\' for uri parameter id')]"/>
-	</munit:validation>
+	  <munit:validation>
+		  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		  <munit-tools:assert-that expression="#[payload.description]"
+								   is="#[MunitTools::containsString('Invalid value \'1110\' for uri parameter id')]"/>
+	  </munit:validation>
   </munit:test>
 
   <munit:test name="invalid-uri-param-types">
@@ -140,14 +142,16 @@
 		</http:response-validator>
 	  </http:request>
 	</munit:execution>
-	<munit:validation>
-	  <munit-tools:assert-that expression="#[vars.numberResult.attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[vars.numberResult.payload]"
-							   is="#[MunitTools::containsString('Invalid value \'word\' for uri parameter id')]"/>
-	  <munit-tools:assert-that expression="#[vars.enumResult.attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[vars.enumResult.payload]"
-							   is="#[MunitTools::containsString('Invalid value \'ten\' for uri parameter id2')]"/>
-	</munit:validation>
+	  <munit:validation>
+		  <munit-tools:assert-that expression="#[vars.numberResult.attributes.statusCode]"
+								   is="#[MunitTools::equalTo(400)]"/>
+		  <munit-tools:assert-that expression="#[vars.numberResult.payload.description]"
+								   is="#[MunitTools::containsString('Invalid value \'word\' for uri parameter id')]"/>
+		  <munit-tools:assert-that expression="#[vars.enumResult.attributes.statusCode]"
+								   is="#[MunitTools::equalTo(400)]"/>
+		  <munit-tools:assert-that expression="#[vars.enumResult.payload.description]"
+								   is="#[MunitTools::containsString('Invalid value \'ten\' for uri parameter id2')]"/>
+	  </munit:validation>
   </munit:test>
 
 </mule>

@@ -8,6 +8,12 @@ title: API for test errors!
       200:
         body:
             application/json:
+/raiseNotImplemented:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
 /onErrorContinue:
   get:
     responses:
@@ -26,3 +32,7 @@ title: API for test errors!
       200:
         body:
            application/json:
+/unsupportedMediaType:
+  post:
+    body:
+      application/json:

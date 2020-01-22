@@ -93,9 +93,9 @@
 	  </http:request>
 	</munit:execution>
 	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('Invalid value \'1\' for query parameter sized')]"/>
+		<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		<munit-tools:assert-that expression="#[output application/java --- payload.description]"
+								 is="#[MunitTools::containsString('Invalid value \'1\' for query parameter sized')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -118,11 +118,11 @@
 		</http:response-validator>
 	  </http:request>
 	</munit:execution>
-	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('Invalid value \'more-than-3-chars\' for query parameter sized')]"/>
-	</munit:validation>
+	  <munit:validation>
+		  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		  <munit-tools:assert-that expression="#[output application/java --- payload.description]"
+								   is="#[MunitTools::containsString('Invalid value \'more-than-3-chars\' for query parameter sized')]"/>
+	  </munit:validation>
   </munit:test>
 
   <munit:test name="invalid-query-param-pattern">
@@ -144,11 +144,11 @@
 		</http:response-validator>
 	  </http:request>
 	</munit:execution>
-	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('Invalid value \'1st\' for query parameter sized.')]"/>
-	</munit:validation>
+	  <munit:validation>
+		  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		  <munit-tools:assert-that expression="#[output application/java --- payload.description]"
+								   is="#[MunitTools::containsString('Invalid value \'1st\' for query parameter sized.')]"/>
+	  </munit:validation>
   </munit:test>
 
   <munit:test name="invalid-boolean-query-param">
@@ -171,11 +171,11 @@
 		</http:response-validator>
 	  </http:request>
 	</munit:execution>
-	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[output application/java --- payload]"
-							   is="#[MunitTools::containsString('Invalid value \'yes\' for query parameter optionalBoolean.')]"/>
-	</munit:validation>
+	  <munit:validation>
+		  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		  <munit-tools:assert-that expression="#[output application/java --- payload.description]"
+								   is="#[MunitTools::containsString('Invalid value \'yes\' for query parameter optionalBoolean.')]"/>
+	  </munit:validation>
   </munit:test>
 
   <munit:test name="missing-required-query-params">
@@ -191,8 +191,9 @@
 	  </http:request>
 	</munit:execution>
 	<munit:validation>
-	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-	  <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::containsString('Required query parameter sized not specified')]"/>
+		<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		<munit-tools:assert-that expression="#[output application/java --- payload.description]"
+								 is="#[MunitTools::containsString('Required query parameter sized not specified')]"/>
 	</munit:validation>
   </munit:test>
 
@@ -231,8 +232,8 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload]"
-      is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableString')]"/>
+		<munit-tools:assert-that expression="#[output text/plain --- payload.description]"
+								 is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableString')]"/>
     </munit:validation>
   </munit:test>
 
@@ -345,8 +346,8 @@
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-			<munit-tools:assert-that expression="#[output text/plain --- payload]"
-				is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableInteger')]"/>
+			<munit-tools:assert-that expression="#[output text/plain --- payload.description]"
+									 is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableInteger')]"/>
 		</munit:validation>
 	</munit:test>
 
@@ -364,8 +365,8 @@
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-			<munit-tools:assert-that expression="#[output text/plain --- payload]"
-				is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableInteger')]"/>
+			<munit-tools:assert-that expression="#[output text/plain --- payload.description]"
+									 is="#[MunitTools::containsString('Invalid value \'null\' for query parameter nonNullableInteger')]"/>
 		</munit:validation>
 	</munit:test>
 

@@ -71,8 +71,9 @@
     </munit:execution>
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload]"
-        is="#[MunitTools::equalTo('[notDefinedQueryParam] parameters are not defined in RAML.')]"/>
+      <logger level="INFO" message="#[payload]"/>
+      <munit-tools:assert-that expression="#[output text/plain --- payload.description]"
+                               is="#[MunitTools::equalTo('[notDefinedQueryParam] parameters are not defined in RAML.')]"/>
     </munit:validation>
   </munit:test>
 
