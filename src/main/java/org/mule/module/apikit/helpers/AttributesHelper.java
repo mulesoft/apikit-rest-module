@@ -16,7 +16,6 @@ import org.mule.runtime.api.util.MultiMap;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,9 +35,7 @@ public class AttributesHelper {
 
   public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap, String key, String value) {
     MultiMap<String, String> mapParam = new MultiMap<>();
-    immutableMap.entrySet().stream().forEach(entry -> {
-      mapParam.put(entry.getKey(), entry.getValue());
-    });
+    immutableMap.keySet().stream().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
 
     mapParam.put(key, value);
     return mapParam;
