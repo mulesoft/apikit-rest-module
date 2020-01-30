@@ -218,6 +218,42 @@
 		</munit:validation>
 	</munit:test>
 
+	<munit:test name="query-parameter-with-default-value-and-optional-array">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-params-main"/>
+			<munit:enable-flow-source value="get:\defaultValue:query-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/defaultValue">
+				<http:query-params>
+					#[output application/java
+					---
+					{
+					"optionalArray" : "Rafael",
+					"optionalArray" : "Santos",
+					"optionalArray" : "Borre"
+					}]
+				</http:query-params>
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.withDefaultValue]"
+															 is="#[MunitTools::equalTo('f4l0p4')]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.otherWithDefaultValue]"
+															 is="#[MunitTools::equalTo('agasdg')]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.*optionalArray[0]]"
+															 is="#[MunitTools::equalTo('Rafael')]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.*optionalArray[1]]"
+															 is="#[MunitTools::equalTo('Santos')]"/>
+			<munit-tools:assert-that expression="#[output application/json --- payload.*optionalArray[2]]"
+															 is="#[MunitTools::equalTo('Borre')]"/>
+		</munit:validation>
+	</munit:test>
+
   <munit:test name="query-parameter-string-non-nullable-without-value">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="query-params-main"/>
