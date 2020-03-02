@@ -34,7 +34,7 @@
         <parser.service.version>2.1.0-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
-        <apiconsole.version>6.0.40</apiconsole.version>
+        <apiconsole.version>6.0.49</apiconsole.version>
 
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.6</commons.io.version>
