@@ -255,7 +255,7 @@
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
       <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
-                               is="#[MunitTools::equalTo('Unsupported media type')]"/>
+                               is="#[MunitTools::containsString('Unsupported media type')]"/>
     </munit:validation>
   </munit:test>
 

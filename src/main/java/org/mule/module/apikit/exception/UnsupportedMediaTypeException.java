@@ -16,6 +16,10 @@ public class UnsupportedMediaTypeException extends MuleRestException {
     super("Unsupported mediaType");
   }
 
+  public UnsupportedMediaTypeException(String message) {
+    super(message);
+  }
+
   @Override
   public String getStringRepresentation() {
     return STRING_REPRESENTATION;

@@ -6,23 +6,11 @@
  */
 package org.mule.module.apikit;
 
-import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
-import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.net.URI;
-import java.util.Optional;
-
-import javax.inject.Inject;
-
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.UrlUtils;
 import org.mule.module.apikit.api.console.ConsoleResources;
 import org.mule.module.apikit.api.console.Resource;
 import org.mule.module.apikit.exception.NotFoundException;
-import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.module.apikit.helpers.EventHelper;
 import org.mule.module.apikit.helpers.EventWrapper;
 import org.mule.runtime.api.component.AbstractComponent;
@@ -33,9 +21,20 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
 import org.mule.runtime.core.api.util.IOUtils;
 import org.mule.runtime.core.api.util.StringMessageUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URI;
+import java.util.Optional;
+
+import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
+import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.module.apikit.HeaderName.ACCEPT;
+import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
+import static org.mule.module.apikit.helpers.AttributesHelper.getCommaSeparatedParamValues;
 
 public class Console extends AbstractComponent implements Processor, Initialisable {
 
@@ -91,7 +90,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     HttpRequestAttributes attributes = EventHelper.getHttpRequestAttributes(event);
     String listenerPath = attributes.getListenerPath();
     String requestPath = attributes.getRequestPath();
-    String acceptHeader = AttributesHelper.getHeaderIgnoreCase(attributes, "Accept");
+    String acceptHeader = getCommaSeparatedParamValues(attributes.getHeaders(), ACCEPT.getName());
     String queryString = attributes.getQueryString();
     String method = attributes.getMethod();
 
