@@ -173,7 +173,6 @@ public class FlowFinder {
       }
     }
 
-    logger.warn(format("Flow named \"%s\" does not match any RAML descriptor resource", key));
     return null;
   }
 
