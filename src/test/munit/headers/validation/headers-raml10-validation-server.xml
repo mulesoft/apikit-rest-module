@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
-  xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-    http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+                          http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+
+                          http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
   <apikit:config name="headers-10-validation-config" raml="munit/headers/validation10.raml"
                  outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
@@ -29,7 +31,25 @@
     <set-payload value="#[attributes.headers['x-modifiedsince']]" />
   </flow>
 
+  <flow name="get:\test-array-header:headers-10-validation-config">
+    <set-payload value="#[attributes.headers.*'array-header']" />
+    <munit-tools:store key="first-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>
+    </munit-tools:store>
+    <munit-tools:store key="second-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[1]]</munit-tools:value>
+    </munit-tools:store>
+  </flow>
+
   <flow name="post:\datetime2616:headers-10-validation-config">
-    <set-payload value="#[attributes.headers['defaultHeaderValue']]" />
+    <set-payload value="#[attributes.headers['defaultHeaderValue']]"/>
+  </flow>
+
+  <flow name="get:\multiplicity:headers-10-validation-config">
+    <set-payload value="#[payload]"/>
+  </flow>
+
+  <flow name="post:\multiplicity:headers-10-validation-config">
+    <set-payload value="#[payload]"/>
   </flow>
 </mule>

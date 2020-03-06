@@ -66,7 +66,7 @@ public class HeadersValidator {
             validateHeader(copyIncomingHeaders.getAll(incomingHeader), ramlHeader, ramlType);
         }
       } else {
-        final List<String> values = AttributesHelper.getParamsIgnoreCase(copyIncomingHeaders, ramlHeader);
+        final List<String> values = AttributesHelper.getParamValues(copyIncomingHeaders, ramlHeader);
         if (values.isEmpty() && ramlType.isRequired()) {
           throw new InvalidHeaderException("Required header '" + ramlHeader + "' not specified");
         }
