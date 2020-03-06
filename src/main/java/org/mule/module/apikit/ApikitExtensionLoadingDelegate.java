@@ -6,16 +6,6 @@
  */
 package org.mule.module.apikit;
 
-import static java.util.Collections.singletonList;
-import static org.mule.metadata.api.model.MetadataFormat.JAVA;
-import static org.mule.parser.service.ParserMode.AUTO;
-import static org.mule.runtime.api.meta.Category.COMMUNITY;
-import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-import static org.mule.runtime.api.meta.model.parameter.ParameterRole.BEHAVIOUR;
-import static org.mule.runtime.api.meta.model.stereotype.StereotypeModelBuilder.newStereotype;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.extension.api.stereotype.MuleStereotypes.CONFIG;
-
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
@@ -37,6 +27,16 @@ import org.mule.runtime.extension.api.declaration.type.ExtensionsTypeLoaderFacto
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationProvider;
+
+import static java.util.Collections.singletonList;
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
+import static org.mule.parser.service.ParserMode.AUTO;
+import static org.mule.runtime.api.meta.Category.COMMUNITY;
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
+import static org.mule.runtime.api.meta.model.parameter.ParameterRole.BEHAVIOUR;
+import static org.mule.runtime.api.meta.model.stereotype.StereotypeModelBuilder.newStereotype;
+import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.extension.api.stereotype.MuleStereotypes.CONFIG;
 
 public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate {
 
@@ -139,14 +139,14 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
   // This code below is taken from ConfigRefDeclarationEnricher in mule-extensions-api
   private void addConfigRefParameter(OperationDeclarer declarer, final StereotypeModel apikitConfigStereotype) {
     // For plder versions, the generated schema would have the parameter duplicated
-    if (MuleVersionUtils.isAtLeast("4.3.0-SNAPSHOT")) {
+    if (MuleVersionUtils.isAtLeast("4.3.0-ea")) {
       declarer.onDefaultParameterGroup().withRequiredParameter("config-ref")
-          .describedAs("The name of the configuration to be used to execute this component")
-          .withRole(BEHAVIOUR)
-          .withDsl(ParameterDslConfiguration.builder().allowsReferences(true).build())
-          .ofType(buildConfigRefType())
-          .withExpressionSupport(NOT_SUPPORTED)
-          .withAllowedStereotypes(singletonList(apikitConfigStereotype));
+              .describedAs("The name of the configuration to be used to execute this component")
+              .withRole(BEHAVIOUR)
+              .withDsl(ParameterDslConfiguration.builder().allowsReferences(true).build())
+              .ofType(buildConfigRefType())
+              .withExpressionSupport(NOT_SUPPORTED)
+              .withAllowedStereotypes(singletonList(apikitConfigStereotype));
     }
   }
 
