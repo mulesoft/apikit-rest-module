@@ -16,3 +16,25 @@ title: Headers Test Case
         type: string
         default: "hola-header"
         required: false
+
+/test-array-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: object
+          properties:
+            type: string
+            value: string
+
+/multiplicity:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+  post:
+    body:
+      application/json:

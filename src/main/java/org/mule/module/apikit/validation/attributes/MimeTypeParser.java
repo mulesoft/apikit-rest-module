@@ -6,16 +6,16 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
+import com.google.common.net.MediaType;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.net.MediaType;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 
 /**
  * MIME-Type Parser
@@ -57,7 +57,7 @@ public class MimeTypeParser {
   protected static ParseResults parseMimeType(String mimeType) {
     String[] parts = StringUtils.split(mimeType, ";");
     ParseResults results = new ParseResults();
-    results.params = new HashMap<String, String>();
+    results.params = new HashMap<>();
 
     for (int i = 1; i < parts.length; ++i) {
       String p = parts[i];
@@ -122,6 +122,7 @@ public class MimeTypeParser {
       this.quality = quality;
     }
 
+    @Override
     public int compareTo(FitnessAndQuality o) {
       if (fitness == o.fitness) {
         if (quality == o.quality) {
@@ -152,9 +153,9 @@ public class MimeTypeParser {
     ParseResults target = parseMediaRange(mimeType);
 
     for (ParseResults range : parsedRanges) {
-      if ((target.type.equals(range.type) || range.type.equals("*") || target.type
+      if ((target.type.equalsIgnoreCase(range.type) || range.type.equals("*") || target.type
           .equals("*"))
-          && (target.subType.equals(range.subType)
+          && (target.subType.equalsIgnoreCase(range.subType)
               || range.subType.equals("*") || target.subType
                   .equals("*"))) {
         for (String k : target.params.keySet()) {
@@ -163,8 +164,8 @@ public class MimeTypeParser {
               && target.params.get(k).equals(range.params.get(k))) {
             paramMatches++;
           }
-          int fitness = (range.type.equals(target.type)) ? 100 : 0;
-          fitness += (range.subType.equals(target.subType)) ? 10 : 0;
+          int fitness = (range.type.equalsIgnoreCase(target.type)) ? 100 : 0;
+          fitness += (range.subType.equalsIgnoreCase(target.subType)) ? 10 : 0;
           fitness += paramMatches;
           if (fitness > bestFitness) {
             bestFitness = fitness;
@@ -197,11 +198,11 @@ public class MimeTypeParser {
    * @return
    */
   public static MediaType bestMatch(List<String> supportedRepresentations, String header) {
-    List<ParseResults> parseResults = new LinkedList<ParseResults>();
+    List<ParseResults> parseResults = new LinkedList<>();
     for (String r : StringUtils.split(header, ','))
       parseResults.add(parseMediaRange(r));
 
-    List<FitnessAndQuality> weightedMatches = new LinkedList<FitnessAndQuality>();
+    List<FitnessAndQuality> weightedMatches = new LinkedList<>();
     String quality = "1"; //first representation defined
     for (String representation : supportedRepresentations) {
       FitnessAndQuality fitnessAndQuality = fitnessAndQualityParsed(representation + ";q=" + quality, parseResults);

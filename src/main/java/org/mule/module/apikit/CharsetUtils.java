@@ -6,19 +6,21 @@
  */
 package org.mule.module.apikit;
 
-import org.mule.module.apikit.helpers.AttributesHelper;
+import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.util.MultiMap;
 
 import java.nio.charset.Charset;
 import java.util.Optional;
-import org.mule.runtime.api.util.MultiMap;
+
+import static org.mule.module.apikit.helpers.AttributesHelper.getContentType;
 
 public class CharsetUtils {
 
   private CharsetUtils() {}
 
-  public static String getCharset(MultiMap<String, String> headers, Object payload) {
+  public static String getCharset(MultiMap<String, String> headers, Object payload) throws UnsupportedMediaTypeException {
     String charset = getHeaderCharset(headers);
     if (charset == null) {
       if (payload instanceof TypedValue) {
@@ -28,8 +30,8 @@ public class CharsetUtils {
     return normalizeCharset(charset);
   }
 
-  private static String getHeaderCharset(MultiMap<String, String> headers) {
-    return getCharset(AttributesHelper.getParamIgnoreCase(headers, "Content-Type"));
+  private static String getHeaderCharset(MultiMap<String, String> headers) throws UnsupportedMediaTypeException {
+    return getCharset(getContentType(headers));
   }
 
   public static String getCharset(String contentType) {

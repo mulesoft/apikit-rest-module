@@ -6,18 +6,7 @@
  */
 package org.mule.module.apikit;
 
-import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
-import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
-import static org.mule.module.apikit.api.validation.RequestValidator.validate;
-import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
-import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
-import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
-import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
-import static reactor.core.publisher.Mono.error;
-
-import java.io.IOException;
-import java.io.InputStream;
+import com.google.common.cache.LoadingCache;
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.Resource;
 import org.mule.extension.http.api.HttpRequestAttributes;
@@ -45,19 +34,29 @@ import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.construct.Flow;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
-
-import javax.inject.Inject;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Optional;
-
-import com.google.common.cache.LoadingCache;
 import org.mule.runtime.core.api.streaming.StreamingManager;
 import org.mule.runtime.core.api.streaming.bytes.CursorStreamProviderFactory;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Optional;
+
+import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
+import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
+import static org.mule.module.apikit.api.validation.RequestValidator.validate;
+import static org.mule.module.apikit.helpers.AttributesHelper.getContentType;
+import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
+import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
+import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
+import static reactor.core.publisher.Mono.error;
 
 
 public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter {
@@ -138,6 +137,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     }
   }
 
+  @Override
   public Publisher<CoreEvent> processEvent(CoreEvent event) throws MuleRestException {
     Configuration config = registry.getConfiguration(getConfiguration().getName());
     HttpRequestAttributes attributes = ((HttpRequestAttributes) event.getMessage().getAttributes().getValue());
@@ -162,7 +162,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
     Flow flow = config.getFlowFinder().getFlow(resource,
                                                attributes.getMethod().toLowerCase(),
-                                               getMediaType(attributes));
+                                               getContentType(attributes.getHeaders()));
 
     CoreEvent subFlowEvent = buildSubFlowEvent(config.isDisableValidations(),
                                                mainEvent, request,

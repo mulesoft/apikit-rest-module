@@ -6,32 +6,32 @@
  */
 package org.mule.module.apikit.validation;
 
-import static java.lang.String.format;
-import static org.mule.module.apikit.CharsetUtils.getCharset;
-import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsString;
-
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.MimeType;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.api.validation.ValidBody;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
-import org.mule.module.apikit.validation.body.form.FormValidatorFactory;
 import org.mule.module.apikit.validation.body.form.FormValidator;
+import org.mule.module.apikit.validation.body.form.FormValidatorFactory;
 import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
 import org.mule.module.apikit.validation.body.schema.v1.RestJsonSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.RestXmlSchemaValidator;
 import org.mule.module.apikit.validation.body.schema.v1.cache.SchemaCacheUtils;
 import org.mule.module.apikit.validation.body.schema.v2.RestSchemaV2Validator;
-import org.mule.apikit.model.Action;
-import org.mule.apikit.model.MimeType;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.metadata.TypedValue;
 
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+
+import static java.lang.String.format;
+import static org.mule.module.apikit.CharsetUtils.getCharset;
+import static org.mule.module.apikit.helpers.AttributesHelper.getContentType;
 import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
+import static org.mule.module.apikit.helpers.PayloadHelper.getPayloadAsString;
 import static org.mule.module.apikit.helpers.PayloadHelper.makePayloadRepeatable;
 
 public class BodyValidator {
@@ -59,7 +59,7 @@ public class BodyValidator {
       return validBody;
     }
 
-    String requestMimeTypeName = getMediaType(attributes);
+    String requestMimeTypeName = getContentType(attributes.getHeaders());
 
     Entry<String, MimeType> foundMimeType = action.getBody().entrySet().stream()
         .filter(entry -> getMediaType(entry.getKey()).equals(requestMimeTypeName))
