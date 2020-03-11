@@ -139,7 +139,7 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
   // This code below is taken from ConfigRefDeclarationEnricher in mule-extensions-api
   private void addConfigRefParameter(OperationDeclarer declarer, final StereotypeModel apikitConfigStereotype) {
     // For plder versions, the generated schema would have the parameter duplicated
-    if (MuleVersionUtils.isAtLeast("4.3.0-SNAPSHOT")) {
+    if (MuleVersionUtils.isAtLeast("4.3.0-")) {
       declarer.onDefaultParameterGroup().withRequiredParameter("config-ref")
           .describedAs("The name of the configuration to be used to execute this component")
           .withRole(BEHAVIOUR)

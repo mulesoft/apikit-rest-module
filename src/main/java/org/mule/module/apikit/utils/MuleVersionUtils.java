@@ -14,6 +14,10 @@ public class MuleVersionUtils {
   private MuleVersionUtils(){ }
 
   public static boolean isAtLeast(String version) {
-    return new MuleVersion(MuleManifest.getProductVersion()).atLeast(version);
+    try {
+      return new MuleVersion(MuleManifest.getProductVersion()).atLeast(version);
+    } catch (IllegalArgumentException e) {
+      return false;
+    }
   }
 }
