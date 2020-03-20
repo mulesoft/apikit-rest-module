@@ -141,7 +141,12 @@ public class AttributesHelper {
    */
   public static String getMediaType(String mediaType) {
     MediaType mType = parse(mediaType);
-    return String.format("%s/%s", mType.getPrimaryType(), mType.getSubType());
+    StringBuilder stringBuilder = new StringBuilder(mType.getPrimaryType().length() + mType.getSubType().length() + 1);
+    stringBuilder
+        .append(mType.getPrimaryType())
+        .append("/")
+        .append(mType.getSubType());
+    return stringBuilder.toString();
   }
 
   /**

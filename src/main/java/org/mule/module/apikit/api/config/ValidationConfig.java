@@ -7,6 +7,7 @@
 package org.mule.module.apikit.api.config;
 
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
+import org.mule.runtime.api.scheduler.Scheduler;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
 import javax.xml.validation.Schema;
@@ -21,6 +22,8 @@ public interface ValidationConfig {
   Schema getXmlSchema(String schemaPath) throws ExecutionException;
 
   ExpressionManager getExpressionManager();
+
+  Scheduler getScheduler();
 
   default boolean isDisableValidations() {
     return false;

@@ -6,7 +6,7 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import com.google.common.net.MediaType;
+import java.util.Objects;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
@@ -14,9 +14,9 @@ import org.mule.module.apikit.HeaderName;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.module.apikit.helpers.AttributesHelper;
+import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.util.MultiMap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,14 +25,17 @@ import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
+import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 
 
 public class HeadersValidator {
 
   private final Action action;
-  private final List<String> mimeTypes;
+  private final Set<InternalMediaType> mimeTypes;
 
   public HeadersValidator(Action action) {
     this.action = action;
@@ -143,19 +146,37 @@ public class HeadersValidator {
       //no response media-types defined, return no body
       return;
     }
-    MediaType bestMatch = MimeTypeParser.bestMatch(mimeTypes, AttributesHelper.getAcceptedResponseMediaTypes(incomingHeaders));
-    if (bestMatch == null) {
-      throw new NotAcceptableException();
+
+    List<String> acceptMediaTypes = asList(getAcceptedResponseMediaTypes(incomingHeaders).split(","));
+
+    if (acceptMediaTypes.isEmpty()) {
+      return;
     }
+
+    for (String accept : acceptMediaTypes) {
+      if (accept.equals("*/*")) {
+        return;
+      }
+    }
+
+    for (String accept : acceptMediaTypes) {
+      if (mimeTypes.contains(new InternalMediaType(accept))) {
+        return;
+      }
+    }
+    throw new NotAcceptableException();
+
   }
 
-  private List<String> getResponseMimeTypes(Action action) {
+  private Set<InternalMediaType> getResponseMimeTypes(Action action) {
     String status = getSuccessStatus(action);
     Response response = action.getResponses().get(status);
     if (response != null && response.hasBody()) {
-      return new ArrayList<>(response.getBody().keySet());
+      return response.getBody().keySet().stream()
+          .map(InternalMediaType::new)
+          .collect(toSet());
     }
-    return new ArrayList<>();
+    return emptySet();
   }
 
   protected String getSuccessStatus(Action action) {
@@ -170,6 +191,36 @@ public class HeadersValidator {
     }
     //default success status
     return "200";
+  }
+
+  private class InternalMediaType {
+
+    private final String primaryType;
+    private final String subType;
+
+    InternalMediaType(String mediaType) {
+      MediaType mType = MediaType.parse(mediaType);
+      this.primaryType = mType.getPrimaryType();
+      this.subType = mType.getSubType();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      InternalMediaType that = (InternalMediaType) o;
+      return Objects.equals(primaryType, that.primaryType) &&
+          Objects.equals(subType, that.subType);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(primaryType, subType);
+    }
   }
 
 }

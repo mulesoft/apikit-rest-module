@@ -8,15 +8,22 @@ package org.mule.module.apikit.validation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import org.apache.http.impl.client.HttpRequestFutureTask;
 import org.mule.apikit.model.Action;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.api.config.ValidationConfig;
+import org.mule.module.apikit.api.exception.ApikitRuntimeException;
+import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.validation.ValidBody;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
+import org.mule.runtime.api.exception.TypedException;
 
 public class RestRequestValidator {
 
@@ -33,20 +40,37 @@ public class RestRequestValidator {
   public ValidRequest validate(ResolvedVariables uriParams, HttpRequestAttributes attributes,
                                String payloadCharset, Object body)
       throws MuleRestException {
+    try {
 
-    if (config.isDisableValidations()) {
+      if (config.isDisableValidations()) {
+        return ValidRequest.builder()
+            .withAttributes(addUriParams(uriParams, attributes))
+            .withBody(new ValidBody(body))
+            .build();
+      }
+
+      Future<HttpRequestAttributes> validateAttributes = config.getScheduler().submit(
+                                                                                      () -> AttributesValidator
+                                                                                          .validateAndAddDefaults(attributes,
+                                                                                                                  action,
+                                                                                                                  uriParams,
+                                                                                                                  config));
+      Future<ValidBody> validateBody = config.getScheduler().submit(
+                                                                    () -> BodyValidator
+                                                                        .validate(action, attributes, body, config,
+                                                                                  payloadCharset, errorTypeRepository));
       return ValidRequest.builder()
-          .withAttributes(addUriParams(uriParams, attributes))
-          .withBody(new ValidBody(body))
+          .withAttributes(validateAttributes.get())
+          .withBody(validateBody.get())
           .build();
+    } catch (InterruptedException e) {
+      throw new ApikitRuntimeException(e);
+    } catch (ExecutionException ee) {
+      if (ee.getCause() instanceof MuleRestException) {
+        throw (MuleRestException) ee.getCause();
+      }
+      throw (MuleRestException) ee.getCause().getCause();
     }
-
-    HttpRequestAttributes validAttributes = AttributesValidator.validateAndAddDefaults(attributes, action, uriParams, config);
-    ValidBody validBody = BodyValidator.validate(action, attributes, body, config, payloadCharset, errorTypeRepository);
-    return ValidRequest.builder()
-        .withAttributes(validAttributes)
-        .withBody(validBody)
-        .build();
   }
 
   private HttpRequestAttributes addUriParams(ResolvedVariables uriParams, HttpRequestAttributes attributes) {
