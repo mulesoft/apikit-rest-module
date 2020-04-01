@@ -6,6 +6,11 @@
  */
 package org.mule.module.apikit.validation.body.form.transformation;
 
+import static java.lang.String.format;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+
+import java.util.Set;
+import org.mule.apikit.model.parameter.FileProperties;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.runtime.api.metadata.MediaType;
@@ -17,8 +22,8 @@ import org.mule.runtime.api.metadata.MediaType;
  */
 public class MultipartFormDataBinaryParameter implements MultipartFormDataParameter {
 
-  private final MediaType mediaType;
   private final byte[] byteArray;
+  private final MediaType mediaType;
 
   public MultipartFormDataBinaryParameter(byte[] inputStream, MediaType mediaType) {
     this.byteArray = inputStream;
@@ -27,6 +32,29 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
 
   @Override
   public void validate(Parameter parameter) throws InvalidFormParameterException {
-    //Parsers currently doesn't validate files
+    if (!parameter.getFileProperties().isPresent()) {
+      return;
+    }
+    FileProperties properties = parameter.getFileProperties().get();
+    Set<String> fileTypes = properties.getFileTypes();
+    Integer minValue = properties.getMinLength();
+    Integer maxValue = properties.getMaxLength();
+
+    if (isNotEmpty(fileTypes) && !anyFileTypeAllowed(fileTypes) && !fileTypes.contains(mediaType.toString())) {
+      throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType.toString()));
+    }
+    if (minValue == 0 && maxValue == 0) {
+      return;
+    }
+    if (byteArray.length < minValue ||
+        byteArray.length > maxValue) {
+      throw new InvalidFormParameterException(
+                                              format("Length must be between : %s and %s", properties.getMinLength(),
+                                                     properties.getMaxLength()));
+    }
+  }
+
+  private boolean anyFileTypeAllowed(Set<String> fileTypes) {
+    return fileTypes.size() == 1 && fileTypes.contains("*/*");
   }
 }
