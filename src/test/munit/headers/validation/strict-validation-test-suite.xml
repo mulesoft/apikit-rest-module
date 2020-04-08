@@ -52,7 +52,7 @@
     <munit:validation>
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
       <munit-tools:assert-that expression="#[output text/plain --- payload.description]"
-                               is="#[MunitTools::containsString('[x-maxrows] headers are not defined in RAML strict headers validation property is true.')]"/>
+                               is="#[MunitTools::containsString('[x-maxrows] headers are not defined in RAML and strict headers validation property is true.')]"/>
     </munit:validation>
   </munit:test>
 

@@ -103,7 +103,7 @@ public class HeadersValidator {
 
     if (!undefinedHeaders.isEmpty()) {
       throw new InvalidHeaderException(format("[%s] %s", on(", ").join(undefinedHeaders),
-                                              "headers are not defined in RAML strict headers validation property is true."));
+                                              "headers are not defined in RAML and strict headers validation property is true."));
     }
   }
 
