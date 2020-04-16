@@ -32,7 +32,7 @@
         <jar.plugin.version>3.0.2</jar.plugin.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.0.5</parser.service.version>
+        <parser.service.version>2.0.6-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.0.49</apiconsole.version>
