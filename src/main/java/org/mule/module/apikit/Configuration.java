@@ -39,6 +39,7 @@ import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
 import org.mule.runtime.api.scheduler.Scheduler;
+import org.mule.runtime.api.scheduler.SchedulerConfig;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExpressionManager;
@@ -99,30 +100,25 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Inject
   private ConfigurationComponentLocator locator;
 
-  /*@Inject
+  @Inject
   private SchedulerService schedulerService;
-  
-  private Scheduler scheduler;*/
-  private ScheduledExecutorService scheduler;
+
+  @Inject
+  private SchedulerConfig schedulerConfig;
+
+  private Scheduler scheduler;
 
   @Override
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
     this.routerService = findExtension();
-    /* final Scheduler scheduler = schedulerService.ioScheduler();
-    this.scheduler = scheduler;*/
-    this.scheduler = Executors.newScheduledThreadPool(30, new ThreadFactory() {
+    this.schedulerConfig = schedulerConfig
+        .withName("AMF")
+        .withPrefix("CUSTOM-SCHEDULER")
+        .withMaxConcurrentTasks(Runtime.getRuntime().availableProcessors());
+    final Scheduler scheduler = schedulerService.customScheduler(schedulerConfig);
+    this.scheduler = scheduler;
 
-      int i = 0;
-
-      @Override
-      public Thread newThread(Runnable r) {
-        i = i + 1;
-        final Thread thread = new Thread(r);
-        thread.setName("AMF-" + i);
-        return thread;
-      }
-    });
     try {
       ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
                                     errorRepositoryFrom(muleContext), parserMode.get());
