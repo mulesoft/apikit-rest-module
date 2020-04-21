@@ -33,10 +33,11 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
 
   @Override
   public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
-    final InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
-    final String boundary = getBoundary(originalPayload);
+    InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
+    String boundary = getBoundary(originalPayload);
     MultipartFormDataBuilder multipartFormDataBuilder = new MultipartFormDataBuilder(inputStream, boundary);
     Map<String, MultipartFormDataParameter> actualParameters = multipartFormDataBuilder.getFormDataParameters();
+
     boolean hasDefaultValues = false;
     for (String expectedKey : formParameters.keySet()) {
       List<Parameter> params = formParameters.get(expectedKey);
