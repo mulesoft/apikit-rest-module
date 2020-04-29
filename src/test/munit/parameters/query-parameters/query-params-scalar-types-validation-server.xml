@@ -7,18 +7,18 @@
 						  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
 						  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-  <apikit:config name="scalar-types-validation-config" raml="munit/parameters/query-params-scalar-types-validation.raml"
-				 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<apikit:config name="scalar-types-validation-config" raml="${api.location}"
+				   outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
-  <flow name="scalar-types-validation-main">
-	<http:listener config-ref="http-listener-simple" path="/validation/scalar/types/*">
-	  <http:response statusCode="#[vars.httpStatus default 200]">
-		<http:headers>#[vars.outboundHeaders default {}]</http:headers>
-	  </http:response>
-	  <http:error-response statusCode="#[vars.httpStatus default 500]">
-		<http:body>#[payload]</http:body>
-		<http:headers>#[vars.outboundHeaders default {}]</http:headers>
-	  </http:error-response>
+	<flow name="scalar-types-validation-main">
+		<http:listener config-ref="http-listener-simple" path="/validation/scalar/types/*">
+			<http:response statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
 	</http:listener>
 	<apikit:router config-ref="scalar-types-validation-config" />
 	<error-handler ref="global-server-error-handler"/>

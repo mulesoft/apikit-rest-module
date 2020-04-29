@@ -15,11 +15,19 @@
       <munit:parameterization name="RAML">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="api.location" value="munit/body/empty-body-api.raml"/>
         </munit:parameters>
       </munit:parameterization>
-      <munit:parameterization name="AMF">
+      <munit:parameterization name="AMF-RAML10">
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/empty-body-api.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/empty-body-oas30-api.json"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>

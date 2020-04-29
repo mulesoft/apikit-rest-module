@@ -1,0 +1,42 @@
+#%RAML 1.0
+---
+title: Sample API
+
+types:
+  timestamp:
+    type: number
+    format: int64
+    example: 123456
+
+  dateOnly:
+    type: date-only
+    example: "2018-08-16"
+
+/bodyunion:
+  post:
+    body:
+      application/json: timestamp | dateOnly
+    responses:
+      200:
+        body:
+          application/json:
+
+/queryparamunion:
+  get:
+    queryParameters:
+      dateortimestamp:
+        type: number | date-only
+    responses:
+      200:
+        body:
+          application/json:
+
+/uriparamunion/{dateortimestamp}:
+  uriParameters:
+    dateortimestamp:
+      type: number | date-only
+  get:
+    responses:
+      200:
+        body:
+          application/json:

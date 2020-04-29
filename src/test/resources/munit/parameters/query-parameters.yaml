@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: undefined
+servers:
+  - url: 'http://localhost:8081/'
+paths:
+  /resource:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_resource
+      parameters:
+        - name: string
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: number
+          in: query
+          schema:
+            type: array
+            items:
+              type: number
+        - name: integer
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+        - name: boolean
+          in: query
+          schema:
+            type: array
+            items:
+              type: boolean
+        - name: date
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              format: date
+        - name: file
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: nil
+          in: query
+          schema:
+            type: array
+            items:
+              type: object
+              nullable: true
+
+  /constrains:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_constrains
+      parameters:
+        - name: sized
+          in: query
+          required: true
+          schema:
+            pattern: '^\D+$'
+            minLength: 2
+            maxLength: 3
+            type: string
+        - name: optionalString
+          in: query
+          schema:
+            type: string
+        - name: optionalBoolean
+          in: query
+          schema:
+            type: boolean
+  /testNull:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_testNull
+      parameters:
+        - name: nullableString
+          in: query
+          schema:
+            type: object
+            nullable: true
+        - name: nonNullableString
+          in: query
+          schema:
+            type: string
+        - name: nullableInteger
+          in: query
+          schema:
+            type: object
+            format: integer
+            nullable: true
+        - name: nonNullableInteger
+          in: query
+          schema:
+            type: integer
+  /defaultValue:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_defaultValue
+      parameters:
+        - name: withDefaultValue
+          in: query
+          schema:
+            default: f4l0p4
+            type: string
+        - name: otherWithDefaultValue
+          in: query
+          schema:
+            default: agasdg
+            type: string
+        - name: optionalArray
+          in: query
+          schema:
+            type: array
+            items:
+              type: string

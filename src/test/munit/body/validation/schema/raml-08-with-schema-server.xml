@@ -8,9 +8,9 @@
       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
 
-  <apikit:config name="raml-08-with-schema-config" api="munit/body/raml-08-with-schema.raml"
-    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"
-    parser="${parser.type}"/>
+  <apikit:config name="raml-08-with-schema-config" api="munit/body/schema/raml-08-with-schema.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"
+                 parser="${parser.type}"/>
 
   <flow name="raml-08-with-schema-main">
     <http:listener config-ref="http-listener-simple" path="/raml-08-with-schema/*">

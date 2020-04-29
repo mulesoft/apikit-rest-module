@@ -8,8 +8,8 @@
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-  <apikit:config name="recursive-config" api="munit/body/recursive-definition.raml"
-    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
+  <apikit:config name="recursive-config" api="${api.location}"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
   <flow name="recursive-main">
     <http:listener config-ref="http-listener-simple" path="/recursive/*">

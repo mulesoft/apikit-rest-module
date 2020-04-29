@@ -11,7 +11,7 @@
   <apikit:config name="headers-validation-08-config" raml="munit/headers/validation08.raml"
                  outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 
-  <flow name="headers-validation-main">
+  <flow name="headers-validation-08-main">
     <http:listener config-ref="http-listener-simple" path="/headers/validation/*">
       <http:response statusCode="#[vars.httpStatus default 200]">
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>

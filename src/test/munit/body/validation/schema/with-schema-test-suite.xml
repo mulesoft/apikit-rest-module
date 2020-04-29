@@ -10,29 +10,41 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="raml-10-with-schema-test-suite">
+  <munit:config name="with-schema-test-suite">
     <munit:parameterizations>
       <munit:parameterization name="RAML">
         <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML10"/>
           <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="api.location" value="munit/body/schema/raml-10-with-schema.raml"/>
         </munit:parameters>
       </munit:parameterization>
-      <munit:parameterization name="AMF">
+      <munit:parameterization name="AMF-RAML10">
         <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML10"/>
           <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/schema/raml-10-with-schema.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="api.version" value="OAS30"/>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/schema/oas-30-with-schema.json"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>
   </munit:config>
 
-  <munit:test name="raml-10-put-valid-json">
+  <munit:test name="put-valid-json">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="raml-10-with-schema-main"/>
-      <munit:enable-flow-source value="put:\schema10user"/>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="put:\schema10user:with-schema-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="PUT" config-ref="http-requester-simple" path="/raml-10-with-schema/schema10user">
-        <http:body>#['{"username":"gbs","firstName":"george","lastName":"bernard shaw","emailAddresses":["gbs@ie"]}']</http:body>
+      <http:request method="PUT" config-ref="http-requester-simple" path="/with-schema/schema10user">
+        <http:body>#['{"username":"gbs","firstName":"george","lastName":"bernard shaw","emailAddresses":["gbs@ie"]}']
+        </http:body>
         <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
@@ -45,13 +57,13 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-10-put-invalid-json">
+  <munit:test name="put-invalid-json">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="raml-10-with-schema-main"/>
-      <munit:enable-flow-source value="put:\schema10user"/>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="put:\schema10user:with-schema-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="PUT" config-ref="http-requester-simple" path="/raml-10-with-schema/schema10user">
+      <http:request method="PUT" config-ref="http-requester-simple" path="/with-schema/schema10user">
         <http:body>#['{"username":"gbs","firstName":"george","lastName":"bernard shaw"}']</http:body>
         <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
         <http:response-validator>
@@ -64,13 +76,13 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-10-put-valid-xml">
+  <munit:test name="put-valid-xml">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="raml-10-with-schema-main"/>
-      <munit:enable-flow-source value="put:\schema10user"/>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="put:\schema10user:with-schema-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="PUT" config-ref="http-requester-simple" path="/raml-10-with-schema/schema10user">
+      <http:request method="PUT" config-ref="http-requester-simple" path="/with-schema/schema10user">
         <http:body><![CDATA[#[
           '<user xmlns="http://mulesoft.org/schemas/sample" username="gbs" firstName="george" lastName="bernard shaw">
             <email-addresses>
@@ -91,13 +103,14 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-10-put-invalid-xml">
+  <!-- min occurrences of array elements does not seem to be forced by OAS -->
+  <munit:test name="put-invalid-xml-array" ignore="#['${api.version}' == 'OAS30']">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="raml-10-with-schema-main"/>
-      <munit:enable-flow-source value="put:\schema10user"/>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="put:\schema10user:with-schema-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="PUT" config-ref="http-requester-simple" path="/raml-10-with-schema/schema10user">
+      <http:request method="PUT" config-ref="http-requester-simple" path="/with-schema/schema10user">
         <http:body><![CDATA[#[
           '<user xmlns="http://mulesoft.org/schemas/sample" username="gbs" firstName="george" lastName="bernard shaw">
             <email-addresses>
@@ -116,13 +129,37 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-10-post-valid-json-using-raml-type">
+  <munit:test name="put-invalid-xml">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="raml-10-with-schema-main"/>
-      <munit:enable-flow-source value="post:\ramluser"/>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="put:\schema10user:with-schema-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/raml-10-with-schema/ramluser">
+      <http:request method="PUT" config-ref="http-requester-simple" path="/with-schema/schema10user">
+        <http:body><![CDATA[#[
+          '<user xmlns="http://mulesoft.org/schemas/sample" username="gbs" firstName="george" lastName="bernard shaw">
+
+           </user>'
+           ]]]>
+        </http:body>
+        <http:headers>#[{'Content-Type': 'text/xml'}]</http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="post-valid-json-using-raml-type">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="post:\ramluser:with-schema-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/with-schema/ramluser">
         <http:body>#['{"firstname":"george","lastname":"bernard shaw","age":30}']</http:body>
         <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
         <http:response-validator>
@@ -136,13 +173,13 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="raml-10-post-invalid-json-using-raml-type-missing-required-param">
+  <munit:test name="post-invalid-json-using-raml-type-missing-required-param">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="raml-10-with-schema-main"/>
-      <munit:enable-flow-source value="post:\ramluser"/>
+      <munit:enable-flow-source value="with-schema-main"/>
+      <munit:enable-flow-source value="post:\ramluser:with-schema-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/raml-10-with-schema/ramluser">
+      <http:request method="POST" config-ref="http-requester-simple" path="/with-schema/ramluser">
         <http:body>#['{"firstname":"george","age":"30"}']</http:body>
         <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
         <http:response-validator>

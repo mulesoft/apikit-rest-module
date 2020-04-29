@@ -1,0 +1,275 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Testing multipart/form API!",
+      "version": "undefined"
+    },
+    "paths": {
+      "/form-data/{form-id}/file": {
+        "post": {
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_form-data-form-id-file",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "filename": {
+                      "description": "uploaded attachment file",
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": [
+                    "filename"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        },
+        "parameters": [
+          {
+            "name": "form-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "/multipart": {
+        "post": {
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_multipart",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "first": {
+                      "type": "string"
+                    },
+                    "second": {
+                      "default": "segundo",
+                      "type": "string"
+                    },
+                    "third": {
+                      "default": true,
+                      "type": "boolean"
+                    },
+                    "fourth": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "first",
+                    "second"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "/uploadImage": {
+        "post": {
+          "responses": {
+            "default": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_uploadImage",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "image": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": [
+                    "image"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "/uploadFile": {
+        "post": {
+          "responses": {
+            "default": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_uploadFile",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "document": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": [
+                    "document"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "/uploadJsonFile": {
+        "post": {
+          "responses": {
+            "default": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_uploadJsonFile",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "document": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": [
+                    "document"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "/uploadXmlFile": {
+        "post": {
+          "responses": {
+            "default": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_uploadXmlFile",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "document": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "required": [
+                    "document"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "/multiple-required-multipart": {
+        "post": {
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_multiple-required-multipart",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "userId": {
+                      "type": "string"
+                    },
+                    "second": {
+                      "type": "string"
+                    },
+                    "third": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "userId",
+                    "second",
+                    "third"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      },
+      "/multiple-optional-multipart": {
+        "post": {
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_multiple-optional-multipart",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "first": {
+                      "maxLength": 10,
+                      "type": "string"
+                    },
+                    "second": {
+                      "default": "segundo",
+                      "type": "string"
+                    },
+                    "third": {
+                      "default": true,
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
+      }
+    }
+  }

@@ -1,36 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-  xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="urlencoded-raml-10-body-validation-test-suite">
+  <munit:config name="urlencoded-body-validation-test-suite">
     <munit:parameterizations>
-      <munit:parameterization name="RAML">
+      <munit:parameterization name="RAML-08">
         <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML08"/>
           <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/urlencoded-body-api-08.raml"/>
         </munit:parameters>
       </munit:parameterization>
-      <munit:parameterization name="AMF">
+      <munit:parameterization name="RAML-10">
         <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML10"/>
+          <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/urlencoded-body-api-10.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-RAML08">
+        <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML08"/>
           <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/urlencoded-body-api-08.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-RAML10">
+        <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML10"/>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/urlencoded-body-api-10.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="api.version" value="OAS30"/>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/urlencoded-body-api-oas-30.json"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>
   </munit:config>
 
-  <munit:test name="simple-urlencoded-request-raml-10">
+  <munit:test name="simple-urlencoded-request">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="urlencoded-10-body-validation-main"/>
-      <munit:enable-flow-source value="post:\url-encoded-simple:application\x-www-form-urlencoded:urlencoded-10-body-validation-config"/>
+      <munit:enable-flow-source
+              value="post:\url-encoded-simple:application\x-www-form-urlencoded:urlencoded-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/urlencoded/url-encoded-simple">
@@ -46,10 +71,11 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="simple-invalid-urlencoded-request-raml-10">
+  <munit:test name="simple-invalid-urlencoded-request">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="urlencoded-10-body-validation-main"/>
-      <munit:enable-flow-source value="post:\url-encoded-simple-integer:application\x-www-form-urlencoded:urlencoded-10-body-validation-config"/>
+      <munit:enable-flow-source
+              value="post:\url-encoded-simple-integer:application\x-www-form-urlencoded:urlencoded-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/urlencoded/url-encoded-simple-integer">
@@ -64,14 +90,17 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="get-key-with-multiple-values-urlencoded-request-raml-10">
+  <munit:test name="get-key-with-multiple-values-urlencoded-request">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="urlencoded-10-body-validation-main"/>
-      <munit:enable-flow-source value="post:\url-encoded-duplicated-key:application\x-www-form-urlencoded:urlencoded-10-body-validation-config"/>
+      <munit:enable-flow-source
+              value="post:\url-encoded-duplicated-key:application\x-www-form-urlencoded:urlencoded-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/urlencoded/url-encoded-duplicated-key">
-        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {first: "hello", second: "segundo", third: "true"}]</http:body>
+        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {first: "hello", second: "segundo", third:
+          "true"}]
+        </http:body>
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
         </http:response-validator>
@@ -83,32 +112,50 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="get-key-with-duplicated-values-urlencoded-request-raml-10">
+  <munit:test name="get-key-with-duplicated-values-urlencoded-request">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="urlencoded-10-body-validation-main"/>
-      <munit:enable-flow-source value="post:\url-encoded-duplicated-key:application\x-www-form-urlencoded:urlencoded-10-body-validation-config"/>
+      <munit:enable-flow-source
+              value="post:\url-encoded-duplicated-key:application\x-www-form-urlencoded:urlencoded-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/urlencoded/url-encoded-duplicated-key">
-        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {first: "hello", first: "hello2", second: "segundo", third: "true"}]</http:body>
+        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {first: "hello", first: "hello2", second:
+          "segundo", third: "true"}]
+        </http:body>
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
         </http:response-validator>
       </http:request>
     </munit:execution>
     <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <set-variable value="${parser.type}" variableName="parser"/>
+      <set-variable value="${api.version}" variableName="api"/>
+      <choice>
+        <when expression='#[(vars.parser == "RAML") and (vars.api == "RAML08")]'>
+          <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+          <munit-tools:assert-that
+                  expression='#[output application/java --- write(payload, "application/x-www-form-urlencoded")]'
+                  is='#[MunitTools::equalTo("first=hello&amp;first=hello2&amp;second=segundo&amp;third=true")]'/>
+        </when>
+        <otherwise>
+          <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+        </otherwise>
+      </choice>
     </munit:validation>
   </munit:test>
 
-  <munit:test name="get-key-with-arrays-urlencoded-request-raml-10">
+  <munit:test name="get-key-with-arrays-urlencoded-request" ignore="#['${api.version}' == 'RAML08']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="urlencoded-10-body-validation-main"/>
-      <munit:enable-flow-source value="post:\url-encoded-with-arrays:application\x-www-form-urlencoded:urlencoded-10-body-validation-config"/>
+      <munit:enable-flow-source
+              value="post:\url-encoded-with-arrays:application\x-www-form-urlencoded:urlencoded-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/urlencoded/url-encoded-with-arrays">
-        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {first: "1234", first: "5678", second: "1234", second: "5678", third: "1234"}]</http:body>
+        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {first: "1234", first: "5678", second: "1234",
+          second: "5678", third: "1234"}]
+        </http:body>
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
         </http:response-validator>
@@ -120,14 +167,16 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="set-default-form-parameter-for-urlencoded-request-raml-10">
+  <munit:test name="set-default-form-parameter-for-urlencoded-request">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="urlencoded-10-body-validation-main"/>
-      <munit:enable-flow-source value="post:\url-encoded-with-default:application\x-www-form-urlencoded:urlencoded-10-body-validation-config"/>
+      <munit:enable-flow-source
+              value="post:\url-encoded-with-default:application\x-www-form-urlencoded:urlencoded-body-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/urlencoded/url-encoded-with-default">
-        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {second: "segundo", third: "true"}]</http:body>
+        <http:body>#[%dw 2.0 output application/x-www-form-urlencoded --- {second: "segundo", third: "true"}]
+        </http:body>
         <http:response-validator>
           <http:success-status-code-validator values="1..500"/>
         </http:response-validator>

@@ -1,0 +1,20 @@
+openapi: 3.0.0
+info:
+  title: Strict validation Test Case
+  version: undefined
+paths:
+  /resource:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_resource
+      parameters:
+        - name: header1
+          in: header
+          schema:
+            type: string
+        - name: x-correlation-id
+          in: header
+          schema:
+            type: string

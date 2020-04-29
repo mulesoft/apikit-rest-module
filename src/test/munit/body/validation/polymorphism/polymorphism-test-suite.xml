@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <munit:config name="polymorphism-test-suite"/>
+
+    <munit:test name="patch-valid-pet-as-cat">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfPetsByDiscriminator:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfPetsByDiscriminator">
+                <http:body>#['{"pet_type": "Cat","name": "Tom","hunts": false}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-valid-pet-as-dog">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfPetsByDiscriminator:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfPetsByDiscriminator">
+                <http:body>#['{"pet_type": "Dog","name": "Jack","bark": false,"breed": "Dingo"}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-invalid-pet-as-cat">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfPetsByDiscriminator:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfPetsByDiscriminator">
+                <http:body>#['{"pet_type": "Cat","age": 2}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-invalid-pet-as-dog">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfPetsByDiscriminator:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfPetsByDiscriminator">
+                <http:body>#['{"pet_type": "Dog"}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-invalid-pet-type">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfPetsByDiscriminator:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfPetsByDiscriminator">
+                <http:body>#['{"pet_type": 1234}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('/pet_type subject must not be valid against schema {&#x22;type&#x22;:&#x22;integer&#x22;}')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-valid-cat">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfCatOrDog:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfCatOrDog">
+                <http:body>#['{"pet_type": "SimpleCat","hunts": true,"age": 3}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-valid-dog">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfCatOrDog:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfCatOrDog">
+                <http:body>#['{"pet_type": "SimpleDog","bark": true,"breed": "Dingo"}']
+                </http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-invalid-cat">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfCatOrDog:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfCatOrDog">
+                <http:body>#['{"pet_type": "SimpleCat","bark": true,"hunts": true}']
+                </http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-invalid-dog">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\oneOfCatOrDog:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/oneOfCatOrDog">
+                <http:body>#['{"pet_type": "SimpleDog","bark": true,"hunts": true,"breed": "Husky","age": 3}']
+                </http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-any-valid-pet">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\anyOfPetsByProp:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/anyOfPetsByProp">
+                <http:body>#['{"age": 1}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-any-valid-pet-as-cat">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\anyOfPetsByProp:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/anyOfPetsByProp">
+                <http:body>#['{"pet_type": "Cat","hunts": true}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="patch-any-invalid-pet">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="polymorphism-main"/>
+            <munit:enable-flow-source value="patch:\anyOfPetsByProp:application\json:polymorphism-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="PATCH" config-ref="http-requester-simple"
+                          path="/api/anyOfPetsByProp">
+                <http:body>#['{"nickname": "Mr. Paws","hunts": false}']</http:body>
+                <http:headers>#[{'Content-Type': 'application/json'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('required key [age] not found')]"/>
+        </munit:validation>
+    </munit:test>
+</mule>

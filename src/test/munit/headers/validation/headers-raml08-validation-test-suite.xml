@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="headers-validation-test-suite"/>
+
+  <munit:test name="required-header-not-provided">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-08-main"/>
+      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <munit-tools:assert-equals actual="#[payload.description]" expected="#['Required header \'one\' not specified']"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-enum-value-for-header">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-08-main"/>
+      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
+        <http:headers>#[
+          output application/java
+          ---
+          {
+          one: 'invalid'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <munit-tools:assert-equals actual="#[payload.description]"
+                                 expected="#['Invalid value \'invalid\' for header \'one\'']"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="valid-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-08-main"/>
+      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
+        <http:headers>#[
+          output application/java
+          ---
+          {
+          one: 'foo'
+          }]
+        </http:headers>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-equals actual="#[payload.message]" expected="#['is all good']"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>

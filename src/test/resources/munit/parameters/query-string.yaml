@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Query string test
+  version: undefined
+servers: []
+paths:
+  /simple-type:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_simple-type
+      parameters:
+        - name: property
+          in: query
+          schema:
+            type: string
+  /type-property-array:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_type-property-array
+      parameters:
+        - name: property1
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: property2
+          in: query
+          schema:
+            type: string
+  /type-property-type:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_type-property-type
+      parameters:
+        - name: property
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/user'
+components:
+  schemas:
+    user:
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+      required:
+        - firstname
+        - lastname
+      type: object

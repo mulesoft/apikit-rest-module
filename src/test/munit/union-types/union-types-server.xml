@@ -9,11 +9,11 @@
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-    <apikit:config name="empty-body-validation-config" api="${api.location}"
+    <apikit:config name="union-types-config" api="${api.location}"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
-    <flow name="empty-body-validation-main">
-        <http:listener config-ref="http-listener-simple" path="/body/validation/empty/*">
+    <flow name="union-types-validation-main">
+        <http:listener config-ref="http-listener-simple" path="/union/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -22,15 +22,20 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="empty-body-validation-config"/>
+        <apikit:router config-ref="union-types-config"/>
         <error-handler ref="global-server-error-handler"/>
     </flow>
 
-    <flow name="put:\method-without-body:empty-body-validation-config">
-        <set-payload value="put:\method-without-body"/>
+    <flow name="post:\bodyunion:application\json:union-types-config">
+        <set-payload value="post:\bodyunion"/>
     </flow>
 
-    <flow name="post:\body-with-json-content-type:empty-body-validation-config">
-        <set-payload value="post:\body-with-empty-content-type"/>
+    <flow name="get:\queryparamunion:union-types-config">
+        <set-payload value="get:\queryparamunion"/>
     </flow>
+
+    <flow name="get:\uriparamunion\(dateortimestamp):union-types-config">
+        <set-payload value="#[output application/json --- attributes.uriParams.dateortimestamp]"/>
+    </flow>
+
 </mule>

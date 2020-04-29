@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: undefined
+paths:
+  /bodyunion:
+    post:
+      responses:
+        '200':
+          description: ''
+      operationId: POST_bodyunion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/dateortimestamp'
+        required: true
+  /queryparamunion:
+    get:
+      responses:
+        '200':
+          description: ''
+      operationId: GET_queryparamunion
+      parameters:
+        - name: dateortimestamp
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/dateortimestamp'
+  /uriparamunion/{dateortimestamp}:
+    get:
+      responses:
+        '200':
+          description: ''
+      operationId: GET_uriparamunion-dateortimestamp
+    parameters:
+      - name: dateortimestamp
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/dateortimestamp'
+components:
+  schemas:
+    timestamp:
+      format: int64
+      example: 123456
+      type: integer
+    dateOnly:
+      example: '2018-08-16'
+      type: string
+      format: date
+    dateortimestamp:
+      oneOf:
+        - $ref: '#/components/schemas/timestamp'
+        - $ref: '#/components/schemas/dateOnly'
