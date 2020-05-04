@@ -88,6 +88,14 @@ public class RamlHandler {
     }
 
     result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode == null ? AUTO : parserMode);
+
+    if (executor != null) {
+      List<Runnable> pendingTasks = executor.shutdownNow();
+      if (pendingTasks.size() > 0) {
+        System.out.println("There are remaining tasks");
+      }
+    }
+
     if (result.success()) {
       this.api = result.get();
       int idx = rootRamlLocation.lastIndexOf("/");

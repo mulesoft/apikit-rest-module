@@ -103,20 +103,16 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Inject
   private SchedulerService schedulerService;
 
-  @Inject
-  private SchedulerConfig schedulerConfig;
-
   private Scheduler scheduler;
 
   @Override
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
     this.routerService = findExtension();
-    this.schedulerConfig = schedulerConfig
+    SchedulerConfig schedulerConfig = SchedulerConfig.config()
         .withName("AMF")
-        .withPrefix("CUSTOM-SCHEDULER")
         .withMaxConcurrentTasks(Runtime.getRuntime().availableProcessors());
-    final Scheduler scheduler = schedulerService.customScheduler(schedulerConfig);
+    final Scheduler scheduler = schedulerService.customScheduler(schedulerConfig, Integer.MAX_VALUE);
     this.scheduler = scheduler;
 
     try {
@@ -378,8 +374,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
 
   @Override
   public void dispose() {
-    if (this.scheduler != null) {
-      scheduler.shutdownNow();
-    }
+    //    this.scheduler = null;
+    //    this.ramlHandler = null;
   }
 }
