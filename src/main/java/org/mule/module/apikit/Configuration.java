@@ -6,11 +6,22 @@
  */
 package org.mule.module.apikit;
 
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+
+import javax.inject.Inject;
+import javax.xml.validation.Schema;
+
 import org.apache.commons.lang.StringUtils;
+
 import org.mule.apikit.ApiType;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
@@ -27,22 +38,21 @@ import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
 import org.mule.runtime.api.lifecycle.InitialisationException;
+import org.mule.runtime.api.scheduler.Scheduler;
+import org.mule.runtime.api.scheduler.SchedulerConfig;
+import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExpressionManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.xml.validation.Schema;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.ServiceLoader;
-import java.util.concurrent.ExecutionException;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
-import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
-
-public class Configuration implements Initialisable, ValidationConfig, ConsoleConfig {
+public class Configuration implements Disposable, Initialisable, ValidationConfig, ConsoleConfig {
 
   private static final String DEFAULT_OUTBOUND_HEADERS_MAP_NAME = "outboundHeaders";
   private static final String DEFAULT_HTTP_STATUS_VAR_NAME = "httpStatus";
@@ -90,13 +100,23 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   @Inject
   private ConfigurationComponentLocator locator;
 
+  @Inject
+  private SchedulerService schedulerService;
+
+  private Scheduler scheduler;
+
   @Override
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
     this.routerService = findExtension();
+    SchedulerConfig schedulerConfig = SchedulerConfig.config()
+        .withName("AMF")
+        .withMaxConcurrentTasks(Runtime.getRuntime().availableProcessors());
+    final Scheduler scheduler = schedulerService.customScheduler(schedulerConfig, Integer.MAX_VALUE);
+    this.scheduler = scheduler;
 
     try {
-      ramlHandler = new RamlHandler(getApi(), isKeepApiBaseUri(),
+      ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
                                     errorRepositoryFrom(muleContext), parserMode.get());
       this.routerService.ifPresent(rs -> {
         try {
@@ -352,4 +372,9 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     System.setProperty("amf.plugins.xml.expandInternalEntities", internalEntities);
   }
 
+  @Override
+  public void dispose() {
+    //    this.scheduler = null;
+    //    this.ramlHandler = null;
+  }
 }

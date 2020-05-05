@@ -6,29 +6,15 @@
  */
 package org.mule.module.apikit.api;
 
-import org.apache.commons.io.IOUtils;
-import org.mule.amf.impl.model.AMFImpl;
-import org.mule.apikit.ApiType;
-import org.mule.apikit.loader.ApiSyncResourceLoader;
-import org.mule.apikit.model.Action;
-import org.mule.apikit.model.ApiSpecification;
-import org.mule.apikit.model.ApiVendor;
-import org.mule.apikit.model.api.ApiReference;
-import org.mule.module.apikit.StreamUtils;
-import org.mule.module.apikit.exception.NotFoundException;
-import org.mule.parser.service.ParserMode;
-import org.mule.parser.service.ParserService;
-import org.mule.parser.service.result.ParseResult;
-import org.mule.runtime.api.exception.ErrorTypeRepository;
-import org.mule.runtime.api.exception.TypedException;
-import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.api.scheduler.SchedulerConfig;
-import org.mule.runtime.api.scheduler.SchedulerService;
-import org.raml.model.ActionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
+import static org.mule.apikit.ApiType.AMF;
+import static org.mule.apikit.ApiType.RAML;
+import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
+import static org.mule.apikit.model.ApiVendor.RAML_08;
+import static org.mule.apikit.model.ApiVendor.RAML_10;
+import static org.mule.parser.service.ParserMode.AUTO;
 
-import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,17 +24,30 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-import static org.mule.apikit.ApiType.AMF;
-import static org.mule.apikit.ApiType.RAML;
-import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
-import static org.mule.apikit.model.ApiVendor.RAML_08;
-import static org.mule.apikit.model.ApiVendor.RAML_10;
-import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.parser.service.ParserMode.AUTO;
+import org.apache.commons.io.IOUtils;
+
+import org.mule.amf.impl.model.AMFImpl;
+import org.mule.apikit.ApiType;
+import org.mule.module.apikit.StreamUtils;
+import org.mule.module.apikit.exception.NotFoundException;
+import org.mule.parser.service.ParserMode;
+import org.mule.parser.service.ParserService;
+import org.mule.apikit.loader.ApiSyncResourceLoader;
+import org.mule.apikit.model.ApiVendor;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.api.ApiReference;
+import org.mule.parser.service.result.ParseResult;
+import org.mule.runtime.api.exception.ErrorTypeRepository;
+import org.mule.runtime.api.exception.TypedException;
+
+import org.raml.model.ActionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RamlHandler {
 
@@ -69,21 +68,18 @@ public class RamlHandler {
   private ErrorTypeRepository errorTypeRepository;
   private List<String> acceptedClasspathResources;
 
-  @Inject
-  private SchedulerService schedulerService;
-
   // ramlLocation should be the root raml location, relative of the resources folder
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ErrorTypeRepository errorTypeRepository) throws IOException {
-    this(ramlLocation, keepApiBaseUri, errorTypeRepository, null);
+    this(null, ramlLocation, keepApiBaseUri, errorTypeRepository, null);
   }
 
-  public RamlHandler(String ramlLocation,
+  public RamlHandler(ScheduledExecutorService executor,
+                     String ramlLocation,
                      boolean keepApiBaseUri,
                      ErrorTypeRepository errorTypeRepository,
                      ParserMode parserMode)
       throws IOException {
-    final Scheduler scheduler = getScheduler();
-    this.parserService = new ParserService(scheduler);
+    this.parserService = new ParserService(executor);
     this.keepApiBaseUri = keepApiBaseUri;
     String rootRamlLocation = findRootRaml(ramlLocation);
 
@@ -93,8 +89,12 @@ public class RamlHandler {
 
     result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode == null ? AUTO : parserMode);
 
-    //We only use the scheduler for AMF initialization, so is safe to shutdown now
-    scheduler.shutdownNow();
+    if (executor != null) {
+      List<Runnable> pendingTasks = executor.shutdownNow();
+      if (pendingTasks.size() > 0) {
+        System.out.println("There are remaining tasks");
+      }
+    }
 
     if (result.success()) {
       this.api = result.get();
@@ -111,13 +111,6 @@ public class RamlHandler {
       String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
       throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
     }
-  }
-
-  private Scheduler getScheduler() {
-    SchedulerConfig schedulerConfig = SchedulerConfig.config()
-        .withName("AMF-SCHEDULER")
-        .withMaxConcurrentTasks(Runtime.getRuntime().availableProcessors());
-    return schedulerService.customScheduler(schedulerConfig, Integer.MAX_VALUE);
   }
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
