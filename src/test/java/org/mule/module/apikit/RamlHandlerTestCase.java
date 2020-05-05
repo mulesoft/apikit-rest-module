@@ -182,7 +182,7 @@ public class RamlHandlerTestCase {
 
   private RamlHandler createRamlHandler(String ramlPath, boolean keepRamlBaseUri, ParserMode parser) {
     try {
-      return new RamlHandler(null, ramlPath, keepRamlBaseUri, muleContext.getErrorTypeRepository(), parser);
+      return new RamlHandler(ramlPath, keepRamlBaseUri, muleContext.getErrorTypeRepository(), parser);
     } catch (IOException e) {
       throw new RuntimeException("Error creating RamlHandler", e);
     }
