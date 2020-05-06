@@ -103,20 +103,14 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Inject
   private SchedulerService schedulerService;
 
-  private Scheduler scheduler;
 
   @Override
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
     this.routerService = findExtension();
-    SchedulerConfig schedulerConfig = SchedulerConfig.config()
-        .withName("AMF")
-        .withMaxConcurrentTasks(Runtime.getRuntime().availableProcessors());
-    final Scheduler scheduler = schedulerService.customScheduler(schedulerConfig, Integer.MAX_VALUE);
-    this.scheduler = scheduler;
 
     try {
-      ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
+      ramlHandler = new RamlHandler(schedulerService, getApi(), isKeepApiBaseUri(),
                                     errorRepositoryFrom(muleContext), parserMode.get());
       this.routerService.ifPresent(rs -> {
         try {

@@ -19,10 +19,14 @@ import static org.mule.apikit.ApiType.RAML;
 import static org.mule.parser.service.ParserMode.AUTO;
 
 import java.io.File;
+
+import org.junit.AfterClass;
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.ApiVendor;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.exception.MuleException;
+import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.MuleContext;
 
 import java.io.IOException;
@@ -31,15 +35,24 @@ import java.util.function.Supplier;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mule.service.scheduler.internal.DefaultSchedulerService;
 
 public class RamlHandlerTestCase {
 
   private static MuleContext muleContext;
+  private static DefaultSchedulerService service;
 
   @BeforeClass
-  public static void beforeAll() {
+  public static void beforeAll() throws MuleException {
     muleContext = mock(MuleContext.class);
     when(muleContext.getExecutionClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
+    service = new DefaultSchedulerService();
+    service.start();
+  }
+
+  @AfterClass
+  public static void afterAll() throws MuleException {
+    service.stop();
   }
 
   @Test
@@ -182,9 +195,10 @@ public class RamlHandlerTestCase {
 
   private RamlHandler createRamlHandler(String ramlPath, boolean keepRamlBaseUri, ParserMode parser) {
     try {
-      return new RamlHandler(null, ramlPath, keepRamlBaseUri, muleContext.getErrorTypeRepository(), parser);
+      return new RamlHandler(service, ramlPath, keepRamlBaseUri, muleContext.getErrorTypeRepository(), parser);
     } catch (IOException e) {
       throw new RuntimeException("Error creating RamlHandler", e);
     }
   }
+
 }

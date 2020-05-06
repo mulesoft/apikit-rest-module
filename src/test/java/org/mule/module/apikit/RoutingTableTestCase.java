@@ -12,24 +12,37 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.uri.URIPattern;
+import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.service.scheduler.internal.DefaultSchedulerService;
 
 public class RoutingTableTestCase {
 
   private static RamlHandler ramlHandler;
   private static MuleContext muleContext;
+  private static DefaultSchedulerService service;
 
   @BeforeClass
-  public static void beforeAll() throws IOException {
+  public static void beforeAll() throws IOException, MuleException {
     muleContext = mock(MuleContext.class);
     when(muleContext.getExecutionClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
-    ramlHandler = new RamlHandler("unit/routing-table-sample.raml", true, muleContext.getErrorTypeRepository());
+    service = new DefaultSchedulerService();
+    service.start();
+    ramlHandler =
+        new RamlHandler(service, "unit/routing-table-sample.raml", true, muleContext.getErrorTypeRepository(), ParserMode.AUTO);
+  }
+
+  @AfterClass
+  public static void afterAll() throws MuleException {
+    service.stop();
   }
 
   public RoutingTableTestCase() {}

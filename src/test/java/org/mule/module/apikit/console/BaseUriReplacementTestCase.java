@@ -13,7 +13,9 @@ import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.UrlUtils;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
+import org.mule.runtime.api.exception.MuleException;
 import org.mule.runtime.core.api.MuleContext;
+import org.mule.service.scheduler.internal.DefaultSchedulerService;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -25,17 +27,25 @@ public class BaseUriReplacementTestCase {
   private static final String FULL_DOMAIN = UrlUtils.FULL_DOMAIN;
 
   private static MuleContext muleContext;
+  private static DefaultSchedulerService service;
 
   @BeforeClass
-  public static void beforeAll() {
+  public static void beforeAll() throws MuleException {
     muleContext = mock(MuleContext.class);
     when(muleContext.getExecutionClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
+    service = new DefaultSchedulerService();
+    service.start();
+  }
+
+  @AfterClass
+  public static void afterAll() throws MuleException {
+    service.stop();
   }
 
   @Test
   public void baseUriReplacementTest() throws Exception {
     ErrorTypeRepository errorRepo = muleContext.getErrorTypeRepository();
-    RamlHandler ramlHandler = new RamlHandler(null, "unit/console/simple-with-baseuri10.raml", false, errorRepo, AUTO);
+    RamlHandler ramlHandler = new RamlHandler(service, "unit/console/simple-with-baseuri10.raml", false, errorRepo, AUTO);
     assertEquals("http://localhost:8081/api", ramlHandler.getBaseUriReplacement("http://localhost:8081/api"));
     assertEquals("http://localhost:8081/api", ramlHandler.getBaseUriReplacement("http://0.0.0.0:8081/api"));
 
