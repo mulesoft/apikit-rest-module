@@ -37,12 +37,19 @@ public class ParserHelper {
   }
 
   public <T> T executeWithScheduler(Function<ParseResult, T> function) {
-    final Scheduler scheduler = schedulerService.customScheduler(SCHEDULER_CONFIG, QUEUE_SIZE);
-    final ParserService parserService = new ParserService(scheduler);
-    final ParseResult parseResult = parserService.parse(ApiReference.create(rootRamlLocation), parserMode);
-    T result = function.apply(parseResult);
-    scheduler.shutdownNow();
-    return result;
+    if(schedulerService != null) {
+      final Scheduler scheduler = schedulerService.customScheduler(SCHEDULER_CONFIG, QUEUE_SIZE);
+      final ParserService parserService = new ParserService(scheduler);
+      final ParseResult parseResult = parserService.parse(ApiReference.create(rootRamlLocation), parserMode);
+      T result = function.apply(parseResult);
+      scheduler.shutdownNow();
+      return result;
+    }else{
+      final ParserService parserService = new ParserService();
+      final ParseResult parseResult = parserService.parse(ApiReference.create(rootRamlLocation), parserMode);
+      T result = function.apply(parseResult);
+      return result;
+    }
   }
 
 }
