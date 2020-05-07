@@ -16,12 +16,23 @@
     <munit:parameterizations>
       <munit:parameterization name="RAML">
         <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML10"/>
           <munit:parameter propertyName="parser.type" value="RAML"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/raml-10-file-validation-api.raml"/>
         </munit:parameters>
       </munit:parameterization>
-      <munit:parameterization name="AMF-10">
+      <munit:parameterization name="AMF-RAML10">
         <munit:parameters>
+          <munit:parameter propertyName="api.version" value="RAML10"/>
           <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/raml-10-file-validation-api.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="api.version" value="OAS30"/>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/body/form/oas-30-file-validation-api.json"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>
@@ -95,7 +106,8 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="post-image-file-with-invalid-size">
+  <!--  Size validation not supported by OAS. -->
+  <munit:test name="post-image-file-with-invalid-size" ignore="#['${api.version}' contains 'OAS']">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="file-validation-main"/>
       <munit:enable-flow-source value="post:\small-documents:multipart\form-data:file-validation-config"/>
