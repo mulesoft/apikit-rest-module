@@ -13,16 +13,13 @@ import org.mule.apikit.loader.ApiSyncResourceLoader;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.ApiVendor;
-import org.mule.apikit.model.api.ApiReference;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.exception.NotFoundException;
+import org.mule.module.apikit.helpers.ParserHelper;
 import org.mule.parser.service.ParserMode;
-import org.mule.parser.service.ParserService;
 import org.mule.parser.service.result.ParseResult;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.TypedException;
-import org.mule.runtime.api.scheduler.Scheduler;
-import org.mule.runtime.api.scheduler.SchedulerConfig;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.raml.model.ActionType;
 import org.slf4j.Logger;
@@ -37,7 +34,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -52,8 +48,7 @@ import static org.mule.parser.service.ParserMode.AUTO;
 
 public class RamlHandler {
 
-  private final String rootRamlLocation;
-  private final ParserMode parserMode;
+  private final ParserHelper parserHelper;
   private Pattern CONSOLE_RESOURCE_PATTERN = Pattern.compile(".*console-resources.*(html|json|js)");
 
   public static final String MULE_APIKIT_PARSER_PROPERTY = "mule.apikit.parser";
@@ -68,7 +63,6 @@ public class RamlHandler {
   private ApiSpecification api;
   private ErrorTypeRepository errorTypeRepository;
   private List<String> acceptedClasspathResources;
-  private SchedulerService schedulerService;
   private String amfDump;
 
   // ramlLocation should be the root raml location, relative of the resources folder
@@ -79,12 +73,11 @@ public class RamlHandler {
   public RamlHandler(SchedulerService service, String ramlLocation, boolean keepApiBaseUri,
                      ErrorTypeRepository errorTypeRepository, ParserMode parserMode)
       throws IOException {
-    this.schedulerService = service;
+    String rootRamlLocation = findRootRaml(ramlLocation);
+    this.parserHelper = new ParserHelper(service, rootRamlLocation, parserMode == null ? AUTO : parserMode);
     this.keepApiBaseUri = keepApiBaseUri;
-    this.rootRamlLocation = findRootRaml(ramlLocation);
-    this.parserMode = parserMode == null ? AUTO : parserMode;
 
-    ParseResult result = getParserResult();
+    ParseResult result = parserHelper.executeWithScheduler(parseResult -> parseResult);
 
     if (result.success()) {
       this.api = result.get();
@@ -101,28 +94,6 @@ public class RamlHandler {
       String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
       throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
     }
-  }
-
-  /**
-   * Gets an scheduler from schedulerService, the invoker is responsible for shutdown after use
-   *
-   * @return scheduler
-   */
-  private Scheduler getScheduler() {
-    SchedulerConfig schedulerConfig = SchedulerConfig.config()
-        .withName("AMF-SCHEDULER")
-        .withMaxConcurrentTasks(Runtime.getRuntime().availableProcessors());
-    return schedulerService.customScheduler(schedulerConfig, Integer.MAX_VALUE);
-  }
-
-  private ParseResult getParserResult() {
-    final Scheduler scheduler = getScheduler();
-    final ParserService parserService = new ParserService(scheduler);
-    final ParseResult result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode);
-    //We only use the scheduler for AMF initialization, so is safe to shutdown now
-    scheduler.shutdownNow();
-
-    return result;
   }
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
@@ -229,22 +200,22 @@ public class RamlHandler {
   // TODO: why is an exception for AMF? this should dumping AMF should be the same as dumping a raml
   public String getAMFModel() {
     if (amfDump == null) {
-      amfDump = "";
-      final Scheduler scheduler = getScheduler();
-      final ParserService parserService = new ParserService(scheduler);
-      final ParseResult result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode);
+      amfDump = parserHelper.executeWithScheduler(parseResult -> getAmfDump(parseResult));
+    }
 
-      ApiSpecification specification = result.get();
-      if (specification.getType().equals(AMF)) {
-        AMFImpl parse = ((AMFImpl) specification);
-        if (!keepApiBaseUri) {
-          String baseUriReplacement = getBaseUriReplacement(apiServer);
-          parse.updateBaseUri(baseUriReplacement);
-        }
-        amfDump = parse.dumpAmf();
+    return amfDump;
+  }
+
+  private String getAmfDump(ParseResult parseResult) {
+    String amfDump = "";
+    ApiSpecification specification = parseResult.get();
+    if (specification.getType().equals(AMF)) {
+      AMFImpl parse = ((AMFImpl) specification);
+      if (!keepApiBaseUri) {
+        String baseUriReplacement = getBaseUriReplacement(apiServer);
+        parse.updateBaseUri(baseUriReplacement);
       }
-
-      scheduler.shutdownNow();
+      amfDump = parse.dumpAmf();
     }
     return amfDump;
   }
