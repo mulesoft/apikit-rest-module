@@ -33,7 +33,9 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -64,6 +66,7 @@ public class RamlHandler {
   private ErrorTypeRepository errorTypeRepository;
   private List<String> acceptedClasspathResources;
   private String amfDump;
+  private Map<String,String> ramlDumpMap;
 
   // ramlLocation should be the root raml location, relative of the resources folder
   public RamlHandler(String ramlLocation, boolean keepApiBaseUri, ErrorTypeRepository errorTypeRepository) throws IOException {
@@ -76,6 +79,7 @@ public class RamlHandler {
     String rootRamlLocation = findRootRaml(ramlLocation);
     this.parserHelper = new ParserHelper(service, rootRamlLocation, parserMode == null ? AUTO : parserMode);
     this.keepApiBaseUri = keepApiBaseUri;
+    this.ramlDumpMap = new HashMap<>();
 
     ParseResult result = parserHelper.executeWithScheduler(parseResult -> parseResult);
 
@@ -134,15 +138,20 @@ public class RamlHandler {
   }
 
   public String dumpRaml() {
-    return api.dump(null);
+    return dumpRaml(null);
+  }
+
+  private String dumpRaml(String baseUriReplacement) {
+    return ramlDumpMap.computeIfAbsent(baseUriReplacement,
+            key -> parserHelper.executeWithScheduler(parseResult -> parseResult.get().dump(key)));
   }
 
   public String getRamlV1() {
     if (keepApiBaseUri) {
-      return dumpRaml();
+      return dumpRaml(null);
     } else {
       String baseUriReplacement = getBaseUriReplacement(apiServer);
-      return api.dump(baseUriReplacement);
+      return dumpRaml(baseUriReplacement);
     }
   }
 
