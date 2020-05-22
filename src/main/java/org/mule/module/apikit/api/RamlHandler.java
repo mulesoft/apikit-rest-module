@@ -73,6 +73,14 @@ public class RamlHandler {
     this(null, ramlLocation, keepApiBaseUri, errorTypeRepository, null);
   }
 
+  public RamlHandler(String ramlLocation,
+                     boolean keepApiBaseUri,
+                     ErrorTypeRepository errorTypeRepository,
+                     ParserMode parserMode)
+      throws IOException {
+    this(null, ramlLocation, keepApiBaseUri, errorTypeRepository, parserMode);
+  }
+
   public RamlHandler(ScheduledExecutorService executor,
                      String ramlLocation,
                      boolean keepApiBaseUri,
