@@ -6,19 +6,8 @@
  */
 package org.mule.module.apikit;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mule.apikit.ApiType.AMF;
-import static org.mule.apikit.ApiType.RAML;
-import static org.mule.parser.service.ParserMode.AUTO;
-
-import java.io.File;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.ApiVendor;
 import org.mule.module.apikit.api.RamlHandler;
@@ -29,8 +18,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mule.apikit.ApiType.AMF;
+import static org.mule.apikit.ApiType.RAML;
+import static org.mule.parser.service.ParserMode.AUTO;
 
 public class RamlHandlerTestCase {
 
@@ -147,8 +144,6 @@ public class RamlHandlerTestCase {
     handler = createRamlHandler("unit/raml-handler/raml-parser-only.raml", keepRamlBaseUri, ParserMode.RAML);
     assertEquals(RAML, handler.getApi().getType());
 
-    assertException("Invalid facets for type amf-valid-type:",
-                    () -> createRamlHandler("unit/raml-handler/amf-only.raml", keepRamlBaseUri, ParserMode.RAML));
     assertException("Invalid reference 'SomeTypo'",
                     () -> createRamlHandler("unit/raml-handler/failing-api.raml", keepRamlBaseUri, ParserMode.RAML));
   }
