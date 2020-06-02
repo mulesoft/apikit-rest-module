@@ -1,0 +1,87 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "fileTypeTest",
+    "version": "undefined"
+  },
+  "paths": {
+    "/documents": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_documents",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "second": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "first"
+                ],
+                "type": "object"
+              },
+              "encoding": {
+                "first": {
+                  "contentType": "image/png, image/jpeg",
+                  "headers": {
+                    "X-Rate-Limit-Limit": {
+                      "description": "The number of allowed requests in the current period",
+                      "schema": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "second": {
+                  "contentType": "video/mpeg, audio/mpeg"
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/anyFileTypeAllowed": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_anyFileTypeAllowed",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "first"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  }
+}

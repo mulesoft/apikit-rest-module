@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="oas-routing-test-suite"/>
+  <munit:config name="oas-routing-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="OAS-20">
+        <munit:parameters>
+          <munit:parameter propertyName="raml.api" value="munit/flow-routing/oas-v20-routing.json"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="OAS-30">
+        <munit:parameters>
+          <munit:parameter propertyName="raml.api" value="munit/flow-routing/oas-v30-routing.yaml"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
 
-  <munit:test name="OAS-get-request-with-uri-param-value">
+  <munit:test name="oas-get-request-with-uri-param-value">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="oas-routing-main"/>
       <munit:enable-flow-source value="get:\pets\(petId):oas-routing-config"/>
@@ -26,7 +39,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="OAS-simple-get-request">
+  <munit:test name="oas-simple-get-request">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="oas-routing-main"/>
       <munit:enable-flow-source value="get:\pets:oas-routing-config"/>

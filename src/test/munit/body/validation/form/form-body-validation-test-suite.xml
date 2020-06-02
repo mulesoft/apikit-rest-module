@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-  xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
-		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
   <munit:config name="form-body-validation-test-suite">
@@ -36,6 +35,12 @@
         <munit:parameters>
           <munit:parameter propertyName="parser.type" value="AMF"/>
           <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-08.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-OAS-30">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-oas30.json"/>
         </munit:parameters>
       </munit:parameterization>
     </munit:parameterizations>

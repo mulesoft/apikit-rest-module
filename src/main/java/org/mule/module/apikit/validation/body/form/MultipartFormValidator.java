@@ -10,7 +10,6 @@ package org.mule.module.apikit.validation.body.form;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
-import org.mule.module.apikit.input.stream.RewindableInputStream;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataBuilder;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;

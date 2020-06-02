@@ -6,14 +6,16 @@
  */
 package org.mule.module.apikit.validation.body.form.transformation;
 
+import org.mule.apikit.model.parameter.FileProperties;
+import org.mule.apikit.model.parameter.Parameter;
+import org.mule.module.apikit.api.exception.InvalidFormParameterException;
+import org.mule.runtime.api.metadata.MediaType;
+
+import java.util.Optional;
+import java.util.Set;
+
 import static java.lang.String.format;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
-
-import java.util.Set;
-import org.mule.apikit.model.parameter.FileProperties;
-import org.mule.module.apikit.api.exception.InvalidFormParameterException;
-import org.mule.apikit.model.parameter.Parameter;
-import org.mule.runtime.api.metadata.MediaType;
 
 /**
  * This class is intended to validate multipart form-data
@@ -32,10 +34,11 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
 
   @Override
   public void validate(Parameter parameter) throws InvalidFormParameterException {
-    if (!parameter.getFileProperties().isPresent()) {
+    Optional<FileProperties> fileProperties = parameter.getFileProperties();
+    if (!fileProperties.isPresent()) {
       return;
     }
-    FileProperties properties = parameter.getFileProperties().get();
+    FileProperties properties = fileProperties.get();
     Set<String> fileTypes = properties.getFileTypes();
     Integer minValue = properties.getMinLength();
     Integer maxValue = properties.getMaxLength();

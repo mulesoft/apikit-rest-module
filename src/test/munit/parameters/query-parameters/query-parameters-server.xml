@@ -7,7 +7,7 @@
 						  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
 						  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
-  <apikit:config name="query-params-config" raml="munit/parameters/query-parameters.raml"
+  <apikit:config name="query-params-config" raml="${api.location}"
 				 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
   <flow name="query-params-main">

@@ -1,0 +1,145 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "sample api",
+    "version": "undefined"
+  },
+  "paths": {
+    "/schema10user": {
+      "put": {
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "204": {
+            "description": ""
+          }
+        },
+        "operationId": "PUT_schema10user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "emailAddresses": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "emailAddresses",
+                  "username"
+                ]
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "xml": {
+                      "attribute": true
+                    }
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "xml": {
+                      "attribute": true
+                    }
+                  },
+                  "email-addresses": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "xml": {
+                        "name": "email-address"
+                      }
+                    },
+                    "xml": {
+                      "wrapped": true
+                    }
+                  },
+                  "username": {
+                    "type": "string",
+                    "xml": {
+                      "attribute": true
+                    }
+                  }
+                },
+                "xml": {
+                  "name": "user",
+                  "namespace": "http://mulesoft.org/schemas/sample"
+                },
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email-addresses",
+                  "username"
+                ]
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/ramluser": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_ramluser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "age": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "firstname",
+          "lastname",
+          "age"
+        ]
+      }
+    }
+  }
+}

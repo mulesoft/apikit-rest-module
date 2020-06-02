@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
-  xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-  <apikit:config name="file-validation-config" api="munit/body/form/file-validation-api.raml"
-    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
+  <apikit:config name="file-validation-config" api="${api.location}"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
   <flow name="file-validation-main">
     <http:listener config-ref="http-listener-simple" path="/file-validation/*">

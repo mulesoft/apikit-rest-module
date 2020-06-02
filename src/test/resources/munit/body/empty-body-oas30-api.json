@@ -1,0 +1,47 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Empty body test in Raml 1.0",
+    "version": "undefined"
+  },
+  "paths": {
+    "/method-without-body": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_method-without-body"
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "operationId": "PUT_method-without-body"
+      }
+    },
+    "/body-with-json-content-type": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_body-with-json-content-type",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  }
+}

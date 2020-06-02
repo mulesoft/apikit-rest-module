@@ -10,10 +10,10 @@
 
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="headers-10-validation-config" raml="munit/headers/validation10.raml"
-                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+  <apikit:config name="headers-validation-config" raml="${api.location}"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
-  <flow name="headers-validation-10-main">
+  <flow name="headers-validation-main">
     <http:listener config-ref="http-listener-simple" path="/headers/validation/*">
       <http:response statusCode="#[vars.httpStatus default 200]">
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -23,16 +23,16 @@
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:error-response>
     </http:listener>
-    <apikit:router config-ref="headers-10-validation-config"/>
+    <apikit:router config-ref="headers-validation-config"/>
     <error-handler ref="global-server-error-handler"/>
   </flow>
 
-  <flow name="get:\datetime2616:headers-10-validation-config">
-    <set-payload value="#[attributes.headers['x-modifiedsince']]" />
+  <flow name="get:\datetime2616:headers-validation-config">
+    <set-payload value="#[attributes.headers['x-modifiedsince']]"/>
   </flow>
 
-  <flow name="get:\test-array-header:headers-10-validation-config">
-    <set-payload value="#[attributes.headers.*'array-header']" />
+  <flow name="get:\test-array-header:headers-validation-config">
+    <set-payload value="#[attributes.headers.*'array-header']"/>
     <munit-tools:store key="first-header">
       <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>
     </munit-tools:store>
@@ -41,15 +41,15 @@
     </munit-tools:store>
   </flow>
 
-  <flow name="post:\datetime2616:headers-10-validation-config">
+  <flow name="post:\datetime2616:headers-validation-config">
     <set-payload value="#[attributes.headers['defaultHeaderValue']]"/>
   </flow>
 
-  <flow name="get:\multiplicity:headers-10-validation-config">
+  <flow name="get:\multiplicity:headers-validation-config">
     <set-payload value="#[payload]"/>
   </flow>
 
-  <flow name="post:\multiplicity:headers-10-validation-config">
+  <flow name="post:\multiplicity:headers-validation-config">
     <set-payload value="#[payload]"/>
   </flow>
 </mule>

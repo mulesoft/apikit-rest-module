@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: v1
+paths:
+  '/resource/{version}':
+    get:
+      responses:
+        '200':
+          description: |
+            Successfully retrieved resource(s)
+      description: |
+        Retrieve resource(s)
+      operationId: GET_resource-version
+    parameters:
+      - name: version
+        in: path
+        required: true
+        schema:
+          type: string
+  '/constrains/{id}':
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_constrains-id
+    parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        schema:
+          minimum: 1
+          maximum: 5
+          type: integer
+  '/constrains/{id}/{id2}':
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_constrains-id-id2
+    parameters:
+      - name: id2
+        in: path
+        required: true
+        schema:
+          enum:
+            - one
+            - two
+            - three
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          minimum: 1
+          maximum: 5
+          type: integer

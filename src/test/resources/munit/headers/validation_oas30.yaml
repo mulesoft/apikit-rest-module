@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  title: Headers Test Case
+  version: undefined
+paths:
+  /datetime2616:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_datetime2616
+      parameters:
+        - name: X-ModifiedSince
+          in: header
+          required: true
+          schema:
+            format: date-time
+            type: string
+    post:
+      responses:
+        default:
+          description: ''
+      operationId: POST_datetime2616
+      parameters:
+        - name: X-MaxRows
+          in: header
+          schema:
+            type: integer
+        - name: defaultHeaderValue
+          in: header
+          schema:
+            default: hola-header
+            type: string
+  /test-array-header:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_test-array-header
+      parameters:
+        - name: array-header
+          in: header
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                value:
+                  type: string
+              required:
+                - type
+                - value
+  /multiplicity:
+    get:
+      responses:
+        '200':
+          description: ''
+      operationId: GET_multiplicity
+    post:
+      responses:
+        default:
+          description: ''
+      operationId: POST_multiplicity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
