@@ -8,7 +8,8 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="oas-routing-config" raml="munit/flow-routing/oas-routing.json" outboundHeadersMapName="outboundHeaders"
+  <apikit:config name="oas-routing-config" raml="${raml.api}"
+                 outboundHeadersMapName="outboundHeaders"
                  httpStatusVarName="httpStatus" parser="AMF"/>
 
   <flow name="oas-routing-main">

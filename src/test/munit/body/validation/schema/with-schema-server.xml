@@ -8,12 +8,12 @@
       http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 
 
-  <apikit:config name="raml-10-with-schema-config" api="munit/body/raml-10-with-schema.raml"
-    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"
-    parser="${parser.type}"/>
+  <apikit:config name="with-schema-config" api="${api.location}"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"
+                 parser="${parser.type}"/>
 
-  <flow name="raml-10-with-schema-main">
-    <http:listener config-ref="http-listener-simple" path="/raml-10-with-schema/*">
+  <flow name="with-schema-main">
+    <http:listener config-ref="http-listener-simple" path="/with-schema/*">
       <http:response statusCode="#[vars.httpStatus default 200]">
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:response>
@@ -21,15 +21,15 @@
         <http:headers>#[vars.outboundHeaders default {}]</http:headers>
       </http:error-response>
     </http:listener>
-    <apikit:router config-ref="raml-10-with-schema-config"/>
+    <apikit:router config-ref="with-schema-config"/>
     <error-handler ref="global-server-error-handler"/>
   </flow>
 
-  <flow name="put:\schema10user">
+  <flow name="put:\schema10user:with-schema-config">
     <set-payload value="hello"/>
   </flow>
 
-  <flow name="post:\ramluser">
+  <flow name="post:\ramluser:with-schema-config">
     <set-payload value="hello"/>
   </flow>
 

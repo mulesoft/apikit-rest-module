@@ -11,6 +11,15 @@ title: test x-www-form-urlencoded API
             type: string
     responses:
       201: ~
+/url-encoded-simple-integer:
+  post:
+    body:
+      application/x-www-form-urlencoded:
+        formParameters:
+          first:
+            type: integer
+    responses:
+      201: ~
 /url-encoded-with-default:
   post:
     body:

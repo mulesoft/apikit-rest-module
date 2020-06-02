@@ -8,8 +8,9 @@
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
     http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-  <apikit:config name="strictly-validation-config" raml="munit/headers/strictly-validation.raml"
-    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" headersStrictValidation="true" />
+  <apikit:config name="strictly-validation-config" raml="${api.location}"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"
+                 headersStrictValidation="true"/>
 
   <flow name="strictly-validation-main">
     <http:listener config-ref="http-listener-simple" path="/headers/strictly/*">

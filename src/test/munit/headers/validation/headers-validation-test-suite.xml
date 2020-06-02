@@ -10,78 +10,26 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="headers-validation-test-suite"/>
+  <munit:config name="headers-validation-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML10">
+        <munit:parameters>
+          <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="api.location" value="munit/headers/validation_oas30.yaml"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
 
-  <munit:test name="required-header-not-provided">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-equals actual="#[payload.description]" expected="#['Required header \'one\' not specified']"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="invalid-enum-value-for-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
-        <http:headers>#[
-          output application/java
-          ---
-          {
-          one: 'invalid'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-equals actual="#[payload.description]"
-                                 expected="#['Invalid value \'invalid\' for header \'one\'']"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="valid-header-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
-        <http:headers>#[
-          output application/java
-          ---
-          {
-          one: 'foo'
-          }]
-        </http:headers>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-equals actual="#[payload.message]" expected="#['is all good']"/>
-    </munit:validation>
-  </munit:test>
 
   <munit:test name="success-when-optional-header-is-not-sent">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616"/>
@@ -93,8 +41,8 @@
 
   <munit:test name="failed-when-optional-header-has-not-valid-value">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
@@ -119,8 +67,8 @@
 
   <munit:test name="success-with-default-header-value">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
@@ -145,8 +93,8 @@
 
   <munit:test name="success-with-multiple-accept-header-values">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="get:\multiplicity:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="get:\multiplicity:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
@@ -170,8 +118,8 @@
 
   <munit:test name="success-with-valid-comma-separated-header-value">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="get:\multiplicity:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="get:\multiplicity:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
@@ -194,8 +142,8 @@
 
   <munit:test name="unsupported-media-type-with-multiple-content-type-header-values">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\multiplicity:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
@@ -228,8 +176,8 @@
 
   <munit:test name="unsupported-media-type-with-invalid-content-type-header-value">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\multiplicity:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
@@ -261,8 +209,8 @@
 
   <munit:test name="invalid-content-type-header-value">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\multiplicity:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
@@ -294,8 +242,8 @@
 
   <munit:test name="success-with-special-characters-at-header-value">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
@@ -320,8 +268,8 @@
 
   <munit:test name="success-with-string-array-header">
     <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-10-main"/>
-      <munit:enable-flow-source value="get:\test-array-header:headers-10-validation-config"/>
+      <munit:enable-flow-source value="headers-validation-main"/>
+      <munit:enable-flow-source value="get:\test-array-header:headers-validation-config"/>
     </munit:enable-flow-sources>
     <munit:execution>
       <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-header">

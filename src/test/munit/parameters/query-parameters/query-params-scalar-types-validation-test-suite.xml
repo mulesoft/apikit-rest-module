@@ -12,16 +12,27 @@
 
   <munit:config name="scalar-types-validation-test-suite">
 	<munit:parameterizations>
-	  <munit:parameterization name="RAML">
-		<munit:parameters>
-		  <munit:parameter propertyName="parser.type" value="RAML"/>
-		</munit:parameters>
-	  </munit:parameterization>
-	  <munit:parameterization name="AMF">
-		<munit:parameters>
-		  <munit:parameter propertyName="parser.type" value="AMF"/>
-		</munit:parameters>
-	  </munit:parameterization>
+		<munit:parameterization name="RAML">
+			<munit:parameters>
+				<munit:parameter propertyName="parser.type" value="RAML"/>
+				<munit:parameter propertyName="api.location"
+								 value="munit/parameters/query-params-scalar-types-validation.raml"/>
+			</munit:parameters>
+		</munit:parameterization>
+		<munit:parameterization name="AMF-RAML10">
+			<munit:parameters>
+				<munit:parameter propertyName="parser.type" value="AMF"/>
+				<munit:parameter propertyName="api.location"
+								 value="munit/parameters/query-params-scalar-types-validation.raml"/>
+			</munit:parameters>
+		</munit:parameterization>
+		<munit:parameterization name="AMF-OAS30">
+			<munit:parameters>
+				<munit:parameter propertyName="parser.type" value="AMF"/>
+				<munit:parameter propertyName="api.location"
+								 value="munit/parameters/query-params-scalar-types-validation.json"/>
+			</munit:parameters>
+		</munit:parameterization>
 	</munit:parameterizations>
   </munit:config>
 

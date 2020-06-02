@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
       xmlns:http="http://www.mulesoft.org/schema/mule/http"
-      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
                           http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-                          http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
 
-    <apikit:config name="empty-body-validation-config" api="munit/body/empty-body-api.raml"
+    <apikit:config name="empty-body-validation-config" api="${api.location}"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" parser="${parser.type}"/>
 
     <flow name="empty-body-validation-main">

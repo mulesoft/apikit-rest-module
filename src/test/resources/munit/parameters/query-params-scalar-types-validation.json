@@ -1,0 +1,83 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Scalar Types test",
+    "version": "undefined"
+  },
+  "paths": {
+    "/resource": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "operationId": "GET_resource",
+        "parameters": [
+          {
+            "name": "str",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "num",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "int",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "bool",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "dateOnly",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "time",
+            "description": "TIME-ONLY NOT SUPPORTED BY OAS",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^(\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?)$"
+            }
+          },
+          {
+            "name": "datetimeOnly",
+            "description": "DATETIME-ONLY NOT SUPPORTED BY OAS",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^((?:(\\d{4}-\\d{2}-\\d{2})T(\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?))(Z|[\\+-]\\d{2}:\\d{2})?)$"
+            }
+          },
+          {
+            "name": "datetime",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

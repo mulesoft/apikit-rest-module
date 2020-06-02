@@ -1,0 +1,179 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "test x-www-form-urlencoded API",
+    "version": "undefined"
+  },
+  "paths": {
+    "/url-encoded-simple": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_url-encoded-simple",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "first"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/url-encoded-simple-integer": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_url-encoded-simple-integer",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "first"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/url-encoded-with-default": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_url-encoded-with-default",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "default": "primo",
+                    "type": "string"
+                  },
+                  "second": {
+                    "type": "string"
+                  },
+                  "third": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "second",
+                  "third"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/url-encoded-duplicated-key": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_url-encoded-duplicated-key",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "default": "primo",
+                    "type": "string"
+                  },
+                  "second": {
+                    "type": "string"
+                  },
+                  "third": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "second",
+                  "third"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/url-encoded-with-arrays": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "operationId": "POST_url-encoded-with-arrays",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "first": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "second": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "third": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "first",
+                  "second",
+                  "third"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  }
+}

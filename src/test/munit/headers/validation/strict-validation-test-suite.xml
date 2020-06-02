@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
-  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
-  xmlns="http://www.mulesoft.org/schema/mule/core"
-  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="strictly-validation-test-suite"/>
+  <munit:config name="strictly-validation-test-suite">
+    <munit:parameterizations>
+      <munit:parameterization name="RAML">
+        <munit:parameters>
+          <munit:parameter propertyName="api.location" value="munit/headers/strictly-validation.raml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="api.location" value="munit/headers/strictly-validation-oas30.yaml"/>
+        </munit:parameters>
+      </munit:parameterization>
+    </munit:parameterizations>
+  </munit:config>
+
 
   <munit:test name="without-additional-headers">
     <munit:enable-flow-sources>
