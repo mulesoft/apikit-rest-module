@@ -12,6 +12,9 @@ import org.mule.apikit.model.Resource;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.UrlUtils;
+import org.mule.module.apikit.api.exception.ApikitRuntimeException;
+import org.mule.module.apikit.api.exception.BadRequestException;
+import org.mule.module.apikit.api.exception.InvalidUriParameterException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.spi.AbstractRouter;
 import org.mule.module.apikit.api.spi.RouterService;
@@ -23,6 +26,7 @@ import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.module.apikit.routing.DefaultFlowRoutingStrategy;
 import org.mule.module.apikit.routing.FlowRoutingStrategy;
 import org.mule.module.apikit.routing.PrivilegedFlowRoutingStrategy;
+import org.mule.module.apikit.uri.URICoder;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
@@ -180,15 +184,15 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
         });
   }
 
-  private String getRequestPath(HttpRequestAttributes attributes) {
-    // raw request path is encoded only when it's not encoded
-    // if raw request path is decoded always, and encoded again
-    // we can get "not found" error, when raw request path contains %2F (%2F decode-> "/")
-    // example raw request path : "uri-param/AA%2F11%2F00000070" decode-> "uri-param/AA/11/00000070" encode->"uri-param/AA/11/00000070"
-    boolean isEncoded = !attributes.getRequestPath().equals(attributes.getRawRequestPath());
-    String rawRequestPath = isEncoded ? attributes.getRawRequestPath() : UrlUtils.encode(attributes.getRawRequestPath());
-    String path = UrlUtils.getRelativePath(attributes.getListenerPath(), rawRequestPath);
-    return path.isEmpty() ? "/" : path;
+  private String getRequestPath(HttpRequestAttributes attributes) throws BadRequestException {
+    try {
+      String rawRequestPath = URICoder.encodeRequestPath(attributes.getRawRequestPath());
+      String path = UrlUtils.getRelativePath(attributes.getListenerPath(), rawRequestPath);
+      return path.isEmpty() ? "/" : path;
+    } catch (ApikitRuntimeException e) {
+      throw new InvalidUriParameterException(e.getMessage());
+    }
+
   }
 
   private <T> T findInCache(String key, LoadingCache<String, T> cache) {

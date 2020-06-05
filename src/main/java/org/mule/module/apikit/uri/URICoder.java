@@ -14,6 +14,7 @@ import java.text.Normalizer.Form;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 
 /**
  * An encoder/decoder for use by URI templates.
@@ -56,12 +57,32 @@ public class URICoder {
   private final static int ENCODE_INITIAL_CAPACITY = 16;
 
   /**
-   * Prevents creation of instances.
+   *  Reserved chars, not considered when detecting bad encoding
    */
+  private final static Set<Character> skipChars = new HashSet<>(Arrays.asList('/', '{', '}', '%'));
+
+  /**
+   *  Reserved chars, not considered when encoding request path
+   */
+  private static final Set<Character> escapeChars = new HashSet<>(Arrays.asList('/', '{', '}'));
+
   private URICoder() {}
 
   // Encoder
   // ==========================================================================
+
+  /**
+   * @param rawRequestPath  request path with original encoding /api/myEndpoint
+   * @return @rawRequestPath with encoded special characters if found
+   * @throws ApikitRuntimeException when bad encoding detected
+   */
+  public static String encodeRequestPath(String rawRequestPath) throws ApikitRuntimeException {
+    boolean encoded = !rawRequestPath.equals(decode(rawRequestPath));
+    if (encoded && containsSpecialChars(rawRequestPath, skipChars)) {
+      throw new ApikitRuntimeException("Request path contains special characters not encoded");
+    }
+    return encoded ? rawRequestPath : encode(rawRequestPath, escapeChars);
+  }
 
   /**
    * Encodes the string as valid URI fragment.
@@ -80,6 +101,24 @@ public class URICoder {
     // Check whether we need to use UTF-8 encoder
     boolean ascii = isASCII(s);
     return ascii ? encode_ASCII(s, chars) : encode_UTF8(s, chars);
+  }
+
+  /**
+   * @param path  The path to check if contains special characters
+   * @param skipChars An ASCII set of characters that should not be considered if found in the string.
+   * @return If the path contains special characters not encoded
+   */
+  private static boolean containsSpecialChars(String path, Set<Character> skipChars) {
+    if (path == null || path.length() == 0) {
+      return false;
+    }
+    for (int index = 0; index < path.length(); index++) {
+      char character = path.charAt(index);
+      if (!skipChars.contains(character) && !isUnreserved((int) character)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
