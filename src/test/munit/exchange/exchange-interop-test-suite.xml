@@ -18,19 +18,18 @@
           <munit:parameter propertyName="api.location" value="munit/exchange/api/raml/api.raml"/>
         </munit:parameters>
       </munit:parameterization>
-      <!-- APIMF-2084 __ TODO: Restore when 4.1.2 is released-->
-      <!--      <munit:parameterization name="AMF-OAS30">-->
-      <!--        <munit:parameters>-->
-      <!--          <munit:parameter propertyName="parser.type" value="AMF"/>-->
-      <!--          <munit:parameter propertyName="api.location" value="munit/exchange/api/oas/v3/api.yaml"/>-->
-      <!--        </munit:parameters>-->
-      <!--      </munit:parameterization>-->
-      <!--      <munit:parameterization name="AMF-OAS20">-->
-      <!--        <munit:parameters>-->
-      <!--          <munit:parameter propertyName="parser.type" value="AMF"/>-->
-      <!--          <munit:parameter propertyName="api.location" value="munit/exchange/api/oas/v2/api.yaml"/>-->
-      <!--        </munit:parameters>-->
-      <!--      </munit:parameterization>-->
+      <munit:parameterization name="AMF-OAS30">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/exchange/api/oas/v3/api.yaml"/>
+        </munit:parameters>
+      </munit:parameterization>
+      <munit:parameterization name="AMF-OAS20">
+        <munit:parameters>
+          <munit:parameter propertyName="parser.type" value="AMF"/>
+          <munit:parameter propertyName="api.location" value="munit/exchange/api/oas/v2/api.yaml"/>
+        </munit:parameters>
+      </munit:parameterization>
     </munit:parameterizations>
   </munit:config>
 
