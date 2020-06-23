@@ -1,6 +1,6 @@
 {
   "name":"APIKit",
-  "minMuleVersion":"4.1.5-HF-SNAPSHOT",
+  "minMuleVersion":"4.1.3-HF-SNAPSHOT",
   "requiredProduct":"MULE_EE",
   "bundleDescriptorLoader": {
     "id": "mule",
