@@ -20,27 +20,34 @@ public class UrlUtils {
   public static final String FULL_DOMAIN = "fullDomain";
   private static final String HTTP = "http://";
   private static final String HTTPS = "https://";
-  private static final Set<Character> ESCAPE_CHARS = new HashSet<>(Arrays.asList('/', '{', '}'));
+  private static final Set<Character> ESCAPE_CHARS = new HashSet<Character>(Arrays.asList('/', '{', '}'));
 
   private UrlUtils() {}
 
   private static int getEndOfBasePathIndex(String baseAndApiPath, String requestPath) {
     int index = baseAndApiPath.lastIndexOf('/') + 1;
-    return index > requestPath.length() ? requestPath.length() : index;
+    if (index > requestPath.length()) {
+      return requestPath.length();
+    }
+    return index;
   }
 
   public static String encode(String url) {
     return URICoder.encode(url, ESCAPE_CHARS);
   }
 
-  /**
-   * @param baseAndApiPath http listener base path, example /api/*
-   * @param requestPath example /api/endpoint
-   * @return a String that represent the relative path between @baseAndApiPath and @requestPath, example : /endpoint
-   */
   public static String getRelativePath(String baseAndApiPath, String requestPath) {
-    int slashLastPosition = baseAndApiPath.lastIndexOf('/');
-    return slashLastPosition == -1 || slashLastPosition >= requestPath.length() ? "/" : requestPath.substring(slashLastPosition);
+    int character = getEndOfBasePathIndex(baseAndApiPath, requestPath);
+    String relativePath = requestPath.substring(character);
+    if (!"".equals(relativePath)) {
+      for (; character > 0 && Character.compare(requestPath.charAt(character - 1), '/') == 0; character--) {
+        relativePath = "/" + relativePath;
+      }
+    } else {
+      relativePath += "/";
+    }
+
+    return relativePath;
   }
 
   public static String getListenerPath(String listenerPath, String requestPath) {
