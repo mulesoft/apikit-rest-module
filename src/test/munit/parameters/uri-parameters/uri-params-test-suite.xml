@@ -69,6 +69,20 @@
 	</munit:validation>
   </munit:test>
 
+  <munit:test name="long-uri-param">
+	<munit:enable-flow-sources>
+	  <munit:enable-flow-source value="uri-params-main"/>
+	  <munit:enable-flow-source value="get:\constrains\long\(long):uri-params-config"/>
+	</munit:enable-flow-sources>
+	<munit:execution>
+	  <http:request method="GET" config-ref="http-requester-simple" path="/uri-params/constrains/long/001234"/>
+	</munit:execution>
+	<munit:validation>
+	  <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+	  <munit-tools:assert-that expression="#[output application/java --- payload]" is="#[MunitTools::equalTo('001234')]"/>
+	</munit:validation>
+  </munit:test>
+
   <munit:test name="nested-uri-params">
 	<munit:enable-flow-sources>
 	  <munit:enable-flow-source value="uri-params-main"/>
