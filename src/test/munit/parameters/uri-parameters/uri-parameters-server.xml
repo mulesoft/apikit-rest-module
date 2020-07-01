@@ -27,6 +27,10 @@
         <set-payload value="#[output application/json --- attributes.uriParams.id]"/>
     </flow>
 
+    <flow name="get:\constrains\long\(long):uri-params-config">
+        <set-payload value="#[output application/json --- attributes.uriParams.long]"/>
+    </flow>
+
     <flow name="get:\constrains\(id)\(id2):uri-params-config">
         <set-payload value="#[output application/json ---
             {
