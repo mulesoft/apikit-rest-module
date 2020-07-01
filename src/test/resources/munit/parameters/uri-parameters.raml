@@ -11,6 +11,13 @@ version: v1
         description: |
           Successfully retrieved resource(s)
 /constrains:
+  /long:
+    /{long}:
+      uriParameters:
+        long:
+          type: integer
+          format: int64
+      get:
   /{id}:
     uriParameters:
       id:
