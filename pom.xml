@@ -31,7 +31,7 @@
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
 
         <!-- PARSERS -->
-        <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.1.0-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.0.61</apiconsole.version>
