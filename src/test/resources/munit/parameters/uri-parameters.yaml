@@ -33,6 +33,20 @@ paths:
           minimum: 1
           maximum: 5
           type: integer
+  '/constrains/long/{long}':
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_constrains-long
+    parameters:
+      - name: long
+        in: path
+        required: true
+        style: simple
+        schema:
+          type: integer
+          format: int64
   '/constrains/{id}/{id2}':
     get:
       responses:
