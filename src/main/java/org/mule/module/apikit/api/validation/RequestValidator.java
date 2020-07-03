@@ -15,11 +15,14 @@ import org.mule.module.apikit.api.exception.MethodNotAllowedException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.apikit.model.Resource;
+import org.mule.module.apikit.validation.HttpMethodValidator;
 import org.mule.module.apikit.validation.RestRequestValidator;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 
 public class RequestValidator {
+
+  private static final HttpMethodValidator methodValidator = new HttpMethodValidator();
 
   private RequestValidator() {}
 
@@ -41,6 +44,7 @@ public class RequestValidator {
                                      createStaticMessage("Unexpected error. Resource cannot be null"));
     }
     String method = attributes.getMethod().toLowerCase();
+    methodValidator.validateHttpMethod(method);
     Action action = resource.getAction(method);
     if (action == null) {
       throw new MethodNotAllowedException(resource.getResolvedUri((String) resolvedVariables.get("version")) + " : " + method);
