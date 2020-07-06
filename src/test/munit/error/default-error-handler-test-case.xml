@@ -81,6 +81,26 @@
         </munit:validation>
     </munit:test>
 
+    <munit:test name="throw-405-when-HTTP-method-not-allowed-in-raml-oas-spec">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+            <munit:enable-flow-source value="get:\raiseError:default-error-handler-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="COPY" config-ref="http-requester-simple" path="/error-handler/raiseError">
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(405)]"/>
+            <munit-tools:assert-that expression="#[attributes.headers.'Content-Type']"
+              is="#[MunitTools::equalTo('application/json')]"/>
+            <munit-tools:assert-that expression="#[payload.message]" is="#[MunitTools::equalTo('Method not allowed')]"/>
+        </munit:validation>
+    </munit:test>
+
     <munit:test name="throw415">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="default-error-handler-main"/>
