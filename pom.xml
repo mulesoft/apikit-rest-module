@@ -39,7 +39,7 @@
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.7</commons.io.version>
         <guava.version>28.1-jre</guava.version>
-        <jackson.databind.version>2.10.1</jackson.databind.version>
+        <jackson.databind.version>2.11.1</jackson.databind.version>
         <jackson.version>2.10.0</jackson.version>
         <libthrift.version>0.13.0</libthrift.version>
 
