@@ -8,21 +8,16 @@ package org.mule.module.apikit.api.validation;
 
 import static org.mule.runtime.api.i18n.I18nMessageFactory.createStaticMessage;
 
-import org.mule.apikit.model.Action;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.config.ValidationConfig;
-import org.mule.module.apikit.api.exception.MethodNotAllowedException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.apikit.model.Resource;
-import org.mule.module.apikit.validation.HttpMethodValidator;
 import org.mule.module.apikit.validation.RestRequestValidator;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.MuleRuntimeException;
 
 public class RequestValidator {
-
-  private static final HttpMethodValidator methodValidator = new HttpMethodValidator();
 
   private RequestValidator() {}
 
@@ -39,18 +34,13 @@ public class RequestValidator {
                                       ResolvedVariables resolvedVariables, Object payload, String charset,
                                       ErrorTypeRepository errorTypeRepository)
       throws MuleRestException {
+
     if (resource == null) {
       throw new MuleRuntimeException(
                                      createStaticMessage("Unexpected error. Resource cannot be null"));
     }
-    String method = attributes.getMethod().toLowerCase();
-    methodValidator.validateHttpMethod(method);
-    Action action = resource.getAction(method);
-    if (action == null) {
-      throw new MethodNotAllowedException(resource.getResolvedUri((String) resolvedVariables.get("version")) + " : " + method);
-    }
 
-    return new RestRequestValidator(config, action, errorTypeRepository)
+    return new RestRequestValidator(config, resource, errorTypeRepository)
         .validate(resolvedVariables, attributes, charset,
                   payload);
 
