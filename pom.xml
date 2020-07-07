@@ -50,7 +50,7 @@
         <munit.version>2.2.4</munit.version>
         <munit.tools.version>2.2.3</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
-        <mockServerVersion>5.8.0</mockServerVersion>
+        <mockServerVersion>5.10</mockServerVersion>
         <jacoco.version>0.8.5</jacoco.version>
         <allureJunitVersion>2.13.0</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
