@@ -1,0 +1,15 @@
+#%RAML 1.0
+baseUri: https://localhost:8081/ #
+title: api-with-version
+version: 1.0
+mediaType: application/json
+
+/path/{version}:
+  /job/{jobId}:
+    get:
+      responses:
+        200:
+          body:
+            type: string
+            example:
+              value: "job-example"
