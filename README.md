@@ -10,7 +10,7 @@ APIKit Rest is a toolkit that facilitates the REST APIs development through MULE
 * **APIkit Error Handling Reference:** [link](https://docs.mulesoft.com/apikit/4.x/apikit-error-handling-reference)
 
 ## Team
-* **Engineering Manager:** Pablo Angelani: [pablo.angelani@mulesoft.com](mailto:pablo.angelani@mulesoft.com)
+* **Engineering Manager:** Leandro Cota Hevia: [lcotahevia@mulesoft.com](mailto:lcotahevia@mulesoft.com)
 * **Developers / Juanes:**  
   * Damián Courtil: [dcourtil@mulesoft.com](mailto:dcourtil@mulesoft.com)
   * Juan Brasca: [juan.brasca@mulesoft.com](mailto:juan.brasca@mulesoft.com)
