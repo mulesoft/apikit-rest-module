@@ -90,7 +90,8 @@ public class QueryParameterValidator {
       if (values.isEmpty() && queryParam.getValue().getDefaultValue() != null) {
         String queryParamDefaultValue = queryParam.getValue().getDefaultValue();
         queryStringWithDefaults = addQueryString(queryStringWithDefaults, queryParamKey, queryParamDefaultValue);
-        queryParamsWithDefaults = copyImmutableMap(queryParamsWithDefaults, queryParamKey, queryParamDefaultValue);
+        queryParamsWithDefaults = copyImmutableMap(queryParamsWithDefaults);
+        queryParamsWithDefaults.put(queryParamKey, queryParamDefaultValue);
       }
     }
     return new ValidatedQueryParams(queryParamsWithDefaults, queryStringWithDefaults);
