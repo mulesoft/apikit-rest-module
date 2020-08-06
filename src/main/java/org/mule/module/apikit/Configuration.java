@@ -43,6 +43,7 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.Runtime.getRuntime;
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 
 public class Configuration implements Disposable, Initialisable, ValidationConfig, ConsoleConfig {
@@ -102,7 +103,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
     this.routerService = findExtension();
-    this.scheduler = schedulerService.ioScheduler(SchedulerConfig.config().withName("AMF-SCHEDULER"));
+    this.scheduler = getScheduler();
 
     try {
       ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
@@ -114,7 +115,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
           throw new ApikitRuntimeException("Couldn't load enabled extension", e);
         }
       });
-    } catch (final Exception e) {
+    } catch (Exception e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
     flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings(),
@@ -359,6 +360,14 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     String internalEntities = System.getProperty(MULE_EXPAND_ENTITIES_PROPERTY, "false");
     System.setProperty("raml.xml.expandInternalEntities", internalEntities);
     System.setProperty("amf.plugins.xml.expandInternalEntities", internalEntities);
+  }
+
+  private Scheduler getScheduler() {
+    SchedulerConfig config = SchedulerConfig.config()
+        .withMaxConcurrentTasks(getRuntime().availableProcessors())
+        .withName("AMF-SCHEDULER");
+
+    return schedulerService.customScheduler(config, Integer.MAX_VALUE);
   }
 
   @Override
