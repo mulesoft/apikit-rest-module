@@ -57,6 +57,7 @@ import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
 import static org.mule.module.apikit.api.validation.RequestValidator.validate;
 import static org.mule.module.apikit.helpers.AttributesHelper.getContentType;
+import static org.mule.module.apikit.helpers.ConfigURLMapping.INSTANCE;
 import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.processToApply;
@@ -99,6 +100,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     } else {
       String configName = configuration.getName();
       registry.setApiSource(configName, url.get().toString().replace("*", ""));
+      INSTANCE.registerConfigURL(configName, url.get().toString().replace("*", ""));
       LOGGER.info(getBoilerPlate("APIKit Router '" + configName + "' started using Parser: " + configuration.getType()));
     }
     this.streamProviderFactory = streamingManager.forBytes().getDefaultCursorProviderFactory();

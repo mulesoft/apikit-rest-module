@@ -6,6 +6,9 @@
  */
 package org.mule.module.apikit.api;
 
+import static java.lang.System.getProperty;
+
+import java.net.MalformedURLException;
 import org.apache.commons.lang3.StringUtils;
 import org.mule.module.apikit.uri.URICoder;
 
@@ -36,11 +39,13 @@ public class UrlUtils {
   /**
    * @param baseAndApiPath http listener base path, example /api/*
    * @param requestPath example /api/endpoint
-   * @return a String that represent the relative path between @baseAndApiPath and @requestPath, example : /endpoint
+   * @return a String that represent the relative path between @baseAndApiPath and @requestPath,
+   * example : /endpoint
    */
   public static String getRelativePath(String baseAndApiPath, String requestPath) {
     int slashLastPosition = baseAndApiPath.lastIndexOf('/');
-    return slashLastPosition == -1 || slashLastPosition >= requestPath.length() ? "/" : requestPath.substring(slashLastPosition);
+    return slashLastPosition == -1 || slashLastPosition >= requestPath.length() ? "/"
+        : requestPath.substring(slashLastPosition);
   }
 
   public static String getListenerPath(String listenerPath, String requestPath) {
@@ -114,9 +119,11 @@ public class UrlUtils {
 
   /**
    * Creates URL where the server must redirect the client
+   *
    * @return The redirect URL
    */
-  public static String getRedirectLocation(String scheme, String remoteAddress, String requestPath, String queryString) {
+  public static String getRedirectLocation(String scheme, String remoteAddress, String requestPath,
+                                           String queryString) {
     String redirectLocation = scheme + "://" + remoteAddress + requestPath + "/";
 
     if (StringUtils.isNotEmpty(queryString)) {
@@ -127,38 +134,39 @@ public class UrlUtils {
   }
 
   public static String getBaseUriReplacement(String apiServer) {
-    if (apiServer == null) {
-      return null;
-    }
-
-    String baseUriReplacement = apiServer;
-    if (apiServer.contains(BIND_TO_ALL_INTERFACES)) {
-      String fullDomain = System.getProperty(FULL_DOMAIN);
-      if (fullDomain != null) {
-        URL url = null;
-        try {
-          url = new URL(apiServer);
-        } catch (Exception e) {
-          return apiServer;
-        }
-        String path = url.getPath();
-        if (fullDomain.endsWith("/") && path.length() > 0 && path.startsWith("/")) {
-          path = path.length() > 1 ? path.substring(1) : "";
-        } else if (!fullDomain.endsWith("/") && path.length() > 0 && !path.startsWith("/")) {
-          fullDomain += "/";
-        }
-        if (fullDomain.contains("://")) {
-          baseUriReplacement = fullDomain + path;
-        } else {
-          final String protocol = apiServer.contains(HTTPS) ? HTTPS : HTTP;
-          baseUriReplacement = protocol + fullDomain + path;
-        }
-      } else {
-        baseUriReplacement = baseUriReplacement.replace(BIND_TO_ALL_INTERFACES, "localhost");
-      }
-    }
-    return baseUriReplacement;
+    return replaceHostInURL(apiServer, null);
   }
 
+  /**
+   * @param routerURL url where router is listening for requests
+   * @param consoleRequestHost example : <IP>:<PORT> or <protocol>://<IP>:<PORT>,
+   * this parameter is used if 'fullDomain' System property is not present
+   * @return routerURL with host replaced
+   */
+  public static String replaceHostInURL(String routerURL, String consoleRequestHost) {
+    if (routerURL == null) {
+      return null;
+    }
+    if (!routerURL.contains(BIND_TO_ALL_INTERFACES)) {
+      return routerURL;
+    }
+
+    String hostToReplace = getProperty(FULL_DOMAIN) != null ? getProperty(FULL_DOMAIN) : consoleRequestHost;
+    if (hostToReplace == null) {
+      return routerURL.replace(BIND_TO_ALL_INTERFACES, "localhost");
+    }
+    try {
+      String protocol = routerURL.contains(HTTPS) ? HTTPS : HTTP;
+      String path = new URL(routerURL).getPath();
+      path = hostToReplace.endsWith("/") && path.length() > 0 ? path.substring(1) : path;
+      if (hostToReplace.contains("://")) {
+        return hostToReplace + path;
+      }
+      return protocol + hostToReplace + path;
+    } catch (MalformedURLException e) {
+      return routerURL;
+    }
+
+  }
 
 }
