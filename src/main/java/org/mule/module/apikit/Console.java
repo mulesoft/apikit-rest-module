@@ -34,7 +34,10 @@ import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
 import static org.mule.module.apikit.HeaderName.ACCEPT;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
+import static org.mule.module.apikit.api.UrlUtils.getBaseUriReplacement;
+import static org.mule.module.apikit.api.UrlUtils.replaceHostInURL;
 import static org.mule.module.apikit.helpers.AttributesHelper.getCommaSeparatedParamValues;
+import static org.mule.module.apikit.helpers.ConfigURLMapping.INSTANCE;
 
 public class Console extends AbstractComponent implements Processor, Initialisable {
 
@@ -69,7 +72,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     if (url.isPresent()) {
       URI uri = url.get();
       String consoleUrl = uri.toString().replace("*", "");
-      String consoleUrlFixed = UrlUtils.getBaseUriReplacement(consoleUrl);
+      String consoleUrlFixed = getBaseUriReplacement(consoleUrl);
       logger.info(StringMessageUtils.getBoilerPlate("APIKit Console URL: " + consoleUrlFixed));
       publishConsoleUrls(consoleUrlFixed);
     } else {
@@ -93,10 +96,12 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     String acceptHeader = getCommaSeparatedParamValues(attributes.getHeaders(), ACCEPT.getName());
     String queryString = attributes.getQueryString();
     String method = attributes.getMethod();
+    String host = attributes.getHeaders().get("host");
 
     ConsoleResources consoleResources = new ConsoleResources(config, listenerPath,
                                                              requestPath, queryString, method, acceptHeader,
-                                                             errorRepositoryFrom(muleContext));
+                                                             errorRepositoryFrom(muleContext),
+                                                             replaceHostInURL(INSTANCE.getUrl(config.getName()), host));
 
     // Listener path MUST end with /*
     consoleResources.isValidPath(attributes.getListenerPath());
