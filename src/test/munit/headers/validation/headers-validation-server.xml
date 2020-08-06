@@ -31,16 +31,6 @@
     <set-payload value="#[attributes.headers['x-modifiedsince']]"/>
   </flow>
 
-  <flow name="get:\test-array-header:headers-validation-config">
-    <set-payload value="#[attributes.headers.*'array-header']"/>
-    <munit-tools:store key="first-header">
-      <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>
-    </munit-tools:store>
-    <munit-tools:store key="second-header">
-      <munit-tools:value>#[attributes.headers.*'array-header'[1]]</munit-tools:value>
-    </munit-tools:store>
-  </flow>
-
   <flow name="post:\datetime2616:headers-validation-config">
     <set-payload value="#[attributes.headers['defaultHeaderValue']]"/>
   </flow>
@@ -52,4 +42,34 @@
   <flow name="post:\multiplicity:headers-validation-config">
     <set-payload value="#[payload]"/>
   </flow>
+
+  <flow name="get:\test-array-object-header:headers-validation-config">
+    <flow-ref name="split-array-header"/>
+  </flow>
+
+  <flow name="get:\test-array-string-header:headers-validation-config">
+    <flow-ref name="split-array-header"/>
+  </flow>
+
+  <flow name="get:\test-array-number-header:headers-validation-config">
+    <flow-ref name="split-array-header"/>
+  </flow>
+
+  <flow name="get:\test-array-enum-header:headers-validation-config">
+    <flow-ref name="split-array-header"/>
+  </flow>
+
+  <sub-flow name="split-array-header">
+    <set-payload value="#[output text/plain --- sizeOf(attributes.headers.*'array-header') default '0']"/>
+    <munit-tools:store key="first-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>
+    </munit-tools:store>
+    <munit-tools:store key="second-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[1]]</munit-tools:value>
+    </munit-tools:store>
+    <munit-tools:store key="third-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[2]]</munit-tools:value>
+    </munit-tools:store>
+  </sub-flow>
+
 </mule>
