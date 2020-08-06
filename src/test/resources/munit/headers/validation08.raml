@@ -4,9 +4,12 @@ title: Parameters API
 /resource:
   get:
     headers:
-        one:
-            type: string
-            enum: [foo, bar]
-            required: true
+      one:
+        type: string
+        enum: [foo, bar]
+        required: true
+      mule-{?}:
+        type: string
+        enum: [wow, yeah]
     responses:
       200: !!null

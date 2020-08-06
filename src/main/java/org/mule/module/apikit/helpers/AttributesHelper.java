@@ -32,11 +32,9 @@ public class AttributesHelper {
 
   private AttributesHelper() {}
 
-  public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap, String key, String value) {
+  public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap) {
     MultiMap<String, String> mapParam = new MultiMap<>();
     immutableMap.keySet().stream().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
-
-    mapParam.put(key, value);
     return mapParam;
   }
 
@@ -100,7 +98,8 @@ public class AttributesHelper {
   public static List<String> getParamValues(MultiMap<String, String> parameters, String parameterName) {
     return parameters.keySet().stream()
         .filter(header -> header.equalsIgnoreCase(parameterName))
-        .findFirst().map(parameters::getAll)
+        .map(parameters::getAll)
+        .findFirst()
         .orElse(emptyList());
   }
 
@@ -112,8 +111,7 @@ public class AttributesHelper {
    * @return Comma separated list of values or <code>null</code> if parameter is not found
    */
   public static String getCommaSeparatedParamValues(MultiMap<String, String> parameters, String parameterName) {
-    List<String> valuesList = getParamValues(parameters, parameterName);
-    return valuesList.isEmpty() ? null : valuesList.stream().collect(Collectors.joining(COMMA_SEPARATOR));
+    return getParamValues(parameters, parameterName).stream().collect(Collectors.joining(COMMA_SEPARATOR));
   }
 
   /**

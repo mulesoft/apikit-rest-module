@@ -7,19 +7,21 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.net.MediaType;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
 import org.mule.module.apikit.exception.NotAcceptableException;
-import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
@@ -27,10 +29,16 @@ import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
+import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
+import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
+import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
+import static org.mule.module.apikit.validation.attributes.MimeTypeParser.bestMatch;
+import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
 public class HeadersValidator {
 
+  private static final String PLACEHOLDER_TOKEN = "{?}";
   private final Action action;
   private final List<String> mimeTypes;
 
@@ -53,31 +61,54 @@ public class HeadersValidator {
     if (headersStrictValidation) {
       validateHeadersStrictly(incomingHeaders);
     }
-    MultiMap<String, String> copyIncomingHeaders = incomingHeaders;
+    MultiMap<String, String> copyIncomingHeaders = emptyMultiMap();
 
     for (Map.Entry<String, Parameter> entry : action.getHeaders().entrySet()) {
       final String ramlHeader = entry.getKey();
       final Parameter ramlType = entry.getValue();
 
-      if (ramlHeader.contains("{?}")) {
-        final String regex = ramlHeader.replace("{?}", ".*");
-        for (String incomingHeader : copyIncomingHeaders.keySet()) {
-          if (incomingHeader.matches(regex))
-            validateHeader(copyIncomingHeaders.getAll(incomingHeader), ramlHeader, ramlType);
-        }
+      if (ramlHeader.contains(PLACEHOLDER_TOKEN)) {
+        validateHeadersWithPlaceholderToken(incomingHeaders, ramlHeader,
+                                            ramlType);
       } else {
-        final List<String> values = AttributesHelper.getParamValues(copyIncomingHeaders, ramlHeader);
+        List<String> values = getParamValues(incomingHeaders, ramlHeader);
         if (values.isEmpty() && ramlType.isRequired()) {
           throw new InvalidHeaderException("Required header '" + ramlHeader + "' not specified");
         }
         if (values.isEmpty() && ramlType.getDefaultValue() != null) {
-          copyIncomingHeaders = AttributesHelper.copyImmutableMap(copyIncomingHeaders, ramlHeader, ramlType.getDefaultValue());
+          copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
+          copyIncomingHeaders.put(ramlHeader, ramlType.getDefaultValue());
+        }
+        if (!values.isEmpty() && ramlType.isArray()) {
+          values = explodeCommaSeparatedValues(values);
+          copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
+          copyIncomingHeaders.removeAll(ramlHeader);
+          copyIncomingHeaders.put(ramlHeader, values);
         }
         validateHeader(values, ramlHeader, ramlType);
       }
     }
-    return copyIncomingHeaders;
+    return copyIncomingHeaders.isEmpty() ? incomingHeaders : copyIncomingHeaders;
 
+  }
+
+  private MultiMap<String, String> getMutableCopy(MultiMap<String, String> incomingHeaders,
+                                                  MultiMap<String, String> copyIncomingHeaders) {
+    if (copyIncomingHeaders.isEmpty()) {
+      return copyImmutableMap(incomingHeaders);
+    }
+    return copyIncomingHeaders;
+  }
+
+  private void validateHeadersWithPlaceholderToken(MultiMap<String, String> copyIncomingHeaders, String ramlHeader,
+                                                   Parameter ramlType)
+      throws InvalidHeaderException {
+    final String regex = ramlHeader.replace(PLACEHOLDER_TOKEN, ".*");
+    for (String incomingHeader : copyIncomingHeaders.keySet()) {
+      if (incomingHeader.matches(regex)) {
+        validateHeader(copyIncomingHeaders.getAll(incomingHeader), ramlHeader, ramlType);
+      }
+    }
   }
 
   private void validateHeadersStrictly(Map<String, String> headers) throws InvalidHeaderException {
@@ -87,8 +118,8 @@ public class HeadersValidator {
         .collect(toSet());
 
     final Set<String> templateHeaders = ramlHeaders.stream()
-        .filter(header -> header.contains("{?}"))
-        .map(header -> header.replace("{?}", ".*"))
+        .filter(header -> header.contains(PLACEHOLDER_TOKEN))
+        .map(header -> header.replace(PLACEHOLDER_TOKEN, ".*"))
         .collect(toSet());
 
     final Set<String> unmatchedHeaders = headers.keySet().stream()
@@ -109,30 +140,43 @@ public class HeadersValidator {
 
   private void validateHeader(List<String> values, String name, Parameter type)
       throws InvalidHeaderException {
-    if (values.isEmpty())
+    if (values.isEmpty()) {
       return;
-
-    if (values.size() > 1 && !type.isArray() && !type.isRepeat())
+    }
+    if (values.size() > 1 && !type.isArray() && !type.isRepeat()) {
       throw new InvalidHeaderException("Header " + name + " is not repeatable");
-
-    // raml 1.0 array validation
+    }
     if (type.isArray()) {
-      validateType(name, values, type);
+      validateTypeArrayValues(name, values, type);
     } else {
-      // single header or repeat
-      validateType(name, values.get(0), type);
+      validateTypeValue(name, values.get(0), type);
     }
   }
 
-  private void validateType(String name, List<String> values, Parameter type) throws InvalidHeaderException {
-    final StringBuilder yamlValue = new StringBuilder();
-    for (String value : values)
-      yamlValue.append("- ").append(value).append("\n");
-
-    validateType(name, yamlValue.toString(), type);
+  /**
+   * Takes a list of comma separated values, parses each as a JSON array and returns a list of each single value.
+   *
+   * @param listOfCsv
+   * @return
+   */
+  private List<String> explodeCommaSeparatedValues(List<String> listOfCsv) {
+    try {
+      return listOfCsv.stream().map(v -> "[" + v + "]")
+          .map(JSONArray::new)
+          .collect(ArrayList::new, (list, jsonArray) -> jsonArray.forEach(v -> list.add(v.toString())),
+                   ArrayList::addAll);
+    } catch (JSONException e) {
+      //If there is some issue parsing the value as array continue with the actual value
+    }
+    return listOfCsv;
   }
 
-  private void validateType(String name, String value, Parameter type) throws InvalidHeaderException {
+  private void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {
+    String yamlArrayValue = values.stream().collect(Collectors.joining("\n- ", "- ", ""));
+    validateTypeValue(name, yamlArrayValue, type);
+  }
+
+  private void validateTypeValue(String name, String value, Parameter type) throws InvalidHeaderException {
     if (!type.validate(value)) {
       throw new InvalidHeaderException(format("Invalid value '%s' for header '%s'", value, name));
     }
@@ -143,7 +187,7 @@ public class HeadersValidator {
       //no response media-types defined, return no body
       return;
     }
-    MediaType bestMatch = MimeTypeParser.bestMatch(mimeTypes, AttributesHelper.getAcceptedResponseMediaTypes(incomingHeaders));
+    MediaType bestMatch = bestMatch(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
     if (bestMatch == null) {
       throw new NotAcceptableException();
     }

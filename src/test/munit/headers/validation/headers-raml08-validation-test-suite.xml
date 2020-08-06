@@ -78,4 +78,53 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="valid-placeholder-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-08-main"/>
+      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'one': 'foo',
+          'mule-special': 'yeah'
+          }]
+        </http:headers>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+      <munit-tools:assert-equals actual="#[payload.message]" expected="#['is all good']"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-placeholder-header-value">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="headers-validation-08-main"/>
+      <munit:enable-flow-source value="get:\resource:headers-validation-08-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/resource">
+        <http:headers>#[
+          output application/json
+          ---
+          {
+          'one': 'foo',
+          'mule-special': 'dough'
+          }]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+      <munit-tools:assert-that expression="#[payload.description]" is="#[MunitTools::containsString('Invalid value')]"/>
+    </munit:validation>
+  </munit:test>
+
 </mule>
