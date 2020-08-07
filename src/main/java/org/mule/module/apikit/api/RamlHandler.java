@@ -53,7 +53,6 @@ public class RamlHandler {
 
   private Pattern CONSOLE_RESOURCE_PATTERN = Pattern.compile(".*console-resources.*(html|json|js)");
 
-  public static final String MULE_APIKIT_PARSER_PROPERTY = "mule.apikit.parser";
   public static final String APPLICATION_RAML = "application/raml+yaml";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RamlHandler.class);

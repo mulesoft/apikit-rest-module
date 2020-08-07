@@ -16,10 +16,13 @@ import java.io.InputStream;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.apikit.model.ApiVendor;
+import org.mule.module.apikit.helpers.APISpecModelHandler;
+import org.mule.module.apikit.helpers.APISpecModelHandlerImpl;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 
 public class ConsoleResources {
@@ -34,28 +37,37 @@ public class ConsoleResources {
   private String requestPath;
   private String queryString;
   private String method;
-  private String aceptHeader;
+  private String acceptHeader;
+  private String host;
   private ErrorTypeRepository errorTypeRepository;
 
-  public ConsoleResources(ConsoleConfig config, String listenerPath, String requestPath, String queryString, String method,
-                          String aceptHeader, ErrorTypeRepository errorTypeRepository) {
-    CONSOLE_RESOURCES_BASE = AMF.equals(config.getType()) ? "/console-resources-amf" : "/console-resources";
+  public ConsoleResources(ConsoleConfig config, String listenerPath,
+                          String requestPath, String queryString, String method,
+                          String acceptHeader, ErrorTypeRepository errorTypeRepository) {
 
+    this.CONSOLE_RESOURCES_BASE = AMF.equals(config.getType()) ? "/console-resources-amf" : "/console-resources";
     this.config = config;
     this.listenerPath = listenerPath;
     this.requestPath = requestPath;
     this.queryString = queryString;
     this.method = method;
-    this.aceptHeader = aceptHeader;
+    this.acceptHeader = acceptHeader;
     this.errorTypeRepository = errorTypeRepository;
+  }
+
+  public ConsoleResources(ConsoleConfig config, String listenerPath,
+                          String requestPath, String queryString, String method,
+                          String acceptHeader, ErrorTypeRepository errorTypeRepository, String host) {
+
+    this(config, listenerPath, requestPath, queryString, method, acceptHeader, errorTypeRepository);
+    this.host = host;
   }
 
   public Resource getConsoleResource(String resourceRelativePath) {
 
-    // For getting RAML resources
-    String raml = getApiResourceIfRequested(resourceRelativePath);
-    if (raml != null) {
-      return new RamlResource(raml);
+    Optional<String> apiSpecModel = getApiResourceIfRequested(resourceRelativePath);
+    if (apiSpecModel.isPresent()) {
+      return new RamlResource(apiSpecModel.get());
     }
 
     String consoleResourcePath;
@@ -77,12 +89,12 @@ public class ConsoleResources {
       resourceContent = getClass().getResourceAsStream(consoleResourcePath);
 
       if (resourceContent == null) {
-        raml = config.getRamlHandler().getRamlV2(resourceRelativePath);
-        if (raml == null) {
+        String ramlV2 = config.getRamlHandler().getRamlV2(resourceRelativePath);
+        if (ramlV2 == null) {
           throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
         }
 
-        return new RamlResource(raml);
+        return new RamlResource(ramlV2);
       }
 
       if (consoleResourcePath.contains("index.html")) {
@@ -97,8 +109,6 @@ public class ConsoleResources {
       IOUtils.closeQuietly(resourceContent);
       IOUtils.closeQuietly(byteArrayOutputStream);
     }
-
-
   }
 
   private InputStream updateIndexWithRamlLocation(InputStream inputStream) throws IOException {
@@ -132,23 +142,16 @@ public class ConsoleResources {
     }
   }
 
-  private String getApiResourceIfRequested(String resourceRelativePath) {
-    if (queryString.equals("api")) {
-      return config.getRamlHandler().dumpRaml();
-    }
+  /**
+   * Checks if API Spec Model is requested and returns it, else Optional.empty()
+   * @param resourceRelativePath
+   * @return Optional.of(API Spec Model)
+   */
+  private Optional<String> getApiResourceIfRequested(String resourceRelativePath) {
 
-    if (config.getRamlHandler().isRequestingRamlV1ForConsole(listenerPath, requestPath, queryString, method, aceptHeader)) {
-      return config.getRamlHandler().getRamlV1();
-    }
-
-    if (config.getRamlHandler().isRequestingRamlV2(listenerPath, requestPath, queryString, method)) {
-      return config.getRamlHandler().getRamlV2(resourceRelativePath);
-    }
-
-    if (AMF == config.getType() && queryString.equals("amf")) {
-      return config.getRamlHandler().getAMFModel();
-    }
-
-    return null;
+    APISpecModelHandler consoleApiModel = new APISpecModelHandlerImpl(config.getRamlHandler(), listenerPath,
+                                                                      requestPath, queryString, method,
+                                                                      acceptHeader, config.getType(), resourceRelativePath);
+    return consoleApiModel.getModel(host);
   }
 }
