@@ -24,7 +24,6 @@ import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.exception.NotImplementedException;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
-import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.module.apikit.helpers.FlowName;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.ApiSpecification;
