@@ -20,6 +20,7 @@ import org.mule.module.apikit.api.spi.RouterService;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
+import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoader;
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
@@ -117,10 +118,18 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     } catch (final Exception e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
-    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings(),
-                                errorRepositoryFrom(muleContext));
+    initFlowFinder();
     buildResourcePatternCaches();
     registry.registerConfiguration(this);
+  }
+
+  private void initFlowFinder() {
+    try {
+      flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings(),
+                                  errorRepositoryFrom(muleContext));
+    } catch (UnsupportedMediaTypeException e) {
+      throw new UnsupportedOperationException(e.getMessage());
+    }
   }
 
   @Deprecated // TODO USE NEW API

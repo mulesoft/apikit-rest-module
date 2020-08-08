@@ -14,6 +14,7 @@ import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.util.MultiMap;
 
+import javax.activation.MimeTypeParseException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -115,7 +116,7 @@ public class AttributesHelper {
   }
 
   /**
-   * Returns "Accept" header param value.
+   * Returns "Content-type" header param value.
    *
    * @param headers Map of parameter's name-value
    * @return
@@ -137,9 +138,14 @@ public class AttributesHelper {
    * @param mediaType Media Type
    * @return Media Type with "type/subtype" format
    */
-  public static String getMediaType(String mediaType) {
-    MediaType mType = parse(mediaType);
-    return String.format("%s/%s", mType.getPrimaryType(), mType.getSubType());
+  public static String getMediaType(String mediaType) throws UnsupportedMediaTypeException {
+    try {
+      MediaType mType = parse(mediaType);
+      return String.format("%s/%s", mType.getPrimaryType(), mType.getSubType());
+    } catch (Exception e) {
+      String message = mediaType == null ? "MediaType is null" : e.getMessage();
+      throw new UnsupportedMediaTypeException(message);
+    }
   }
 
   /**

@@ -24,6 +24,7 @@ import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.exception.NotImplementedException;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
+import org.mule.module.apikit.helpers.AttributesHelper;
 import org.mule.module.apikit.helpers.FlowName;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.ApiSpecification;
@@ -51,7 +52,8 @@ public class FlowFinder {
   private ErrorTypeRepository errorTypeRepository;
 
   public FlowFinder(RamlHandler ramlHandler, String configName, ConfigurationComponentLocator locator,
-                    List<FlowMapping> flowMappings, ErrorTypeRepository errorTypeRepository) {
+                    List<FlowMapping> flowMappings, ErrorTypeRepository errorTypeRepository)
+      throws UnsupportedMediaTypeException {
     this.ramlHandler = ramlHandler;
     this.configName = configName;
     this.flowMappings = flowMappings;
@@ -61,7 +63,7 @@ public class FlowFinder {
     loadRoutingTable();
   }
 
-  protected void initializeRestFlowMap() {
+  protected void initializeRestFlowMap() throws UnsupportedMediaTypeException {
     final ApiSpecification api = ramlHandler.getApi();
     flattenResourceTree(api.getResources(), api.getVersion());
 
@@ -176,7 +178,7 @@ public class FlowFinder {
     return null;
   }
 
-  private void logMissingMappings(String version) {
+  private void logMissingMappings(String version) throws UnsupportedMediaTypeException {
     for (Resource resource : flatResourceTree.values()) {
       String fullResource = resource.getResolvedUri(version);
       for (Action action : resource.getActions().values()) {
@@ -187,9 +189,10 @@ public class FlowFinder {
         }
         if (action.hasBody()) {
           for (String contentType : action.getBody().keySet()) {
-            if (restFlowMap.get(key + ":" + getMediaType(contentType)) == null) {
+            String mediaType = findMediaType(contentType);
+            if (restFlowMap.get(key + ":" + mediaType) == null) {
               logger.warn(format("Action-Resource-ContentType triplet has no implementation -> %s:%s:%s ",
-                                 method, fullResource, getMediaType(contentType)));
+                                 method, fullResource, mediaType));
             }
           }
         } else {
@@ -199,6 +202,15 @@ public class FlowFinder {
       }
     }
   }
+
+  private String findMediaType(String contentType) throws UnsupportedMediaTypeException {
+    try {
+      return getMediaType(contentType);
+    } catch (UnsupportedMediaTypeException e) {
+      throw new UnsupportedMediaTypeException(e.getMessage());
+    }
+  }
+
 
   private void loadRoutingTable() {
     if (routingTable == null) {
