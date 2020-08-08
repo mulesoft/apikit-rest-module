@@ -14,7 +14,6 @@ import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.util.MultiMap;
 
-import javax.activation.MimeTypeParseException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
