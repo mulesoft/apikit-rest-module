@@ -134,6 +134,35 @@
         </munit:validation>
     </munit:test>
 
+    <munit:test name="throw415-with-invalid-content-type">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="default-error-handler-main"/>
+            <munit:enable-flow-source value="post:\unsupportedMediaType:application\json:api-errors-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/error-handler/unsupportedMediaType">
+                <http:body>
+                    <![CDATA[#[
+                    %dw 2.0
+                    output application/x-www-form-urlencoded
+                    ---
+                    {
+                        "firstName" : "John",
+                        "lastName": "Doe"
+                    }
+                    ]]]>
+                </http:body>
+                <http:headers>#[{'Content-Type': 'application/'}]</http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+        </munit:validation>
+    </munit:test>
+
     <munit:test name="throw501">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="default-error-handler-main"/>
