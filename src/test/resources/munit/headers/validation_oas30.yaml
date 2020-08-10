@@ -92,6 +92,20 @@ paths:
             items:
               type: string
               enum: ["SFO", "LAX", "CLE", "DAL", "NUY", "PHL", "NJC"]
+  /test-array-date-header:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_test-array-date-header
+      parameters:
+        - name: array-header
+          in: header
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
   /multiplicity:
     get:
       responses:

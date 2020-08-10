@@ -7,14 +7,15 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.net.MediaType;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
 import org.mule.module.apikit.exception.NotAcceptableException;
+import org.mule.module.apikit.parsing.AttributeParser;
+import org.mule.module.apikit.parsing.AttributesParserFactory;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
-import static org.mule.module.apikit.validation.attributes.MimeTypeParser.bestMatch;
+import static org.mule.module.apikit.validation.attributes.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
@@ -48,15 +49,18 @@ public class HeadersValidator {
   }
 
   public MultiMap<String, String> validateAndAddDefaults(MultiMap<String, String> incomingHeaders,
-                                                         boolean headersStrictValidation)
+                                                         boolean headersStrictValidation,
+                                                         AttributesParsingStrategy attributesParsingStrategy)
       throws InvalidHeaderException, NotAcceptableException {
-    MultiMap<String, String> headersWithDefaults = analyseRequestHeaders(incomingHeaders, headersStrictValidation);
+    MultiMap<String, String> headersWithDefaults =
+        analyseRequestHeaders(incomingHeaders, headersStrictValidation, attributesParsingStrategy);
     analyseAcceptHeader(headersWithDefaults);
     return headersWithDefaults;
   }
 
   private MultiMap<String, String> analyseRequestHeaders(MultiMap<String, String> incomingHeaders,
-                                                         boolean headersStrictValidation)
+                                                         boolean headersStrictValidation,
+                                                         AttributesParsingStrategy attributesParsingStrategy)
       throws InvalidHeaderException {
     if (headersStrictValidation) {
       validateHeadersStrictly(incomingHeaders);
@@ -80,7 +84,7 @@ public class HeadersValidator {
           copyIncomingHeaders.put(ramlHeader, ramlType.getDefaultValue());
         }
         if (!values.isEmpty() && ramlType.isArray()) {
-          values = explodeCommaSeparatedValues(values);
+          values = parseDelimitedValues(values, attributesParsingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
           copyIncomingHeaders.removeAll(ramlHeader);
           copyIncomingHeaders.put(ramlHeader, values);
@@ -153,22 +157,9 @@ public class HeadersValidator {
     }
   }
 
-  /**
-   * Takes a list of comma separated values, parses each as a JSON array and returns a list of each single value.
-   *
-   * @param listOfCsv
-   * @return
-   */
-  private List<String> explodeCommaSeparatedValues(List<String> listOfCsv) {
-    try {
-      return listOfCsv.stream().map(v -> "[" + v + "]")
-          .map(JSONArray::new)
-          .collect(ArrayList::new, (list, jsonArray) -> jsonArray.forEach(v -> list.add(v.toString())),
-                   ArrayList::addAll);
-    } catch (JSONException e) {
-      //If there is some issue parsing the value as array continue with the actual value
-    }
-    return listOfCsv;
+  private List<String> parseDelimitedValues(List<String> listOfCsv, AttributesParsingStrategy attributesParsingStrategy) {
+    AttributeParser parser = AttributesParserFactory.INSTANCE.buildParserByStrategy(attributesParsingStrategy);
+    return parser.parseListOfValues(listOfCsv);
   }
 
   private void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {
@@ -187,7 +178,7 @@ public class HeadersValidator {
       //no response media-types defined, return no body
       return;
     }
-    MediaType bestMatch = bestMatch(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
+    MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
     if (bestMatch == null) {
       throw new NotAcceptableException();
     }

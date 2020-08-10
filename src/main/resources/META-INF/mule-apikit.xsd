@@ -47,6 +47,10 @@
                 <xsd:sequence>
                     <xsd:element type="flow-mappings" name="flow-mappings" maxOccurs="1" minOccurs="0"/>
                 </xsd:sequence>
+                <xsd:sequence>
+                    <xsd:element type="parsing-strategies" name="parsing-strategies" maxOccurs="1"
+                                 minOccurs="0"/>
+                </xsd:sequence>
                 <xsd:attribute name="name" type="mule:nonBlankString" use="optional"/>
                 <xsd:attribute name="raml" type="mule:nonBlankString" use="optional"/>
                 <xsd:attribute name="api" type="mule:nonBlankString" use="optional"/>
@@ -54,7 +58,8 @@
                 <xsd:attribute name="httpStatusVarName" type="mule:nonBlankString" use="required"/>
                 <xsd:attribute name="keepApiBaseUri" type="mule:substitutableBoolean" default="false" use="optional"/>
                 <xsd:attribute name="keepRamlBaseUri" type="mule:substitutableBoolean" default="false" use="optional"/>
-                <xsd:attribute name="disableValidations" type="mule:substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="disableValidations" type="mule:substitutableBoolean" default="false"
+                               use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
                             Do no perform validation of uri parameters, headers, query parameters and body schemas.
@@ -62,25 +67,30 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="queryParamsStrictValidation" type="mule:substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="queryParamsStrictValidation" type="mule:substitutableBoolean" default="false"
+                               use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Query parameters strict validations, all request query parameters must be defined in the RAML.
+                            Query parameters strict validations, all request query parameters must be defined in the
+                            RAML.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="headersStrictValidation" type="mule:substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="headersStrictValidation" type="mule:substitutableBoolean" default="false"
+                               use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
                             Headers strict validations, all request headers must be defined in the RAML.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="parser" default="AUTO" type="parserType" use="optional" >
+                <xsd:attribute name="parser" default="AUTO" type="parserType" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            The parser to be used for request validation. There are three valid values: AMF, RAML and AUTO.
-                            In case of using AUTO, APIkit will try first with AMF and then, if any error was found, will try with RAML
+                            The parser to be used for request validation. There are three valid values: AMF, RAML and
+                            AUTO.
+                            In case of using AUTO, APIkit will try first with AMF and then, if any error was found, will
+                            try with RAML
 
                             Default value: AUTO
                         </xsd:documentation>
@@ -142,6 +152,21 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:complexType name="parsing-strategies">
+        <xsd:sequence>
+            <xsd:element name="array-header-parsing-strategy" maxOccurs="1" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:attribute name="delimiter" use="required" type="headerDelimiter"/>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
 
+    <xsd:simpleType name="headerDelimiter" final="restriction">
+        <xsd:restriction base="mule:nonBlankString">
+            <xsd:enumeration value="COMMA"/>
+            <xsd:enumeration value="SEMICOLON"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
 </xsd:schema>

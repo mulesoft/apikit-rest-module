@@ -16,10 +16,14 @@ import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
 import org.mule.module.apikit.api.spi.RouterService;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
+import org.mule.module.apikit.parsing.AttributesParsingStrategies;
+import org.mule.module.apikit.parsing.NoneAttributeParsingStrategy;
 import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoader;
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
@@ -44,6 +48,7 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
 
 import static java.lang.Runtime.getRuntime;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 
 public class Configuration implements Disposable, Initialisable, ValidationConfig, ConsoleConfig {
@@ -71,6 +76,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   private String outboundHeadersMapName;
   private String httpStatusVarName;
   private FlowMappings flowMappings = new FlowMappings();
+  private AttributesParsingStrategies attributesParsingStrategies = new AttributesParsingStrategies();
 
   private LoadingCache<String, JsonSchema> jsonSchemaCache;
   private LoadingCache<String, Schema> xmlSchemaCache;
@@ -154,6 +160,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     this.api = api;
   }
 
+  @Override
   public boolean isDisableValidations() {
     return disableValidations;
   }
@@ -178,6 +185,16 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Override
   public boolean isHeadersStrictValidation() {
     return headersStrictValidation;
+  }
+
+  @Override
+  public AttributesParsingStrategy getAttributesParsingStrategy(AttributesParsingStrategyIdentifier identifier) {
+    if (attributesParsingStrategies == null || isEmpty(attributesParsingStrategies.getAttributesParsingStrategies())) {
+      return new NoneAttributeParsingStrategy();
+    }
+    return attributesParsingStrategies.getAttributesParsingStrategies().stream()
+        .filter(ps -> ps.getStrategyIdentifier().equals(identifier))
+        .findFirst().orElseThrow(() -> new RuntimeException("No parser found for the parsing strategy identifier provided."));
   }
 
   public void setHeadersStrictValidation(boolean headersStrictValidation) {
@@ -373,5 +390,13 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Override
   public void dispose() {
     scheduler.shutdownNow();
+  }
+
+  public AttributesParsingStrategies getAttributesParsingStrategies() {
+    return attributesParsingStrategies;
+  }
+
+  public void setAttributesParsingStrategies(AttributesParsingStrategies attributesParsingStrategies) {
+    this.attributesParsingStrategies = attributesParsingStrategies;
   }
 }

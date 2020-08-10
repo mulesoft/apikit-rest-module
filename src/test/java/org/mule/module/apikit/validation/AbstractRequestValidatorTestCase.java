@@ -6,12 +6,6 @@
  */
 package org.mule.module.apikit.validation;
 
-import static org.mule.apikit.model.api.ApiReference.create;
-
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import javax.xml.validation.Schema;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
@@ -21,6 +15,8 @@ import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.MuleRestException;
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.uri.URIResolver.MatchRule;
@@ -30,6 +26,13 @@ import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
 import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.core.api.el.ExpressionManager;
+
+import javax.xml.validation.Schema;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.mule.apikit.model.api.ApiReference.create;
 
 
 /**
@@ -115,6 +118,11 @@ public abstract class AbstractRequestValidatorTestCase {
 
       @Override
       public ExpressionManager getExpressionManager() {
+        return null;
+      }
+
+      @Override
+      public AttributesParsingStrategy getAttributesParsingStrategy(AttributesParsingStrategyIdentifier identifier) {
         return null;
       }
     };

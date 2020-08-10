@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.api.config;
 
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
@@ -33,4 +35,6 @@ public interface ValidationConfig {
   default boolean isHeadersStrictValidation() {
     return false;
   }
+
+  AttributesParsingStrategy getAttributesParsingStrategy(AttributesParsingStrategyIdentifier identifier);
 }

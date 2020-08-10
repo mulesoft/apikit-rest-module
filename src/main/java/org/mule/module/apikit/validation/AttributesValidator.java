@@ -6,8 +6,7 @@
  */
 package org.mule.module.apikit.validation;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.mule.apikit.model.Action;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.MuleRestException;
@@ -17,9 +16,13 @@ import org.mule.module.apikit.validation.attributes.HeadersValidator;
 import org.mule.module.apikit.validation.attributes.QueryParameterValidator;
 import org.mule.module.apikit.validation.attributes.QueryStringValidator;
 import org.mule.module.apikit.validation.attributes.UriParametersValidator;
-import org.mule.apikit.model.Action;
 import org.mule.module.apikit.validation.attributes.ValidatedQueryParams;
 import org.mule.runtime.api.util.MultiMap;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier.ARRAY_HEADER_PARSING_STRATEGY;
 
 public class AttributesValidator {
 
@@ -51,7 +54,8 @@ public class AttributesValidator {
     // headers
     HeadersValidator headersValidator = ValidatorsCache.INSTANCE.getHeadersValidator(action);
     headers = headersValidator.validateAndAddDefaults(attributes.getHeaders(),
-                                                      config.isHeadersStrictValidation());
+                                                      config.isHeadersStrictValidation(),
+                                                      config.getAttributesParsingStrategy(ARRAY_HEADER_PARSING_STRATEGY));
 
     Map<String, String> uriParamsMap = new HashMap<>();
     resolvedVariables.names().stream().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));
@@ -61,6 +65,10 @@ public class AttributesValidator {
                                           queryParams,
                                           queryString,
                                           uriParamsMap);
+  }
+
+  private static boolean hasAnArrayHeader(Action action) {
+    return action.getHeaders().values().stream().anyMatch(h -> h.isArray());
   }
 
 }

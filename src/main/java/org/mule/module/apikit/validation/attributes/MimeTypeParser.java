@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
+
 /**
  * MIME-Type Parser
  * <p/>
@@ -197,9 +199,9 @@ public class MimeTypeParser {
    * @param header
    * @return
    */
-  public static MediaType bestMatch(List<String> supportedRepresentations, String header) {
+  public static MediaType bestMatchForAcceptHeader(List<String> supportedRepresentations, String header) {
     List<ParseResults> parseResults = new LinkedList<>();
-    for (String r : StringUtils.split(header, ','))
+    for (String r : StringUtils.split(header, COMMA.getDelimiterValue()))
       parseResults.add(parseMediaRange(r));
 
     List<FitnessAndQuality> weightedMatches = new LinkedList<>();

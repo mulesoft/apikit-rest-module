@@ -11,6 +11,9 @@ import org.mule.module.apikit.Console;
 import org.mule.module.apikit.FlowMapping;
 import org.mule.module.apikit.FlowMappings;
 import org.mule.module.apikit.Router;
+import org.mule.module.apikit.parsing.ArrayHeaderDelimiterTypeConverter;
+import org.mule.module.apikit.parsing.ArrayHeaderParsingStrategy;
+import org.mule.module.apikit.parsing.AttributesParsingStrategies;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 
@@ -51,6 +54,8 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
         .withSetterParameterDefinition("headersStrictValidation", fromSimpleParameter("headersStrictValidation").build())
         .withSetterParameterDefinition("parser", fromSimpleParameter("parser").build())
         .withSetterParameterDefinition("flowMappings", fromChildConfiguration(FlowMappings.class).build())
+        .withSetterParameterDefinition("attributesParsingStrategies",
+                                       fromChildConfiguration(AttributesParsingStrategies.class).build())
         .build());
 
     definitions.add(baseDefinition.withIdentifier("flow-mappings")
@@ -75,6 +80,19 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
         .withTypeDefinition(fromType(Console.class))
         .withSetterParameterDefinition("name", fromSimpleParameter("name").build())
         .withSetterParameterDefinition("configuration", fromSimpleReferenceParameter("config-ref").build()).build());
+
+    definitions.add(baseDefinition.withIdentifier("parsing-strategies")
+        .withTypeDefinition(fromType(AttributesParsingStrategies.class))
+        .withSetterParameterDefinition("attributesParsingStrategies",
+                                       fromChildCollectionConfiguration(ArrayHeaderParsingStrategy.class).build())
+        .build());
+
+    definitions.add(baseDefinition.withIdentifier("array-header-parsing-strategy")
+        .withTypeDefinition(fromType(ArrayHeaderParsingStrategy.class))
+        .withSetterParameterDefinition("delimiter",
+                                       fromSimpleParameter("delimiter", new ArrayHeaderDelimiterTypeConverter()).build())
+        .build());
+
     return definitions;
   }
 }

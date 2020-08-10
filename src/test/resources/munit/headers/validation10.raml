@@ -57,6 +57,15 @@ title: Headers Test Case
           type: string
           enum: ["SFO", "LAX", "CLE", "DAL", "NUY", "PHL", "NJC"]
 
+/test-array-date-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: datetime
+
 /multiplicity:
   get:
     responses:

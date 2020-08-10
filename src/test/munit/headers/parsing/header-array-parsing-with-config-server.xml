@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+                          http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+                          http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+                          http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+
+  <apikit:config name="comma-delimiter-config" raml="munit/headers/validation10.raml"
+                 outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
+    <apikit:parsing-strategies>
+      <apikit:array-header-parsing-strategy delimiter="${parsing.delimiter}"/>
+    </apikit:parsing-strategies>
+  </apikit:config>
+
+  <flow name="headers-parsing-validation-main">
+    <http:listener config-ref="http-listener-simple" path="/headers/validation/*">
+      <http:response statusCode="#[vars.httpStatus default 200]">
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:response>
+      <http:error-response statusCode="#[vars.httpStatus default 500]">
+        <http:body>#[payload]</http:body>
+        <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+      </http:error-response>
+    </http:listener>
+    <apikit:router config-ref="comma-delimiter-config"/>
+    <error-handler ref="global-server-error-handler"/>
+  </flow>
+
+  <flow name="get:\test-array-object-header">
+    <flow-ref name="parse-array-header"/>
+  </flow>
+
+  <flow name="get:\test-array-string-header">
+    <flow-ref name="parse-array-header"/>
+  </flow>
+
+  <flow name="get:\test-array-number-header">
+    <flow-ref name="parse-array-header"/>
+  </flow>
+
+  <flow name="get:\test-array-enum-header">
+    <flow-ref name="parse-array-header"/>
+  </flow>
+
+  <sub-flow name="parse-array-header">
+    <set-payload value="#[output text/plain --- sizeOf(attributes.headers.*'array-header') default '0']"/>
+    <munit-tools:store key="first-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>
+    </munit-tools:store>
+    <munit-tools:store key="second-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[1]]</munit-tools:value>
+    </munit-tools:store>
+    <munit-tools:store key="third-header">
+      <munit-tools:value>#[attributes.headers.*'array-header'[2]]</munit-tools:value>
+    </munit-tools:store>
+  </sub-flow>
+
+</mule>

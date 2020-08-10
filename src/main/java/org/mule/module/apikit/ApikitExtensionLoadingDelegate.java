@@ -6,21 +6,12 @@
  */
 package org.mule.module.apikit;
 
-import static java.util.Collections.singletonList;
-import static org.mule.metadata.api.model.MetadataFormat.JAVA;
-import static org.mule.parser.service.ParserMode.AUTO;
-import static org.mule.runtime.api.meta.Category.COMMUNITY;
-import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-import static org.mule.runtime.api.meta.model.parameter.ParameterRole.BEHAVIOUR;
-import static org.mule.runtime.api.meta.model.stereotype.StereotypeModelBuilder.newStereotype;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.extension.api.stereotype.MuleStereotypes.CONFIG;
-
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectType;
+import org.mule.module.apikit.parsing.ArrayHeaderParsingStrategy;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.meta.model.ImportedTypeModel;
@@ -37,6 +28,16 @@ import org.mule.runtime.extension.api.declaration.type.ExtensionsTypeLoaderFacto
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationProvider;
+
+import static java.util.Collections.singletonList;
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
+import static org.mule.parser.service.ParserMode.AUTO;
+import static org.mule.runtime.api.meta.Category.COMMUNITY;
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
+import static org.mule.runtime.api.meta.model.parameter.ParameterRole.BEHAVIOUR;
+import static org.mule.runtime.api.meta.model.stereotype.StereotypeModelBuilder.newStereotype;
+import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.extension.api.stereotype.MuleStereotypes.CONFIG;
 
 public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate {
 
@@ -116,6 +117,10 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
         .withExpressionSupport(NOT_SUPPORTED)
         .ofType(typeBuilder.arrayType().of(typeLoader.load(FlowMapping.class)).build());
+    parameterGroupDeclarer.withOptionalParameter("parsingStrategies")
+        .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
+        .withExpressionSupport(NOT_SUPPORTED)
+        .ofType(typeBuilder.arrayType().of(typeLoader.load(ArrayHeaderParsingStrategy.class)).build());
 
     // router
     OperationDeclarer routerDeclarer = apikitConfig.withOperation("router");
