@@ -10,749 +10,280 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="headers-validation-test-suite">
-    <munit:parameterizations>
-      <munit:parameterization name="RAML10">
-        <munit:parameters>
-          <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
-        </munit:parameters>
-      </munit:parameterization>
-      <munit:parameterization name="OAS30">
-        <munit:parameters>
-          <munit:parameter propertyName="api.location" value="munit/headers/validation_oas30.yaml"/>
-        </munit:parameters>
-      </munit:parameterization>
-    </munit:parameterizations>
-  </munit:config>
+    <munit:config name="headers-validation-test-suite">
+        <munit:parameterizations>
+            <munit:parameterization name="RAML10">
+                <munit:parameters>
+                    <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="OAS30">
+                <munit:parameters>
+                    <munit:parameter propertyName="api.location" value="munit/headers/validation_oas30.yaml"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
 
 
-  <munit:test name="success-when-optional-header-is-not-sent">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616"/>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="success-when-optional-header-is-not-sent">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616"/>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="success-when-optional-array-header-is-not-sent">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-enum-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-enum-header">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('0')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="success-when-optional-array-header-is-not-sent">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-enum-header:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-enum-header">
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('0')]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="failed-when-optional-header-has-not-valid-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
-        <http:headers>#[
-          output application/java
-          ---
-          {
-            'X-MaxRows': 'JEJE'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[payload.description]"
-                               is="#[MunitTools::equalTo('Invalid value \'JEJE\' for header \'X-MaxRows\'')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="failed-when-optional-header-has-not-valid-value">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
+                <http:headers>#[
+                    output application/java
+                    ---
+                    {
+                    'X-MaxRows': 'JEJE'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::equalTo('Invalid value \'JEJE\' for header \'X-MaxRows\'')]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="success-with-default-header-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
-        <http:headers>#[
-          output application/java
-          ---
-          {
-          'X-MaxRows': '123'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload]"
-                               is="#[MunitTools::equalTo('hola-header')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="success-with-default-header-value">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
+                <http:headers>#[
+                    output application/java
+                    ---
+                    {
+                    'X-MaxRows': '123'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[output text/plain --- payload]"
+                                     is="#[MunitTools::equalTo('hola-header')]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="success-with-multiple-accept-header-values">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\multiplicity:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'Accept': 'Application/json',
-          'Accept': 'Application/xml'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="success-with-multiple-accept-header-values">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="get:\multiplicity:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'Accept': 'Application/json',
+                    'Accept': 'Application/xml'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="success-with-valid-HTTP-csv-header-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\multiplicity:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'Accept': 'application/json,application/xml'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="success-with-valid-HTTP-csv-header-value">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="get:\multiplicity:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'Accept': 'application/json,application/xml'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="unsupported-media-type-with-multiple-content-type-header-values">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
-        <http:body>#[
-          output application/json
-          ---
-          {
-          'id': 'test'
-          }]
-        </http:body>
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'Content-type': 'application/json',
-          'Content-type': 'application/xml'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
-                               is="#[MunitTools::equalTo('Unsupported media type')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="unsupported-media-type-with-multiple-content-type-header-values">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+                <http:body>#[
+                    output application/json
+                    ---
+                    {
+                    'id': 'test'
+                    }]
+                </http:body>
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'Content-type': 'application/json',
+                    'Content-type': 'application/xml'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+            <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
+                                     is="#[MunitTools::equalTo('Unsupported media type')]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="unsupported-media-type-with-invalid-content-type-header-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
-        <http:body>#[
-          output application/json
-          ---
-          {
-          'id': 'test'
-          }]
-        </http:body>
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'Content-type': 'application/json,application/xml'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
-                               is="#[MunitTools::containsString('Unsupported media type')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="unsupported-media-type-with-invalid-content-type-header-value">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+                <http:body>#[
+                    output application/json
+                    ---
+                    {
+                    'id': 'test'
+                    }]
+                </http:body>
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'Content-type': 'application/json,application/xml'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+            <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
+                                     is="#[MunitTools::containsString('Unsupported media type')]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="invalid-content-type-header-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
-        <http:body>#[
-          output application/json
-          ---
-          {
-          'id': 'test'
-          }]
-        </http:body>
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'Content-type': 'application/xml'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
-                               is="#[MunitTools::equalTo('Unsupported media type')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="invalid-content-type-header-value">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\multiplicity:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/multiplicity">
+                <http:body>#[
+                    output application/json
+                    ---
+                    {
+                    'id': 'test'
+                    }]
+                </http:body>
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'Content-type': 'application/xml'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(415)]"/>
+            <munit-tools:assert-that expression="#[output text/plain --- payload.message]"
+                                     is="#[MunitTools::equalTo('Unsupported media type')]"/>
+        </munit:validation>
+    </munit:test>
 
-  <munit:test name="success-with-special-characters-at-header-value">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
-        <http:headers>#[
-          output application/java
-          ---
-          {
-          'X-MaxRows': '123',
-          'defaultHeaderValue': '{ this should work }'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[output text/plain --- payload]" is="#[MunitTools::equalTo('{ this should work }')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-object-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-object-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-object-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '{"type": "username", "value": "testvalue"}',
-          'array-header': '{"type": "password", "value": "testvalue"}'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('username')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('password')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="fail-with-invalid-object-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-object-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-object-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '"type": "username", "value": "testvalue"}',
-          'array-header': '{"typ": "password", "value": "testvalue"}'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[payload.description]" is="#[MunitTools::containsString('Invalid value')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-single-object-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-object-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-object-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '{"type": "username", "value": "testvalue"}'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('username')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-csv-object-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-object-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-object-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '{"type": "username", "value": "testvalue"},{"type": "password", "value": "testvalue"}'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('username')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('password')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-multiple-object-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-object-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-object-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '{"type": "username", "value": "testvalue"}',
-          'array-header': '{"type": "password", "value": "testvalue"},{"type": "alias", "value": "testvalue"}'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('username')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('password')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('alias')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="fail-with-invalid-csv-object-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-object-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-object-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '{ invalid object, { another invalid object'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[payload.description]" is="#[MunitTools::containsString('Invalid value')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-string-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-string-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-string-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'first',
-          'array-header': 'second,third'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('third')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-including-quoted-string-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-string-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-string-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '"I, should, be, the, first, value"',
-          'array-header': '"I, should, be, the, second, value"'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-csv-string-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-string-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-string-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'first,second,third'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('third')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-csv-including-quoted-string-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-string-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-string-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'first,"I, should, be, one, value, only",third'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('should')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('third')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-number-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-number-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-number-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 123,
-          'array-header': '456,789'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('123')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('456')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('789')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-csv-number-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-number-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-number-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': '123,456,789'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('123')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('456')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('789')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-enum-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-enum-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-enum-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'SFO',
-          'array-header': 'PHL',
-          'array-header': 'DAL,CLE'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('SFO')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('PHL')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('DAL')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="success-with-csv-enum-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-enum-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-enum-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'SFO,CLE,PHL'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
-      <munit-tools:retrieve key="first-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('SFO')]"/>
-      <munit-tools:retrieve key="second-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('CLE')]"/>
-      <munit-tools:retrieve key="third-header"/>
-      <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('PHL')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="fail-with-invalid-enum-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-enum-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-enum-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'SFO',
-          'array-header': 'AAA'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[payload.description]" is="#[MunitTools::containsString('Invalid value')]"/>
-    </munit:validation>
-  </munit:test>
-
-  <munit:test name="fail-with-invalid-csv-enum-array-header">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="headers-validation-main"/>
-      <munit:enable-flow-source value="get:\test-array-enum-header:headers-validation-config"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="GET" config-ref="http-requester-simple" path="/headers/validation/test-array-enum-header">
-        <http:headers>#[
-          output application/json
-          ---
-          {
-          'array-header': 'SFO,AAA'
-          }]
-        </http:headers>
-        <http:response-validator>
-          <http:success-status-code-validator values="1..500"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-      <munit-tools:assert-that expression="#[payload.description]" is="#[MunitTools::containsString('Invalid value')]"/>
-    </munit:validation>
-  </munit:test>
+    <munit:test name="success-with-special-characters-at-header-value">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-validation-main"/>
+            <munit:enable-flow-source value="post:\datetime2616:headers-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/headers/validation/datetime2616">
+                <http:headers>#[
+                    output application/java
+                    ---
+                    {
+                    'X-MaxRows': '123',
+                    'defaultHeaderValue': '{ this should work }'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[output text/plain --- payload]"
+                                     is="#[MunitTools::equalTo('{ this should work }')]"/>
+        </munit:validation>
+    </munit:test>
 
 </mule>

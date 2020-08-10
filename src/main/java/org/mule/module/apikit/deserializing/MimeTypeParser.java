@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.validation.attributes;
+package org.mule.module.apikit.deserializing;
 
 import com.google.common.net.MediaType;
 import org.apache.commons.lang.StringUtils;
@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
 
 /**
  * MIME-Type Parser
@@ -197,9 +199,9 @@ public class MimeTypeParser {
    * @param header
    * @return
    */
-  public static MediaType bestMatch(List<String> supportedRepresentations, String header) {
+  public static MediaType bestMatchForAcceptHeader(List<String> supportedRepresentations, String header) {
     List<ParseResults> parseResults = new LinkedList<>();
-    for (String r : StringUtils.split(header, ','))
+    for (String r : StringUtils.split(header, COMMA.getDelimiterValue()))
       parseResults.add(parseMediaRange(r));
 
     List<FitnessAndQuality> weightedMatches = new LinkedList<>();

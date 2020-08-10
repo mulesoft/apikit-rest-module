@@ -6,10 +6,6 @@
  */
 package org.mule.module.apikit.validation;
 
-import static java.lang.String.format;
-
-import java.util.HashMap;
-import java.util.Map;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Resource;
 import org.mule.extension.http.api.HttpRequestAttributes;
@@ -21,6 +17,11 @@ import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.validation.ValidBody;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 public class RestRequestValidator {
 
