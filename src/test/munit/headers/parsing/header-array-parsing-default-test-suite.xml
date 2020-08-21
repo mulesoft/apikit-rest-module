@@ -14,11 +14,13 @@
         <munit:parameterizations>
             <munit:parameterization name="RAML10">
                 <munit:parameters>
+                    <munit:parameter propertyName="api.version" value="RAML10"/>
                     <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="OAS30">
                 <munit:parameters>
+                    <munit:parameter propertyName="api.version" value="OAS30"/>
                     <munit:parameter propertyName="api.location" value="munit/headers/validation_oas30.yaml"/>
                 </munit:parameters>
             </munit:parameterization>
@@ -220,9 +222,9 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('first')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('second')]"/>
         </munit:validation>
     </munit:test>
 
@@ -281,7 +283,7 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first,second,third')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('first,second,third')]"/>
         </munit:validation>
     </munit:test>
 
@@ -370,9 +372,9 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('123')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('123')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('456')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('456')]"/>
         </munit:validation>
     </munit:test>
 
@@ -456,9 +458,9 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('SFO')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('SFO')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('PHL')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('PHL')]"/>
         </munit:validation>
     </munit:test>
 
@@ -558,6 +560,283 @@
                     ---
                     {
                     'array-header': 'SFO,AAA'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-datetime-array-header-default">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '1985-04-12T23:20:50.52Z',
+                    'array-header': '1996-12-19T16:39:57-08:00'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-including-quoted-datetime-array-header-default">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '"1985-04-12T23:20:50.52Z"',
+                    'array-header': '"1996-12-19T16:39:57-08:00"'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('&quot;1985-04-12T23:20:50.52Z&quot;')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('&quot;1996-12-19T16:39:57-08:00&quot;')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-csv-datetime-array-header-as-one-value-default">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '1985-04-12T23:20:50.52Z,1996-12-19T16:39:57-08:00,1937-01-01T12:00:27.87+00:20'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-multiple-csv-datetime-array-header-as-multiple-values-default">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '1985-04-12T23:20:50.52Z,1996-12-19T16:39:57-08:00',
+                    'array-header': '1937-01-01T12:00:27.87+00:20'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-csv-including-quoted-datetime-as-one-value-array-header-default">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '1985-04-12T23:20:50.52Z,"1996-12-19T16:39:57-08:00",1937-01-01T12:00:27.87+00:20'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <!--    DateTime following rfc2616 format is not supported by OAS, so ignoring-->
+
+    <munit:test name="success-with-semicolon-delimited-datetime2616-array-header-without-quotes"
+                ignore="#['${api.version}' == 'OAS30']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT',
+                    'array-header': 'Wed, 21 Oct 2015 07:28:00 GMT'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Sun, 28 Feb 2016 16:41:41 GMT')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Wed, 21 Oct 2015 07:28:00 GMT')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-including-quoted-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '"Sun, 28 Feb 2016 16:41:41 GMT"',
+                    'array-header': '"Wed, 21 Oct 2015 07:28:00 GMT"'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('&quot;Sun, 28 Feb 2016 16:41:41 GMT&quot;')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('&quot;Wed, 21 Oct 2015 07:28:00 GMT&quot;')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-comma-delimited-datetime2616-array-header"
+                ignore="#['${api.version}' == 'OAS30']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': '\"Sun, 28 Feb 2016 16:41:41 GMT\",\"Wed, 21 Oct 2015 07:28:00 GMT\"'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-invalid-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-default-parsing-config-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-parsing-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT',
+                    'array-header': 'Tue, 15 11 1994 12:45:26 GMT'
                     }]
                 </http:headers>
                 <http:response-validator>

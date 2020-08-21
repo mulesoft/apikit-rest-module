@@ -57,7 +57,7 @@ title: Headers Test Case
           type: string
           enum: ["SFO", "LAX", "CLE", "DAL", "NUY", "PHL", "NJC"]
 
-/test-array-date-header:
+/test-array-datetime-header:
   get:
     headers:
       array-header:
@@ -65,6 +65,16 @@ title: Headers Test Case
         type: array
         items:
           type: datetime
+
+/test-array-datetime2616-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: datetime
+          format: rfc2616
 
 /multiplicity:
   get:

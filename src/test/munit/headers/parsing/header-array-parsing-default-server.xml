@@ -42,6 +42,14 @@
         <flow-ref name="parse-array-header"/>
     </flow>
 
+    <flow name="get:\test-array-datetime-header:default-parsing-config">
+        <flow-ref name="parse-array-header"/>
+    </flow>
+
+    <flow name="get:\test-array-datetime2616-header:default-parsing-config">
+        <flow-ref name="parse-array-header"/>
+    </flow>
+
     <sub-flow name="parse-array-header-and-store">
         <set-payload value="#[output text/plain --- sizeOf(attributes.headers.*'array-header') default '0']"/>
         <munit-tools:store key="first-header">

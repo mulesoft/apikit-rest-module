@@ -247,9 +247,9 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('first')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('second')]"/>
         </munit:validation>
     </munit:test>
 
@@ -314,11 +314,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('first')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('second')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('third')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('third')]"/>
         </munit:validation>
     </munit:test>
 
@@ -353,11 +353,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('first')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('second')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('second')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('third')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('third')]"/>
         </munit:validation>
     </munit:test>
 
@@ -391,11 +391,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('first')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('first')]"/>
             <munit-tools:retrieve key="second-header"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('should')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('third')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('third')]"/>
         </munit:validation>
     </munit:test>
 
@@ -424,9 +424,9 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('123')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('123')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('456')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('456')]"/>
         </munit:validation>
     </munit:test>
 
@@ -460,11 +460,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('123')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('123')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('456')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('456')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('789')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('789')]"/>
         </munit:validation>
     </munit:test>
 
@@ -499,11 +499,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('123')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('123')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('456')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('456')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('789')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('789')]"/>
         </munit:validation>
     </munit:test>
 
@@ -533,11 +533,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('SFO')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('SFO')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('PHL')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('PHL')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('DAL')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('DAL')]"/>
         </munit:validation>
     </munit:test>
 
@@ -571,11 +571,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('SFO')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('SFO')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('CLE')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('CLE')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('PHL')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('PHL')]"/>
         </munit:validation>
     </munit:test>
 
@@ -611,11 +611,11 @@
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
             <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('4')]"/>
             <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('SFO')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('SFO')]"/>
             <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('PHL')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('PHL')]"/>
             <munit-tools:retrieve key="third-header"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::containsString('DAL')]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('DAL')]"/>
         </munit:validation>
     </munit:test>
 
@@ -664,6 +664,517 @@
                     read(setDelimiter(
                     "{
                     'array-header': 'SFO##delimiter##AAA'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '1985-04-12T23:20:50.52Z',
+                    'array-header': '1996-12-19T16:39:57-08:00'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-including-quoted-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '"1985-04-12T23:20:50.52Z"',
+                    'array-header': '"1996-12-19T16:39:57-08:00"'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-delimited-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header':
+                    '1985-04-12T23:20:50.52Z##delimiter##1996-12-19T16:39:57-08:00##delimiter##1937-01-01T12:00:27.87+00:20'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
+            <munit-tools:retrieve key="third-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('1937-01-01T12:00:27.87+00:20')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-multiple-delimited-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': '1985-04-12T23:20:50.52Z',
+                    'array-header': '1996-12-19T16:39:57-08:00##delimiter##1937-01-01T12:00:27.87+00:20'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
+            <munit-tools:retrieve key="third-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('1937-01-01T12:00:27.87+00:20')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-delimited-including-quoted-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header':
+                    '1985-04-12T23:20:50.52Z##delimiter##\"1996-12-19T16:39:57-08:00\"##delimiter##1937-01-01T12:00:27.87+00:20'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('3')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
+            <munit-tools:retrieve key="third-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('1937-01-01T12:00:27.87+00:20')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-invalid-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '1985-04-12T23:20:50.52Z',
+                    'array-header': '19961219T16:39:57-08:00'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-invalid-delimited-datetime-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': '1985-04-12T23:20:50.52Z##delimiter##19961219T16:39:57-08:00'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-semicolon-delimited-datetime2616-array-header-without-quotes"
+                ignore="#['${parsing.delimiter}' == ',']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT',
+                    'array-header': 'Wed, 21 Oct 2015 07:28:00 GMT'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Sun, 28 Feb 2016 16:41:41 GMT')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Wed, 21 Oct 2015 07:28:00 GMT')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-comma-delimited-datetime2616-array-header-without-quotes"
+                ignore="#['${parsing.delimiter}' == ';']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT',
+                    'array-header': 'Wed, 21 Oct 2015 07:28:00 GMT'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-including-quoted-datetime2616-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': '"Sun, 28 Feb 2016 16:41:41 GMT"',
+                    'array-header': '"Wed, 21 Oct 2015 07:28:00 GMT"'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Sun, 28 Feb 2016 16:41:41 GMT')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Wed, 21 Oct 2015 07:28:00 GMT')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-delimited-quoted-datetime2616-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': '\"Sun, 28 Feb 2016 16:41:41 GMT\"##delimiter##\"Wed, 21 Oct 2015 07:28:00 GMT\"'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Sun, 28 Feb 2016 16:41:41 GMT')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Wed, 21 Oct 2015 07:28:00 GMT')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-single-comma-delimited-datetime2616-array-header-without-quotes"
+                ignore="#['${parsing.delimiter}' == ';']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT##delimiter##Wed, 21 Oct 2015 07:28:00 GMT'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="success-with-single-semicolon-delimited-datetime2616-array-header-without-quotes"
+                ignore="#['${parsing.delimiter}' == ',']">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT##delimiter##Wed, 21 Oct 2015 07:28:00 GMT'
+                    }"
+                    ))
+                    ]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Sun, 28 Feb 2016 16:41:41 GMT')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Wed, 21 Oct 2015 07:28:00 GMT')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-invalid-datetime2616-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    output application/json
+                    ---
+                    {
+                    'array-header': 'Sun, 28 Feb 2016 16:41:41 GMT',
+                    'array-header': 'Tue, 15 11 1994 12:45:26 GMT'
+                    }]
+                </http:headers>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="fail-with-invalid-delimited-datetime2616-array-header">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <http:request method="GET" config-ref="http-requester-simple"
+                          path="/headers/validation/test-array-datetime2616-header">
+                <http:headers>#[
+                    %dw 2.0
+                    output application/json
+                    fun setDelimiter(text) = text as String default '' replace "##delimiter##" with vars.delimiter
+                    ---
+                    read(setDelimiter(
+                    "{
+                    'array-header': '1985-04-12T23:20:50.52Z##delimiter##19961219T16:39:57-08:00'
                     }"
                     ))
                     ]

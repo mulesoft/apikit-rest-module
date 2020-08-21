@@ -92,7 +92,7 @@ paths:
             items:
               type: string
               enum: ["SFO", "LAX", "CLE", "DAL", "NUY", "PHL", "NJC"]
-  /test-array-date-header:
+  /test-array-datetime-header:
     get:
       responses:
         default:
