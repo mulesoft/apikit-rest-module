@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.validation.attributes;
+package org.mule.module.apikit.parsing;
 
 import com.google.common.net.MediaType;
 import org.apache.commons.lang.StringUtils;

@@ -9,7 +9,6 @@ package org.mule.module.apikit.helpers;
 import com.google.common.base.Strings;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpRequestAttributesBuilder;
-import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.util.MultiMap;
@@ -21,6 +20,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.mule.module.apikit.HeaderName.ACCEPT;
 import static org.mule.module.apikit.HeaderName.CONTENT_TYPE;
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
@@ -64,31 +64,6 @@ public class AttributesHelper {
   }
 
   /**
-   * Returns the value for the parameter in the map that matches the name. It validates that only one value exists.
-   * <p>
-   * If multiple values are allowed for the parameter, consider using {@link AttributesHelper#getParamValues(MultiMap, String)} instead.
-   * </p>
-   *
-   * @param parameters    Map of parameter's name-value
-   * @param parameterName Parameter name
-   * @return Parameter value or <code>null</code> if parameter is not found
-   * @throws UnsupportedMediaTypeException if multiple values are present for the parameter
-   */
-  private static String getParamValue(MultiMap<String, String> parameters, String parameterName)
-      throws BadRequestException {
-    List<String> paramValues = getParamValues(parameters, parameterName);
-    int listSize = paramValues.size();
-    if (listSize == 0) {
-      return null;
-    }
-    if (listSize > 1 || paramValues.get(0).contains(COMMA.getDelimiterValue())) {
-      throw new BadRequestException("Multiple values are not allowed for \"" + parameterName
-          + "\" header param");
-    }
-    return paramValues.get(0);
-  }
-
-  /**
    * Returns the list of values for the parameter that matches the name.
    *
    * @param parameters    Map of parameter's name-value
@@ -111,11 +86,13 @@ public class AttributesHelper {
    * @throws UnsupportedMediaTypeException
    */
   public static String getContentType(MultiMap<String, String> headers) throws UnsupportedMediaTypeException {
-    final String contentType;
-    try {
-      contentType = getParamValue(headers, CONTENT_TYPE.getName());
-    } catch (BadRequestException e) {
-      throw new UnsupportedMediaTypeException("Unsupported mediaType. " + e.getMessage());
+    final List<String> contentTypes = getParamValues(headers, CONTENT_TYPE.getName());
+    if (isEmpty(contentTypes)) {
+      return null;
+    }
+    String contentType = contentTypes.get(0);
+    if (contentTypes.size() > 1 || contentType.contains(COMMA.getDelimiterValue())) {
+      throw new UnsupportedMediaTypeException("Unsupported mediaType. Multiple values are not allowed for Content-Type header param");
     }
     return Strings.isNullOrEmpty(contentType) ? null : getMediaType(contentType);
   }

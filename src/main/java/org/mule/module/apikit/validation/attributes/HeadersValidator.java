@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
-import static org.mule.module.apikit.validation.attributes.MimeTypeParser.bestMatchForAcceptHeader;
+import static org.mule.module.apikit.parsing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
