@@ -15,8 +15,8 @@ import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.MuleRestException;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.uri.URIResolver.MatchRule;
@@ -122,7 +122,7 @@ public abstract class AbstractRequestValidatorTestCase {
       }
 
       @Override
-      public AttributesParsingStrategy getAttributesParsingStrategy(AttributesParsingStrategyIdentifier identifier) {
+      public AttributesDeserializingStrategy getAttributesDeserializingStrategy(AttributesDeserializingStrategyIdentifier identifier) {
         return null;
       }
     };

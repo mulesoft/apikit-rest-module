@@ -11,9 +11,9 @@
 
     <apikit:config name="comma-delimiter-config" raml="munit/headers/validation10.raml"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
-        <apikit:parsing-strategies>
-            <apikit:array-header-parsing-strategy delimiter="${parsing.delimiter}"/>
-        </apikit:parsing-strategies>
+        <apikit:attributes-deserializing-strategies>
+            <apikit:array-header-deserializing-strategy delimiter="${deserializer.delimiter}"/>
+        </apikit:attributes-deserializing-strategies>
     </apikit:config>
 
     <flow name="headers-parsing-validation-main">

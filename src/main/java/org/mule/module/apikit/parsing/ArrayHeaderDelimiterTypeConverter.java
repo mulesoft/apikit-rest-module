@@ -10,7 +10,6 @@ import org.mule.runtime.dsl.api.component.TypeConverter;
 
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.NONE;
-import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.SEMICOLON;
 
 /**
  * Maps the String delimiter set in configuration with the corresponding enum value
@@ -19,11 +18,6 @@ public class ArrayHeaderDelimiterTypeConverter implements TypeConverter<String, 
 
   @Override
   public ArrayHeaderDelimiter convert(String s) {
-    if (COMMA.getDelimiterValue().equals(s)) {
-      return COMMA;
-    } else if (SEMICOLON.getDelimiterValue().equals(s)) {
-      return SEMICOLON;
-    }
-    return NONE;
+    return COMMA.getDelimiterValue().equals(s) ? COMMA : NONE;
   }
 }

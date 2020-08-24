@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.api.config;
 
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
@@ -36,5 +36,5 @@ public interface ValidationConfig {
     return false;
   }
 
-  AttributesParsingStrategy getAttributesParsingStrategy(AttributesParsingStrategyIdentifier identifier);
+  AttributesDeserializingStrategy getAttributesDeserializingStrategy(AttributesDeserializingStrategyIdentifier identifier);
 }

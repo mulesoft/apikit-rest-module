@@ -22,7 +22,7 @@ import org.mule.runtime.api.util.MultiMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier.ARRAY_HEADER_PARSING_STRATEGY;
+import static org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
 
 public class AttributesValidator {
 
@@ -55,7 +55,8 @@ public class AttributesValidator {
     HeadersValidator headersValidator = ValidatorsCache.INSTANCE.getHeadersValidator(action);
     headers = headersValidator.validateAndAddDefaults(attributes.getHeaders(),
                                                       config.isHeadersStrictValidation(),
-                                                      config.getAttributesParsingStrategy(ARRAY_HEADER_PARSING_STRATEGY));
+                                                      config
+                                                          .getAttributesDeserializingStrategy(ARRAY_HEADER_DESERIALIZING_STRATEGY));
 
     Map<String, String> uriParamsMap = new HashMap<>();
     resolvedVariables.names().stream().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));

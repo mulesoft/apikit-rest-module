@@ -14,12 +14,12 @@
         <munit:parameterizations>
             <munit:parameterization name="COMMA_DELIMITER">
                 <munit:parameters>
-                    <munit:parameter propertyName="parsing.delimiter" value=","/>
+                    <munit:parameter propertyName="deserializer.delimiter" value=","/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="SEMICOLON_DELIMITER">
                 <munit:parameters>
-                    <munit:parameter propertyName="parsing.delimiter" value=";"/>
+                    <munit:parameter propertyName="deserializer.delimiter" value=";"/>
                 </munit:parameters>
             </munit:parameterization>
         </munit:parameterizations>

@@ -12,8 +12,8 @@ import org.mule.module.apikit.FlowMapping;
 import org.mule.module.apikit.FlowMappings;
 import org.mule.module.apikit.Router;
 import org.mule.module.apikit.parsing.ArrayHeaderDelimiterTypeConverter;
-import org.mule.module.apikit.parsing.ArrayHeaderParsingStrategy;
-import org.mule.module.apikit.parsing.AttributesParsingStrategies;
+import org.mule.module.apikit.parsing.ArrayHeaderDeserializingStrategy;
+import org.mule.module.apikit.parsing.AttributesDeserializingStrategies;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 
@@ -54,8 +54,8 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
         .withSetterParameterDefinition("headersStrictValidation", fromSimpleParameter("headersStrictValidation").build())
         .withSetterParameterDefinition("parser", fromSimpleParameter("parser").build())
         .withSetterParameterDefinition("flowMappings", fromChildConfiguration(FlowMappings.class).build())
-        .withSetterParameterDefinition("attributesParsingStrategies",
-                                       fromChildConfiguration(AttributesParsingStrategies.class).build())
+        .withSetterParameterDefinition("attributesDeserializingStrategies",
+                                       fromChildConfiguration(AttributesDeserializingStrategies.class).build())
         .build());
 
     definitions.add(baseDefinition.withIdentifier("flow-mappings")
@@ -81,14 +81,14 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
         .withSetterParameterDefinition("name", fromSimpleParameter("name").build())
         .withSetterParameterDefinition("configuration", fromSimpleReferenceParameter("config-ref").build()).build());
 
-    definitions.add(baseDefinition.withIdentifier("parsing-strategies")
-        .withTypeDefinition(fromType(AttributesParsingStrategies.class))
-        .withSetterParameterDefinition("attributesParsingStrategies",
-                                       fromChildCollectionConfiguration(ArrayHeaderParsingStrategy.class).build())
+    definitions.add(baseDefinition.withIdentifier("attributes-deserializing-strategies")
+        .withTypeDefinition(fromType(AttributesDeserializingStrategies.class))
+        .withSetterParameterDefinition("attributesDeserializingStrategies",
+                                       fromChildCollectionConfiguration(ArrayHeaderDeserializingStrategy.class).build())
         .build());
 
-    definitions.add(baseDefinition.withIdentifier("array-header-parsing-strategy")
-        .withTypeDefinition(fromType(ArrayHeaderParsingStrategy.class))
+    definitions.add(baseDefinition.withIdentifier("array-header-deserializing-strategy")
+        .withTypeDefinition(fromType(ArrayHeaderDeserializingStrategy.class))
         .withSetterParameterDefinition("delimiter",
                                        fromSimpleParameter("delimiter", new ArrayHeaderDelimiterTypeConverter()).build())
         .build());

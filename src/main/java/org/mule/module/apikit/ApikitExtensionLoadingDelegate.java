@@ -11,7 +11,7 @@ import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectType;
-import org.mule.module.apikit.parsing.ArrayHeaderParsingStrategy;
+import org.mule.module.apikit.parsing.ArrayHeaderDeserializingStrategy;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.meta.model.ImportedTypeModel;
@@ -117,10 +117,10 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
         .withExpressionSupport(NOT_SUPPORTED)
         .ofType(typeBuilder.arrayType().of(typeLoader.load(FlowMapping.class)).build());
-    parameterGroupDeclarer.withOptionalParameter("parsingStrategies")
+    parameterGroupDeclarer.withOptionalParameter("attributesDeserializingStrategies")
         .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
         .withExpressionSupport(NOT_SUPPORTED)
-        .ofType(typeBuilder.arrayType().of(typeLoader.load(ArrayHeaderParsingStrategy.class)).build());
+        .ofType(typeBuilder.arrayType().of(typeLoader.load(ArrayHeaderDeserializingStrategy.class)).build());
 
     // router
     OperationDeclarer routerDeclarer = apikitConfig.withOperation("router");

@@ -11,8 +11,7 @@ package org.mule.module.apikit.parsing;
  */
 public enum ArrayHeaderDelimiter {
   NONE(""),
-  COMMA(","),
-  SEMICOLON(";");
+  COMMA(",");
 
   private final String delimiter;
 

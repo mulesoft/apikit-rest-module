@@ -9,11 +9,11 @@ package org.mule.module.apikit.parsing;
 import java.util.List;
 
 /**
- * Interface to be implemented by attribute parsers.
+ * Interface to be implemented by attribute deserializers.
  */
-public interface AttributeParser {
+public interface AttributeDeserializer {
 
-  List<String> parseValue(String attributeValue);
+  List<String> deserializeValue(String attributeValue);
 
-  List<String> parseListOfValues(List<String> attributeValues);
+  List<String> deserializeListOfValues(List<String> attributeValues);
 }

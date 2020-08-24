@@ -10,16 +10,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import sun.reflect.ConstructorAccessor;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
 
 @RunWith(Parameterized.class)
-public class ArrayHeaderAttributeParserTest {
+public class ArrayHeaderAttributeDeserializerTest {
 
   private static final String TWO_LEVEL_OBJECT_WITH_LINE_FEEDS = "{\n" +
       "  \"color\": \"RED\",\n" +
@@ -34,34 +39,52 @@ public class ArrayHeaderAttributeParserTest {
       "{\"color\": \"RED\", \"manufacturer\": {\"brand\": \"Ferrari\"}, \"reseller\": {\"name\": \"YourCar\"}}";
   private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + TWO_LEVEL_OBJECT + "\"";
 
-  private ArrayHeaderAttributeParser parser;
+  private ArrayHeaderAttributeDeserializer deserializer;
   private List<String> listOfArrayHeaderValues;
   private String delimiter;
   @Parameterized.Parameter
-  public ArrayHeaderParsingStrategy parsingStrategy;
+  public ArrayHeaderDeserializingStrategy deserializingStrategy;
 
   @Parameterized.Parameters(name = "Delimiter = {0}")
-  public static Iterable<Object[]> data() {
-    ArrayHeaderParsingStrategy commaDelimitedParsingStrategy = new ArrayHeaderParsingStrategy();
-    commaDelimitedParsingStrategy.setDelimiter(ArrayHeaderDelimiter.COMMA);
-    ArrayHeaderParsingStrategy semicolonDelimitedParsingStrategy = new ArrayHeaderParsingStrategy();
-    semicolonDelimitedParsingStrategy.setDelimiter(ArrayHeaderDelimiter.SEMICOLON);
+  public static Iterable<Object[]> data() throws Exception {
+    ArrayHeaderDeserializingStrategy commaDelimitedStrategy = new ArrayHeaderDeserializingStrategy();
+    commaDelimitedStrategy.setDelimiter(COMMA);
+    ArrayHeaderDeserializingStrategy semicolonDelimitedStrategy = new ArrayHeaderDeserializingStrategy();
+    ArrayHeaderDelimiter semicolon = createEnumValue("SEMICOLON", 2, ";");
+    semicolonDelimitedStrategy.setDelimiter(semicolon);
     return asList(new Object[][] {
-        {commaDelimitedParsingStrategy},
-        {semicolonDelimitedParsingStrategy},
+        {commaDelimitedStrategy},
+        {semicolonDelimitedStrategy},
     });
+  }
+
+  protected static ArrayHeaderDelimiter createEnumValue(String name, int ordinal, String description) throws Exception {
+    Class<ArrayHeaderDelimiter> monsterClass = ArrayHeaderDelimiter.class;
+    Constructor<?> constructor = monsterClass.getDeclaredConstructors()[0];
+    constructor.setAccessible(true);
+
+    Field constructorAccessorField = Constructor.class.getDeclaredField("constructorAccessor");
+    constructorAccessorField.setAccessible(true);
+    ConstructorAccessor ca = (ConstructorAccessor) constructorAccessorField.get(constructor);
+    if (ca == null) {
+      Method acquireConstructorAccessorMethod = Constructor.class.getDeclaredMethod("acquireConstructorAccessor");
+      acquireConstructorAccessorMethod.setAccessible(true);
+      ca = (ConstructorAccessor) acquireConstructorAccessorMethod.invoke(constructor);
+    }
+    ArrayHeaderDelimiter enumValue = (ArrayHeaderDelimiter) ca.newInstance(new Object[] {name, ordinal, description});
+    return enumValue;
   }
 
   @Before
   public void init() {
-    parser = new ArrayHeaderAttributeParser(parsingStrategy);
-    delimiter = parsingStrategy.getDelimiter().getDelimiterValue();
+    deserializer = new ArrayHeaderAttributeDeserializer(deserializingStrategy);
+    delimiter = deserializingStrategy.getDelimiter().getDelimiterValue();
     listOfArrayHeaderValues = new ArrayList<>();
   }
 
   @Test
-  public void parseEmptyArrayHeader() {
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+  public void deserializeEmptyArrayHeader() {
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertNotNull(result);
     assertEquals(0, result.size());
   }
@@ -71,14 +94,14 @@ public class ArrayHeaderAttributeParserTest {
     listOfArrayHeaderValues.add("   ");
     listOfArrayHeaderValues.add("" + delimiter + " ");
     listOfArrayHeaderValues.add("\"\"" + delimiter + "\"  \"");
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertNotNull(result);
     assertEquals(0, result.size());
   }
 
   @Test
   public void testSingleValueBetweenEnclosingQuotes() {
-    List<String> result = parser.parseValue("\"This is a unique value\"");
+    List<String> result = deserializer.deserializeValue("\"This is a unique value\"");
     assertNotNull(result);
     assertEquals(1, result.size());
     assertEquals("This is a unique value", result.get(0));
@@ -86,52 +109,55 @@ public class ArrayHeaderAttributeParserTest {
 
   @Test
   public void testValueWithDelimitersBetweenEnclosingQuotes() {
-    List<String> result = parser.parseValue("\"This " + delimiter + " is a unique" + delimiter + " value\"");
+    List<String> result = deserializer.deserializeValue("\"This " + delimiter + " is a unique" + delimiter + " value\"");
     assertEquals(1, result.size());
     assertEquals("This " + delimiter + " is a unique" + delimiter + " value", result.get(0));
   }
 
   @Test
   public void allowDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
-    List<String> result = parser.parseValue("\"\"\"\"\"\"\"");
+    List<String> result = deserializer.deserializeValue("\"\"\"\"\"\"\"");
     assertEquals(1, result.size());
     assertEquals("\"\"\"", result.get(0));
   }
 
   @Test
-  public void parseObjectBetweenQuotes() {
+  public void deserializeObjectBetweenQuotes() {
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(1, result.size());
     assertEquals(TWO_LEVEL_OBJECT, result.get(0));
   }
 
   @Test
-  public void lineFeedOutsideQuotesEndsParsing() {
-    List<String> result = parser
-        .parseValue("\"This is one result\"" + "\n" + delimiter + "\"This is in a different line and should not be in result\"");
+  public void lineFeedOutsideQuotesEndsDeserializing() {
+    List<String> result = deserializer
+        .deserializeValue("\"This is one result\"" + "\n" + delimiter
+            + "\"This is in a different line and should not be in result\"");
     assertEquals(1, result.size());
     assertEquals("This is one result", result.get(0));
   }
 
   @Test
   public void lineFeedBetweenQuotesIsIncludedInResult() {
-    List<String> result = parser.parseValue("\"This is one result\n with two lines\"" + delimiter + "\"This is\n another one\"");
+    List<String> result =
+        deserializer.deserializeValue("\"This is one result\n with two lines\"" + delimiter + "\"This is\n another one\"");
     assertEquals(2, result.size());
     assertEquals("This is one result\n with two lines", result.get(0));
     assertEquals("This is\n another one", result.get(1));
   }
 
   @Test
-  public void lineFeedOutsideCurlyBracesEndsParsing() {
-    List<String> result = parser.parseValue("{\"key\": \"value1\"}" + "\n" + delimiter + "{\"key\": \"value2\"}");
+  public void lineFeedOutsideCurlyBracesEndsDeserializing() {
+    List<String> result = deserializer.deserializeValue("{\"key\": \"value1\"}" + "\n" + delimiter + "{\"key\": \"value2\"}");
     assertEquals(1, result.size());
     assertEquals("{\"key\": \"value1\"}", result.get(0));
   }
 
   @Test
   public void lineFeedBetweenCurlyBracesIsIncludedInResult() {
-    List<String> result = parser.parseValue(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS + delimiter + TWO_LEVEL_OBJECT_WITH_LINE_FEEDS);
+    List<String> result =
+        deserializer.deserializeValue(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS + delimiter + TWO_LEVEL_OBJECT_WITH_LINE_FEEDS);
     assertEquals(2, result.size());
     assertEquals(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS, result.get(0));
     assertEquals(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS, result.get(1));
@@ -139,8 +165,8 @@ public class ArrayHeaderAttributeParserTest {
 
   @Test
   public void carriageReturnOutsideQuotesIsOmitted() {
-    List<String> result = parser
-        .parseValue("\"This is one result\"" + "\r" + delimiter + "\"This is another one\"");
+    List<String> result = deserializer
+        .deserializeValue("\"This is one result\"" + "\r" + delimiter + "\"This is another one\"");
     assertEquals(2, result.size());
     assertEquals("This is one result", result.get(0));
     assertEquals("This is another one", result.get(1));
@@ -149,7 +175,8 @@ public class ArrayHeaderAttributeParserTest {
   @Test
   public void carriageReturnBetweenQuotesIsIncludedInResult() {
     List<String> result =
-        parser.parseValue("\"This is one result\r with carriage\r returns\"" + delimiter + "\"This is\r another one\"");
+        deserializer
+            .deserializeValue("\"This is one result\r with carriage\r returns\"" + delimiter + "\"This is\r another one\"");
     assertEquals(2, result.size());
     assertEquals("This is one result\r with carriage\r returns", result.get(0));
     assertEquals("This is\r another one", result.get(1));
@@ -157,14 +184,14 @@ public class ArrayHeaderAttributeParserTest {
 
   @Test
   public void carriageReturnBetweenCurlyBracesIsIncludedInResult() {
-    List<String> result = parser.parseValue("{\"key\":\r \"value1\"}" + delimiter + "{\"key\":\r \"value2\"}");
+    List<String> result = deserializer.deserializeValue("{\"key\":\r \"value1\"}" + delimiter + "{\"key\":\r \"value2\"}");
     assertEquals(2, result.size());
     assertEquals("{\"key\":\r \"value1\"}", result.get(0));
     assertEquals("{\"key\":\r \"value2\"}", result.get(1));
   }
 
   @Test
-  public void parseValidObjectArrayHeaders() {
+  public void deserializeValidObjectArrayHeaders() {
     listOfArrayHeaderValues.add("{\"type\": \"username\", \"value\": \"testvalue\"}" +
         delimiter +
         "{\"type\": \"password\", \"value\": \"testvalue; second\"}");
@@ -173,7 +200,7 @@ public class ArrayHeaderAttributeParserTest {
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS + delimiter + TWO_LEVEL_OBJECT_WITH_LINE_FEEDS);
     listOfArrayHeaderValues.add("\"" + TWO_LEVEL_OBJECT + delimiter + TWO_LEVEL_OBJECT + "\"");
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES + delimiter + TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(10, result.size());
     assertEquals(TWO_LEVEL_OBJECT, result.get(4));
     assertEquals(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS, result.get(5));
@@ -182,14 +209,14 @@ public class ArrayHeaderAttributeParserTest {
   }
 
   @Test
-  public void parseValidArrayHeaders() {
+  public void deserializeValidArrayHeaders() {
     listOfArrayHeaderValues.add("123" + delimiter + "456" + delimiter + "789");
     listOfArrayHeaderValues.add("1.213" + delimiter + "456" + delimiter + "\"7,123.213\"");
     listOfArrayHeaderValues.add("first" + delimiter + "second" + delimiter + "third");
     listOfArrayHeaderValues.add("\"commas, between, quotes\"" + delimiter + "\"semicolon; between; quotes\"");
     listOfArrayHeaderValues.add("1985-04-12T23:20:50.52Z" + delimiter + "\"1996-12-19T16:39:57-08:00\"" + delimiter
         + "1937-01-01T12:00:27.87+00:20");
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(14, result.size());
     assertEquals(2, result.stream().filter(v -> "456".equals(v)).count());
     assertEquals("commas, between, quotes", result.get(9));
@@ -199,13 +226,13 @@ public class ArrayHeaderAttributeParserTest {
   }
 
   @Test
-  public void parseMalformedObjectArrayHeaders() {
+  public void deserializeMalformedObjectArrayHeaders() {
     listOfArrayHeaderValues.add("{\"type\": \"username\"{" + delimiter + "\"testvalue: second\"}");
     listOfArrayHeaderValues.add("{\"type\": }\"username\"" + delimiter + "\"testvalue: second\"}");
     listOfArrayHeaderValues.add("{{{{ }}");
     listOfArrayHeaderValues.add("{{ }}}}");
     listOfArrayHeaderValues.add("{{{{ " + delimiter + "}}");
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(6, result.size());
     assertEquals("{\"type\": \"username\"{" + delimiter + "\"testvalue: second\"}", result.get(0));
     assertEquals("{\"type\": }username", result.get(1));

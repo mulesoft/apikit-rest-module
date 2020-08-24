@@ -16,24 +16,24 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.NONE;
 
 /**
- * Parser of array header attributes based on the strategy defined by {@link ArrayHeaderParsingStrategy}
+ * Deserializer of array header attributes based on the strategy defined by {@link ArrayHeaderDeserializingStrategy}
  */
-public class ArrayHeaderAttributeParser extends BaseAttributeParser<ArrayHeaderParsingStrategy> {
+public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer<ArrayHeaderDeserializingStrategy> {
 
   private static final char DOUBLE_QUOTES = '"';
   private static final char OPENING_CURLY_BRACE = '{';
   private static final char CLOSING_CURLY_BRACE = '}';
 
-  public ArrayHeaderAttributeParser(ArrayHeaderParsingStrategy parsingStrategy) {
-    super(parsingStrategy);
+  public ArrayHeaderAttributeDeserializer(ArrayHeaderDeserializingStrategy deserializingStrategy) {
+    super(deserializingStrategy);
   }
 
   @Override
-  public List<String> parseValue(String attributeValue) {
+  public List<String> deserializeValue(String attributeValue) {
     if (isBlank(attributeValue)) {
       return emptyList();
     }
-    ArrayHeaderDelimiter strategyDelimiter = parsingStrategy.getDelimiter();
+    ArrayHeaderDelimiter strategyDelimiter = deserializingStrategy.getDelimiter();
     if (NONE.equals(strategyDelimiter)) {
       return asList(attributeValue);
     }

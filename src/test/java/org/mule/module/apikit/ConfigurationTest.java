@@ -9,16 +9,16 @@ package org.mule.module.apikit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
-import org.mule.module.apikit.parsing.ArrayHeaderParsingStrategy;
-import org.mule.module.apikit.parsing.AttributesParsingStrategies;
-import org.mule.module.apikit.parsing.NoneAttributeParsingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.parsing.ArrayHeaderDeserializingStrategy;
+import org.mule.module.apikit.parsing.AttributesDeserializingStrategies;
+import org.mule.module.apikit.parsing.NoneAttributeDeserializingStrategy;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier.ARRAY_HEADER_PARSING_STRATEGY;
-import static org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier.NONE_STRATEGY;
+import static org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
+import static org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier.NONE_DESERIALIZING_STRATEGY;
 
 public class ConfigurationTest {
 
@@ -27,43 +27,47 @@ public class ConfigurationTest {
 
   @Test
   public void getAttributeParsingStrategyByIdentifier() {
-    AttributesParsingStrategies strategies = new AttributesParsingStrategies();
-    strategies.setAttributesParsingStrategies(asList(new ArrayHeaderParsingStrategy(), new NoneAttributeParsingStrategy()));
+    AttributesDeserializingStrategies strategies = new AttributesDeserializingStrategies();
+    strategies.setAttributesDeserializingStrategies(asList(new ArrayHeaderDeserializingStrategy(),
+                                                           new NoneAttributeDeserializingStrategy()));
     Configuration configuration = new Configuration();
-    configuration.setAttributesParsingStrategies(strategies);
-    AttributesParsingStrategy parsingStrategy = configuration.getAttributesParsingStrategy(ARRAY_HEADER_PARSING_STRATEGY);
-    assertNotNull(parsingStrategy);
-    assertTrue(ArrayHeaderParsingStrategy.class.isInstance(parsingStrategy));
-    parsingStrategy = configuration.getAttributesParsingStrategy(NONE_STRATEGY);
-    assertNotNull(parsingStrategy);
-    assertTrue(NoneAttributeParsingStrategy.class.isInstance(parsingStrategy));
+    configuration.setAttributesDeserializingStrategies(strategies);
+    AttributesDeserializingStrategy deserializingStrategy =
+        configuration.getAttributesDeserializingStrategy(ARRAY_HEADER_DESERIALIZING_STRATEGY);
+    assertNotNull(deserializingStrategy);
+    assertTrue(ArrayHeaderDeserializingStrategy.class.isInstance(deserializingStrategy));
+    deserializingStrategy = configuration.getAttributesDeserializingStrategy(NONE_DESERIALIZING_STRATEGY);
+    assertNotNull(deserializingStrategy);
+    assertTrue(NoneAttributeDeserializingStrategy.class.isInstance(deserializingStrategy));
   }
 
   @Test
   public void getDummyStrategyIfNoStrategies() {
     Configuration configuration = new Configuration();
-    configuration.setAttributesParsingStrategies(new AttributesParsingStrategies());
-    AttributesParsingStrategy parsingStrategy = configuration.getAttributesParsingStrategy(ARRAY_HEADER_PARSING_STRATEGY);
+    configuration.setAttributesDeserializingStrategies(new AttributesDeserializingStrategies());
+    AttributesDeserializingStrategy parsingStrategy =
+        configuration.getAttributesDeserializingStrategy(ARRAY_HEADER_DESERIALIZING_STRATEGY);
     assertNotNull(parsingStrategy);
-    assertTrue(NoneAttributeParsingStrategy.class.isInstance(parsingStrategy));
+    assertTrue(NoneAttributeDeserializingStrategy.class.isInstance(parsingStrategy));
   }
 
   @Test
   public void getDummyStrategyIfNullStrategies() {
     Configuration configuration = new Configuration();
-    AttributesParsingStrategy parsingStrategy = configuration.getAttributesParsingStrategy(ARRAY_HEADER_PARSING_STRATEGY);
+    AttributesDeserializingStrategy parsingStrategy =
+        configuration.getAttributesDeserializingStrategy(ARRAY_HEADER_DESERIALIZING_STRATEGY);
     assertNotNull(parsingStrategy);
-    assertTrue(NoneAttributeParsingStrategy.class.isInstance(parsingStrategy));
+    assertTrue(NoneAttributeDeserializingStrategy.class.isInstance(parsingStrategy));
   }
 
   @Test
   public void exceptionIfStrategyDoesNotExist() {
     expectedException.expect(RuntimeException.class);
-    expectedException.expectMessage("No parser found for the parsing strategy identifier provided.");
-    AttributesParsingStrategies strategies = new AttributesParsingStrategies();
-    strategies.setAttributesParsingStrategies(asList(new NoneAttributeParsingStrategy()));
+    expectedException.expectMessage("No deserializer found for the strategy identifier provided.");
+    AttributesDeserializingStrategies strategies = new AttributesDeserializingStrategies();
+    strategies.setAttributesDeserializingStrategies(asList(new NoneAttributeDeserializingStrategy()));
     Configuration configuration = new Configuration();
-    configuration.setAttributesParsingStrategies(strategies);
-    configuration.getAttributesParsingStrategy(ARRAY_HEADER_PARSING_STRATEGY);
+    configuration.setAttributesDeserializingStrategies(strategies);
+    configuration.getAttributesDeserializingStrategy(ARRAY_HEADER_DESERIALIZING_STRATEGY);
   }
 }

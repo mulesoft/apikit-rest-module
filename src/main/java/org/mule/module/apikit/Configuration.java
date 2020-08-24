@@ -16,14 +16,14 @@ import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier;
 import org.mule.module.apikit.api.spi.RouterService;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
-import org.mule.module.apikit.parsing.AttributesParsingStrategies;
-import org.mule.module.apikit.parsing.NoneAttributeParsingStrategy;
+import org.mule.module.apikit.parsing.AttributesDeserializingStrategies;
+import org.mule.module.apikit.parsing.NoneAttributeDeserializingStrategy;
 import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoader;
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
@@ -76,7 +76,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   private String outboundHeadersMapName;
   private String httpStatusVarName;
   private FlowMappings flowMappings = new FlowMappings();
-  private AttributesParsingStrategies attributesParsingStrategies = new AttributesParsingStrategies();
+  private AttributesDeserializingStrategies attributesDeserializingStrategies = new AttributesDeserializingStrategies();
 
   private LoadingCache<String, JsonSchema> jsonSchemaCache;
   private LoadingCache<String, Schema> xmlSchemaCache;
@@ -188,13 +188,14 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   }
 
   @Override
-  public AttributesParsingStrategy getAttributesParsingStrategy(AttributesParsingStrategyIdentifier identifier) {
-    if (attributesParsingStrategies == null || isEmpty(attributesParsingStrategies.getAttributesParsingStrategies())) {
-      return new NoneAttributeParsingStrategy();
+  public AttributesDeserializingStrategy getAttributesDeserializingStrategy(AttributesDeserializingStrategyIdentifier identifier) {
+    if (attributesDeserializingStrategies == null
+        || isEmpty(attributesDeserializingStrategies.getAttributesDeserializingStrategies())) {
+      return new NoneAttributeDeserializingStrategy();
     }
-    return attributesParsingStrategies.getAttributesParsingStrategies().stream()
+    return attributesDeserializingStrategies.getAttributesDeserializingStrategies().stream()
         .filter(ps -> ps.getStrategyIdentifier().equals(identifier))
-        .findFirst().orElseThrow(() -> new RuntimeException("No parser found for the parsing strategy identifier provided."));
+        .findFirst().orElseThrow(() -> new RuntimeException("No deserializer found for the strategy identifier provided."));
   }
 
   public void setHeadersStrictValidation(boolean headersStrictValidation) {
@@ -392,11 +393,11 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     scheduler.shutdownNow();
   }
 
-  public AttributesParsingStrategies getAttributesParsingStrategies() {
-    return attributesParsingStrategies;
+  public AttributesDeserializingStrategies getAttributesDeserializingStrategies() {
+    return attributesDeserializingStrategies;
   }
 
-  public void setAttributesParsingStrategies(AttributesParsingStrategies attributesParsingStrategies) {
-    this.attributesParsingStrategies = attributesParsingStrategies;
+  public void setAttributesDeserializingStrategies(AttributesDeserializingStrategies attributesDeserializingStrategies) {
+    this.attributesDeserializingStrategies = attributesDeserializingStrategies;
   }
 }

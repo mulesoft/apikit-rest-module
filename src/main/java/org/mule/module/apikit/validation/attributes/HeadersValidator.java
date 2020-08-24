@@ -12,10 +12,10 @@ import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
 import org.mule.module.apikit.exception.NotAcceptableException;
-import org.mule.module.apikit.parsing.AttributeParser;
-import org.mule.module.apikit.parsing.AttributesParserFactory;
+import org.mule.module.apikit.parsing.AttributeDeserializer;
+import org.mule.module.apikit.parsing.AttributesDeserializerFactory;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.ArrayList;
@@ -50,17 +50,17 @@ public class HeadersValidator {
 
   public MultiMap<String, String> validateAndAddDefaults(MultiMap<String, String> incomingHeaders,
                                                          boolean headersStrictValidation,
-                                                         AttributesParsingStrategy attributesParsingStrategy)
+                                                         AttributesDeserializingStrategy attributesDeserializingStrategy)
       throws InvalidHeaderException, NotAcceptableException {
     MultiMap<String, String> headersWithDefaults =
-        analyseRequestHeaders(incomingHeaders, headersStrictValidation, attributesParsingStrategy);
+        analyseRequestHeaders(incomingHeaders, headersStrictValidation, attributesDeserializingStrategy);
     analyseAcceptHeader(headersWithDefaults);
     return headersWithDefaults;
   }
 
   private MultiMap<String, String> analyseRequestHeaders(MultiMap<String, String> incomingHeaders,
                                                          boolean headersStrictValidation,
-                                                         AttributesParsingStrategy attributesParsingStrategy)
+                                                         AttributesDeserializingStrategy attributesDeserializingStrategy)
       throws InvalidHeaderException {
     if (headersStrictValidation) {
       validateHeadersStrictly(incomingHeaders);
@@ -84,7 +84,7 @@ public class HeadersValidator {
           copyIncomingHeaders.put(ramlHeader, ramlType.getDefaultValue());
         }
         if (!values.isEmpty() && ramlType.isArray()) {
-          values = parseDelimitedValues(values, attributesParsingStrategy);
+          values = parseDelimitedValues(values, attributesDeserializingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
           copyIncomingHeaders.removeAll(ramlHeader);
           copyIncomingHeaders.put(ramlHeader, values);
@@ -157,9 +157,11 @@ public class HeadersValidator {
     }
   }
 
-  private List<String> parseDelimitedValues(List<String> listOfCsv, AttributesParsingStrategy attributesParsingStrategy) {
-    AttributeParser parser = AttributesParserFactory.INSTANCE.buildParserByStrategy(attributesParsingStrategy);
-    return parser.parseListOfValues(listOfCsv);
+  private List<String> parseDelimitedValues(List<String> listOfCsv,
+                                            AttributesDeserializingStrategy attributesDeserializingStrategy) {
+    AttributeDeserializer parser =
+        AttributesDeserializerFactory.INSTANCE.getDeserializerByStrategy(attributesDeserializingStrategy);
+    return parser.deserializeListOfValues(listOfCsv);
   }
 
   private void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {

@@ -11,7 +11,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.NONE;
-import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.SEMICOLON;
 
 public class ArrayHeaderDelimiterTypeConverterTest {
 
@@ -20,12 +19,11 @@ public class ArrayHeaderDelimiterTypeConverterTest {
   @Test
   public void convertExistingDelimitersSuccessfully() {
     assertEquals(COMMA, converter.convert(","));
-    assertEquals(SEMICOLON, converter.convert(";"));
+    assertEquals(NONE, converter.convert(""));
   }
 
   @Test
   public void convertingInvalidDelimiterReturnsNone() {
-    assertEquals(NONE, converter.convert(""));
     assertEquals(NONE, converter.convert("a"));
     assertEquals(NONE, converter.convert("&"));
     assertEquals(NONE, converter.convert("this is a long delimiter"));

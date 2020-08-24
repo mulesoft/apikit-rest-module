@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class DummyAttributeParserTest {
+public class DummyAttributeDeserializerTest {
 
   private final static String DUMMY_DELIMITER = ",";
 
@@ -32,19 +32,19 @@ public class DummyAttributeParserTest {
       "{\"color\": \"RED\", \"manufacturer\": {\"brand\": \"Ferrari\"}, \"reseller\": {\"name\": \"YourCar\"}}";
   private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + TWO_LEVEL_OBJECT + "\"";
 
-  private DummyAttributeParser parser;
+  private DummyAttributeDeserializer deserializer;
   private List<String> listOfArrayHeaderValues;
 
 
   @Before
   public void init() {
-    parser = new DummyAttributeParser(new NoneAttributeParsingStrategy());
+    deserializer = new DummyAttributeDeserializer(new NoneAttributeDeserializingStrategy());
     listOfArrayHeaderValues = new ArrayList<>();
   }
 
   @Test
-  public void parseEmptyArrayHeader() {
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+  public void deserializeEmptyArrayHeader() {
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertNotNull(result);
     assertEquals(0, result.size());
   }
@@ -54,7 +54,7 @@ public class DummyAttributeParserTest {
     listOfArrayHeaderValues.add("   ");
     listOfArrayHeaderValues.add("" + DUMMY_DELIMITER + " ");
     listOfArrayHeaderValues.add("\"\"" + DUMMY_DELIMITER + "\"  \"");
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertNotNull(result);
     assertEquals(3, result.size());
     assertEquals("   ", result.get(0));
@@ -64,7 +64,7 @@ public class DummyAttributeParserTest {
 
   @Test
   public void testSingleValueBetweenEnclosingQuotes() {
-    List<String> result = parser.parseValue("\"This is a unique value\"");
+    List<String> result = deserializer.deserializeValue("\"This is a unique value\"");
     assertNotNull(result);
     assertEquals(1, result.size());
     assertEquals("\"This is a unique value\"", result.get(0));
@@ -72,45 +72,46 @@ public class DummyAttributeParserTest {
 
   @Test
   public void testValueWithDelimitersBetweenEnclosingQuotes() {
-    List<String> result = parser.parseValue("\"This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value\"");
+    List<String> result =
+        deserializer.deserializeValue("\"This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value\"");
     assertEquals(1, result.size());
     assertEquals("\"This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value\"", result.get(0));
   }
 
   @Test
   public void allowDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
-    List<String> result = parser.parseValue("\"\"\"\"\"\"\"");
+    List<String> result = deserializer.deserializeValue("\"\"\"\"\"\"\"");
     assertEquals(1, result.size());
     assertEquals("\"\"\"\"\"\"\"", result.get(0));
   }
 
   @Test
-  public void parseObjectBetweenQuotes() {
+  public void deserializeObjectBetweenQuotes() {
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(1, result.size());
     assertEquals(TWO_LEVEL_OBJECT_BETWEEN_QUOTES, result.get(0));
   }
 
   @Test
-  public void parseValidObjectArrayHeaders() {
+  public void deserializeValidObjectArrayHeaders() {
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT + DUMMY_DELIMITER + TWO_LEVEL_OBJECT);
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_WITH_RETURNS + DUMMY_DELIMITER + TWO_LEVEL_OBJECT_WITH_RETURNS);
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(2, result.size());
     assertEquals(TWO_LEVEL_OBJECT + DUMMY_DELIMITER + TWO_LEVEL_OBJECT, result.get(0));
     assertEquals(TWO_LEVEL_OBJECT_WITH_RETURNS + DUMMY_DELIMITER + TWO_LEVEL_OBJECT_WITH_RETURNS, result.get(1));
   }
 
   @Test
-  public void parseValidArrayHeaders() {
+  public void deserializeValidArrayHeaders() {
     listOfArrayHeaderValues.add("123" + DUMMY_DELIMITER + "456" + DUMMY_DELIMITER + "789");
     listOfArrayHeaderValues.add("1.213" + DUMMY_DELIMITER + "456" + DUMMY_DELIMITER + "\"7,123.213\"");
     listOfArrayHeaderValues.add("first" + DUMMY_DELIMITER + "second" + DUMMY_DELIMITER + "third");
     listOfArrayHeaderValues.add("\"commas, between, quotes\"" + DUMMY_DELIMITER + "\"semicolon; between; quotes\"");
     listOfArrayHeaderValues.add("1985-04-12T23:20:50.52Z" + DUMMY_DELIMITER + "\"1996-12-19T16:39:57-08:00\"" + DUMMY_DELIMITER
         + "1937-01-01T12:00:27.87+00:20");
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals("123" + DUMMY_DELIMITER + "456" + DUMMY_DELIMITER + "789", result.get(0));
     assertEquals("\"commas, between, quotes\"" + DUMMY_DELIMITER + "\"semicolon; between; quotes\"", result.get(3));
     assertEquals("1985-04-12T23:20:50.52Z" + DUMMY_DELIMITER + "\"1996-12-19T16:39:57-08:00\"" + DUMMY_DELIMITER
@@ -118,11 +119,11 @@ public class DummyAttributeParserTest {
   }
 
   @Test
-  public void parseMalformedObjectArrayHeaders() {
+  public void deserializeMalformedObjectArrayHeaders() {
     listOfArrayHeaderValues.add("{\"type\": \"username\"{" + DUMMY_DELIMITER + "\"testvalue: second\"}");
     listOfArrayHeaderValues.add("{{ }}}}");
     listOfArrayHeaderValues.add("{{{{ " + DUMMY_DELIMITER + "}}");
-    List<String> result = parser.parseListOfValues(listOfArrayHeaderValues);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(3, result.size());
     assertEquals("{\"type\": \"username\"{" + DUMMY_DELIMITER + "\"testvalue: second\"}", result.get(0));
     assertEquals("{{ }}}}", result.get(1));

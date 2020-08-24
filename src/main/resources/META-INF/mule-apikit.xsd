@@ -5,10 +5,13 @@
             targetNamespace="http://www.mulesoft.org/schema/mule/mule-apikit"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-current.xsd" />
-    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core" schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd" />
-    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc" schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/current/mule-schemadoc.xsd" />
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.springframework.org/schema/beans"
+                schemaLocation="http://www.springframework.org/schema/beans/spring-beans-current.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
+                schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc"
+                schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/current/mule-schemadoc.xsd"/>
 
     <xsd:annotation>
         <xsd:documentation>
@@ -32,10 +35,10 @@
         <xsd:sequence>
             <xsd:element name="flow-mapping" maxOccurs="unbounded" minOccurs="0">
                 <xsd:complexType>
-                    <xsd:attribute name="resource" use="required" type="mule:nonBlankString" />
-                    <xsd:attribute name="action" use="required" type="mule:nonBlankString" />
-                    <xsd:attribute name="content-type" use="optional" type="mule:nonBlankString" />
-                    <xsd:attribute name="flow-ref" use="required" type="mule:nonBlankString" />
+                    <xsd:attribute name="resource" use="required" type="mule:nonBlankString"/>
+                    <xsd:attribute name="action" use="required" type="mule:nonBlankString"/>
+                    <xsd:attribute name="content-type" use="optional" type="mule:nonBlankString"/>
+                    <xsd:attribute name="flow-ref" use="required" type="mule:nonBlankString"/>
                 </xsd:complexType>
             </xsd:element>
         </xsd:sequence>
@@ -48,7 +51,8 @@
                     <xsd:element type="flow-mappings" name="flow-mappings" maxOccurs="1" minOccurs="0"/>
                 </xsd:sequence>
                 <xsd:sequence>
-                    <xsd:element type="parsing-strategies" name="parsing-strategies" maxOccurs="1"
+                    <xsd:element type="attributes-deserializing-strategies" name="attributes-deserializing-strategies"
+                                 maxOccurs="1"
                                  minOccurs="0"/>
                 </xsd:sequence>
                 <xsd:attribute name="name" type="mule:nonBlankString" use="optional"/>
@@ -100,7 +104,7 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:simpleType name="parserType" final="restriction" >
+    <xsd:simpleType name="parserType" final="restriction">
         <xsd:restriction base="mule:nonBlankString">
             <xsd:enumeration value="AMF"/>
             <xsd:enumeration value="AUTO"/>
@@ -152,9 +156,9 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="parsing-strategies">
+    <xsd:complexType name="attributes-deserializing-strategies">
         <xsd:sequence>
-            <xsd:element name="array-header-parsing-strategy" maxOccurs="1" minOccurs="0">
+            <xsd:element name="array-header-deserializing-strategy" maxOccurs="1" minOccurs="0">
                 <xsd:complexType>
                     <xsd:attribute name="delimiter" use="required" type="headerDelimiter"/>
                 </xsd:complexType>
@@ -164,8 +168,8 @@
 
     <xsd:simpleType name="headerDelimiter" final="restriction">
         <xsd:restriction base="mule:nonBlankString">
-            <xsd:enumeration value="COMMA"/>
-            <xsd:enumeration value="SEMICOLON"/>
+            <xsd:enumeration value=""/>
+            <xsd:enumeration value=","/>
         </xsd:restriction>
     </xsd:simpleType>
 

@@ -6,17 +6,17 @@
  */
 package org.mule.module.apikit.parsing;
 
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategy;
-import org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
-import static org.mule.module.apikit.api.parsing.AttributesParsingStrategyIdentifier.ARRAY_HEADER_PARSING_STRATEGY;
+import static org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
 import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.NONE;
 
 /**
  * Configuration that defines the delimiter character used for separate array header values.
  */
-public class ArrayHeaderParsingStrategy implements AttributesParsingStrategy {
+public class ArrayHeaderDeserializingStrategy implements AttributesDeserializingStrategy {
 
   /**
    * Delimiter character used for separate array header values.
@@ -33,7 +33,7 @@ public class ArrayHeaderParsingStrategy implements AttributesParsingStrategy {
   }
 
   @Override
-  public AttributesParsingStrategyIdentifier getStrategyIdentifier() {
-    return ARRAY_HEADER_PARSING_STRATEGY;
+  public AttributesDeserializingStrategyIdentifier getStrategyIdentifier() {
+    return ARRAY_HEADER_DESERIALIZING_STRATEGY;
   }
 }

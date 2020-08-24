@@ -7,10 +7,9 @@
 package org.mule.module.apikit.api.parsing;
 
 /**
- * Attribute parsing strategies set by configuration will implement this interface.
+ * Set of identifiers for attribute parsing strategies.
  */
-public interface AttributesParsingStrategy {
-
-  AttributesParsingStrategyIdentifier getStrategyIdentifier();
-
+public enum AttributesDeserializingStrategyIdentifier {
+  NONE_DESERIALIZING_STRATEGY,
+  ARRAY_HEADER_DESERIALIZING_STRATEGY
 }
