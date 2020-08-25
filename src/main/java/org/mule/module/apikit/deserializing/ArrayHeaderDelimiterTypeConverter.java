@@ -9,7 +9,6 @@ package org.mule.module.apikit.deserializing;
 import org.mule.runtime.dsl.api.component.TypeConverter;
 
 import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.NONE;
 
 /**
  * Maps the String delimiter set in configuration with the corresponding enum value
@@ -18,6 +17,9 @@ public class ArrayHeaderDelimiterTypeConverter implements TypeConverter<String, 
 
   @Override
   public ArrayHeaderDelimiter convert(String s) {
-    return COMMA.name().equals(s) ? COMMA : NONE;
+    if (COMMA.getDelimiterValue().equals(s)) {
+      return COMMA;
+    }
+    throw new RuntimeException("Delimiter value not supported.");
   }
 }

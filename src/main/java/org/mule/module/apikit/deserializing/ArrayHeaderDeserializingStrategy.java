@@ -11,7 +11,6 @@ import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategyI
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 import static org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.NONE;
 
 /**
  * Configuration that defines the delimiter character used for separate array header values.
@@ -22,7 +21,7 @@ public class ArrayHeaderDeserializingStrategy implements AttributesDeserializing
    * Delimiter character used for separate array header values.
    */
   @Parameter
-  private ArrayHeaderDelimiter delimiter = NONE;
+  private ArrayHeaderDelimiter delimiter;
 
   public ArrayHeaderDelimiter getDelimiter() {
     return delimiter;

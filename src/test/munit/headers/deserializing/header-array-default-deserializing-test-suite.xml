@@ -26,11 +26,11 @@
                     <munit:parameter propertyName="apikit.config" value="default-deserializing-config"/>
                 </munit:parameters>
             </munit:parameterization>
-            <munit:parameterization name="RAML10_NONE_STRATEGY">
+            <munit:parameterization name="NO_DELIMITER">
                 <munit:parameters>
                     <munit:parameter propertyName="api.version" value="RAML10"/>
                     <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
-                    <munit:parameter propertyName="apikit.config" value="none-delimiter-deserializing-config"/>
+                    <munit:parameter propertyName="apikit.config" value="no-delimiter-config"/>
                 </munit:parameters>
             </munit:parameterization>
         </munit:parameterizations>

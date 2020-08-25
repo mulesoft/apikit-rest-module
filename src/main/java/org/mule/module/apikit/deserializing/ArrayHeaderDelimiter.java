@@ -10,7 +10,6 @@ package org.mule.module.apikit.deserializing;
  * Set of values that are allowed as delimiters for HTTP array header values.
  */
 public enum ArrayHeaderDelimiter {
-  NONE(""),
   COMMA(",");
 
   private final String delimiter;

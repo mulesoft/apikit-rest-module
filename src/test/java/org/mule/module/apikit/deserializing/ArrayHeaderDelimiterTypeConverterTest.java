@@ -6,27 +6,29 @@
  */
 package org.mule.module.apikit.deserializing;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.NONE;
 
 public class ArrayHeaderDelimiterTypeConverterTest {
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   ArrayHeaderDelimiterTypeConverter converter = new ArrayHeaderDelimiterTypeConverter();
 
   @Test
   public void convertExistingDelimitersSuccessfully() {
-    assertEquals(COMMA, converter.convert("COMMA"));
-    assertEquals(NONE, converter.convert("NONE"));
+    assertEquals(COMMA, converter.convert(","));
   }
 
   @Test
   public void convertingInvalidDelimiterReturnsNone() {
-    assertEquals(NONE, converter.convert("SEMICOLON"));
-    assertEquals(NONE, converter.convert("a"));
-    assertEquals(NONE, converter.convert("&"));
-    assertEquals(NONE, converter.convert("this is a long delimiter"));
+    expectedException.expect(RuntimeException.class);
+    expectedException.expectMessage("Delimiter value not supported.");
+    converter.convert(";");
   }
 }

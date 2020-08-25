@@ -9,11 +9,9 @@ package org.mule.module.apikit.deserializing;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.NONE;
 
 /**
  * Deserializer of array header attributes based on the strategy defined by {@link ArrayHeaderDeserializingStrategy}
@@ -33,11 +31,7 @@ public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer<
     if (isBlank(attributeValue)) {
       return emptyList();
     }
-    ArrayHeaderDelimiter strategyDelimiter = deserializingStrategy.getDelimiter();
-    if (NONE.equals(strategyDelimiter)) {
-      return asList(attributeValue);
-    }
-    final char delimiter = strategyDelimiter.getDelimiterValue().charAt(0);
+    final char delimiter = deserializingStrategy.getDelimiter().getDelimiterValue().charAt(0);
     char[] chars = attributeValue.toCharArray();
     StringBuffer curVal = new StringBuffer();
     boolean inQuotes = false;

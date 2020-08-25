@@ -158,9 +158,9 @@
 
     <xsd:complexType name="attributes-deserializing-strategies">
         <xsd:sequence>
-            <xsd:element name="array-header-deserializing-strategy" maxOccurs="1" minOccurs="0">
+            <xsd:element name="array-header-deserializing-strategy" maxOccurs="1" minOccurs="1">
                 <xsd:complexType>
-                    <xsd:attribute name="delimiter" use="required" type="headerDelimiter"/>
+                    <xsd:attribute name="delimiter" type="headerDelimiter" use="required"/>
                 </xsd:complexType>
             </xsd:element>
         </xsd:sequence>
@@ -168,8 +168,7 @@
 
     <xsd:simpleType name="headerDelimiter" final="restriction">
         <xsd:restriction base="mule:nonBlankString">
-            <xsd:enumeration value="NONE"/>
-            <xsd:enumeration value="COMMA"/>
+            <xsd:enumeration value=","/>
         </xsd:restriction>
     </xsd:simpleType>
 

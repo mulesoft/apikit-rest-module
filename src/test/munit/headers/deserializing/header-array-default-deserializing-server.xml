@@ -12,11 +12,9 @@
     <apikit:config name="default-deserializing-config" raml="${api.location}"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
-    <apikit:config name="none-delimiter-deserializing-config" raml="${api.location}"
+    <apikit:config name="no-delimiter-config" raml="${api.location}"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
-        <apikit:attributes-deserializing-strategies>
-            <apikit:array-header-deserializing-strategy delimiter="NONE"/>
-        </apikit:attributes-deserializing-strategies>
+        <apikit:attributes-deserializing-strategies/>
     </apikit:config>
 
     <flow name="headers-default-deserializing-config-validation-main">

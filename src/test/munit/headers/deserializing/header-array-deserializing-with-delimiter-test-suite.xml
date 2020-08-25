@@ -14,8 +14,7 @@
         <munit:parameterizations>
             <munit:parameterization name="COMMA_DELIMITER">
                 <munit:parameters>
-                    <munit:parameter propertyName="deserializer.delimiter" value="COMMA"/>
-                    <munit:parameter propertyName="delimiter.value" value=","/>
+                    <munit:parameter propertyName="deserializer.delimiter" value=","/>
                 </munit:parameters>
             </munit:parameterization>
         </munit:parameterizations>
@@ -114,7 +113,7 @@
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-object-header">
                 <http:headers>#[
@@ -151,7 +150,7 @@
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-object-header">
                 <http:headers>#[
@@ -191,7 +190,7 @@
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-object-header">
                 <http:headers>#[
@@ -286,7 +285,7 @@
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-string-header">
                 <http:headers>#[
@@ -324,7 +323,7 @@
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-string-header">
                 <http:headers>#[
@@ -363,7 +362,7 @@
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-string-header">
                 <http:headers>#[
@@ -432,7 +431,7 @@
             <munit:enable-flow-source value="get:\test-array-number-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-number-header">
                 <http:headers>#[
@@ -470,7 +469,7 @@
             <munit:enable-flow-source value="get:\test-array-number-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-number-header">
                 <http:headers>#[
@@ -543,7 +542,7 @@
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-enum-header">
                 <http:headers>#[
@@ -581,7 +580,7 @@
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-enum-header">
                 <http:headers>#[
@@ -649,7 +648,7 @@
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-enum-header">
                 <http:headers>#[
@@ -744,7 +743,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -784,7 +783,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -824,7 +823,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -892,7 +891,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -986,7 +985,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
@@ -1025,7 +1024,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
@@ -1086,7 +1085,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
@@ -1121,7 +1120,7 @@
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${delimiter.value}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
