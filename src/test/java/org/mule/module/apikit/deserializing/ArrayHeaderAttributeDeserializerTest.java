@@ -130,12 +130,13 @@ public class ArrayHeaderAttributeDeserializerTest {
   }
 
   @Test
-  public void lineFeedOutsideQuotesEndsDeserializing() {
+  public void lineFeedOutsideQuotesIsIgnored() {
     List<String> result = deserializer
         .deserializeValue("\"This is one result\"" + "\n" + delimiter
             + "\"This is in a different line and should not be in result\"");
-    assertEquals(1, result.size());
+    assertEquals(2, result.size());
     assertEquals("This is one result", result.get(0));
+    assertEquals("This is in a different line and should not be in result", result.get(1));
   }
 
   @Test
@@ -148,10 +149,11 @@ public class ArrayHeaderAttributeDeserializerTest {
   }
 
   @Test
-  public void lineFeedOutsideCurlyBracesEndsDeserializing() {
+  public void lineFeedOutsideCurlyBracesIsIgnored() {
     List<String> result = deserializer.deserializeValue("{\"key\": \"value1\"}" + "\n" + delimiter + "{\"key\": \"value2\"}");
-    assertEquals(1, result.size());
+    assertEquals(2, result.size());
     assertEquals("{\"key\": \"value1\"}", result.get(0));
+    assertEquals("{\"key\": \"value2\"}", result.get(1));
   }
 
   @Test
@@ -164,7 +166,7 @@ public class ArrayHeaderAttributeDeserializerTest {
   }
 
   @Test
-  public void carriageReturnOutsideQuotesIsOmitted() {
+  public void carriageReturnOutsideQuotesIsIgnored() {
     List<String> result = deserializer
         .deserializeValue("\"This is one result\"" + "\r" + delimiter + "\"This is another one\"");
     assertEquals(2, result.size());

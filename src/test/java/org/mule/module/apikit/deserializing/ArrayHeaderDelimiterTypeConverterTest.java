@@ -18,12 +18,13 @@ public class ArrayHeaderDelimiterTypeConverterTest {
 
   @Test
   public void convertExistingDelimitersSuccessfully() {
-    assertEquals(COMMA, converter.convert(","));
-    assertEquals(NONE, converter.convert(""));
+    assertEquals(COMMA, converter.convert("COMMA"));
+    assertEquals(NONE, converter.convert("NONE"));
   }
 
   @Test
   public void convertingInvalidDelimiterReturnsNone() {
+    assertEquals(NONE, converter.convert("SEMICOLON"));
     assertEquals(NONE, converter.convert("a"));
     assertEquals(NONE, converter.convert("&"));
     assertEquals(NONE, converter.convert("this is a long delimiter"));

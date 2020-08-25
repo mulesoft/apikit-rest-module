@@ -87,7 +87,7 @@ public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer<
         } else if (ch == '\r') {
           continue;
         } else if (ch == '\n') {
-          break;
+          continue;
         } else {
           curVal.append(ch);
         }
