@@ -6,8 +6,8 @@
  */
 package org.mule.module.apikit.api.config;
 
-import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
-import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategyIdentifier;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.runtime.core.api.el.ExpressionManager;
 

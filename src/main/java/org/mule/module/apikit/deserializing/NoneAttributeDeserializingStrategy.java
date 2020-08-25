@@ -4,12 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.parsing;
+package org.mule.module.apikit.deserializing;
 
-import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
-import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategyIdentifier;
 
-import static org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier.NONE_DESERIALIZING_STRATEGY;
+import static org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategyIdentifier.NONE_DESERIALIZING_STRATEGY;
 
 /**
  * Default configuration strategy used for identify the lack of deserializing strategy.

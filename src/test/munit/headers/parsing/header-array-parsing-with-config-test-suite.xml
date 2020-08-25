@@ -10,7 +10,7 @@
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
     http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-    <munit:config name="headers-parsing-validation-test-suite">
+    <munit:config name="headers-deserializing-validation-test-suite">
         <munit:parameterizations>
             <munit:parameterization name="COMMA_DELIMITER">
                 <munit:parameters>
@@ -27,7 +27,7 @@
 
     <munit:test name="success-with-object-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -58,7 +58,7 @@
 
     <munit:test name="fail-with-invalid-object-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -86,7 +86,7 @@
 
     <munit:test name="success-with-single-object-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -114,11 +114,11 @@
 
     <munit:test name="success-with-delimited-object-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-object-header">
                 <http:headers>#[
@@ -151,11 +151,11 @@
 
     <munit:test name="success-with-multiple-delimited-object-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-object-header">
                 <http:headers>#[
@@ -191,11 +191,11 @@
 
     <munit:test name="fail-with-invalid-delimited-object-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-object-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-object-header">
                 <http:headers>#[
@@ -224,7 +224,7 @@
 
     <munit:test name="success-with-string-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -255,7 +255,7 @@
 
     <munit:test name="success-including-quoted-string-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -286,11 +286,11 @@
 
     <munit:test name="success-with-delimited-string-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-string-header">
                 <http:headers>#[
@@ -324,11 +324,11 @@
 
     <munit:test name="success-with-multiple-delimited-string-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-string-header">
                 <http:headers>#[
@@ -363,11 +363,11 @@
 
     <munit:test name="success-with-delimited-including-quoted-string-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-string-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-string-header">
                 <http:headers>#[
@@ -401,7 +401,7 @@
 
     <munit:test name="success-with-number-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-number-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -432,11 +432,11 @@
 
     <munit:test name="success-with-delimited-number-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-number-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-number-header">
                 <http:headers>#[
@@ -470,11 +470,11 @@
 
     <munit:test name="success-with-multiple-delimited-number-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-number-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-number-header">
                 <http:headers>#[
@@ -509,7 +509,7 @@
 
     <munit:test name="success-with-enum-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -543,11 +543,11 @@
 
     <munit:test name="success-with-delimited-enum-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-enum-header">
                 <http:headers>#[
@@ -581,11 +581,11 @@
 
     <munit:test name="success-with-multiple-delimited-enum-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-enum-header">
                 <http:headers>#[
@@ -621,7 +621,7 @@
 
     <munit:test name="fail-with-invalid-enum-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -649,11 +649,11 @@
 
     <munit:test name="fail-with-invalid-delimited-enum-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-enum-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-enum-header">
                 <http:headers>#[
@@ -682,7 +682,7 @@
 
     <munit:test name="success-with-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -713,7 +713,7 @@
 
     <munit:test name="success-including-quoted-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -744,11 +744,11 @@
 
     <munit:test name="success-with-delimited-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -784,11 +784,11 @@
 
     <munit:test name="success-with-multiple-delimited-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -824,11 +824,11 @@
 
     <munit:test name="success-with-delimited-including-quoted-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -864,7 +864,7 @@
 
     <munit:test name="fail-with-invalid-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -892,11 +892,11 @@
 
     <munit:test name="fail-with-invalid-delimited-datetime-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime-header">
                 <http:headers>#[
@@ -924,9 +924,9 @@
     </munit:test>
 
     <munit:test name="success-with-semicolon-delimited-datetime2616-array-header-without-quotes"
-                ignore="#['${parsing.delimiter}' == ',']">
+                ignore="#['${deserializer.delimiter}' == ',']">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -958,9 +958,9 @@
     </munit:test>
 
     <munit:test name="fail-with-comma-delimited-datetime2616-array-header-without-quotes"
-                ignore="#['${parsing.delimiter}' == ';']">
+                ignore="#['${deserializer.delimiter}' == ';']">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -988,7 +988,7 @@
 
     <munit:test name="success-including-quoted-datetime2616-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -1021,11 +1021,11 @@
 
     <munit:test name="success-with-delimited-quoted-datetime2616-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
@@ -1058,13 +1058,13 @@
     </munit:test>
 
     <munit:test name="fail-with-single-comma-delimited-datetime2616-array-header-without-quotes"
-                ignore="#['${parsing.delimiter}' == ';']">
+                ignore="#['${deserializer.delimiter}' == ';']">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
@@ -1092,13 +1092,13 @@
     </munit:test>
 
     <munit:test name="success-with-single-semicolon-delimited-datetime2616-array-header-without-quotes"
-                ignore="#['${parsing.delimiter}' == ',']">
+                ignore="#['${deserializer.delimiter}' == ',']">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[
@@ -1132,7 +1132,7 @@
 
     <munit:test name="fail-with-invalid-datetime2616-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
@@ -1160,11 +1160,11 @@
 
     <munit:test name="fail-with-invalid-delimited-datetime2616-array-header">
         <munit:enable-flow-sources>
-            <munit:enable-flow-source value="headers-parsing-validation-main"/>
+            <munit:enable-flow-source value="headers-deserializing-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <set-variable variableName="delimiter" value="${parsing.delimiter}"/>
+            <set-variable variableName="delimiter" value="${deserializer.delimiter}"/>
             <http:request method="GET" config-ref="http-requester-simple"
                           path="/headers/validation/test-array-datetime2616-header">
                 <http:headers>#[

@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.parsing;
+package org.mule.module.apikit.deserializing;
 
 import com.google.common.net.MediaType;
 import org.apache.commons.lang.StringUtils;
@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
+import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
 
 /**
  * MIME-Type Parser

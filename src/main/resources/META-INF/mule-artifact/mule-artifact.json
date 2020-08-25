@@ -1,7 +1,7 @@
 {
-  "name":"APIKit",
-  "minMuleVersion":"4.1.1",
-  "requiredProduct":"MULE",
+  "name": "APIKit",
+  "minMuleVersion": "4.1.1",
+  "requiredProduct": "MULE",
   "bundleDescriptorLoader": {
     "id": "mule",
     "attributes": {
@@ -13,10 +13,10 @@
       "type": "org.mule.module.apikit.ApikitExtensionLoadingDelegate"
     }
   },
-  "classLoaderModelLoaderDescriptor":{
-    "id":"mule",
-    "attributes":{
-      "exportedPackages":[
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [
         "org.mule.module.apikit.api",
         "org.mule.module.apikit.api.spi",
         "org.mule.module.apikit.api.config",
@@ -24,12 +24,12 @@
         "org.mule.module.apikit.api.uri",
         "org.mule.module.apikit.api.validation",
         "org.mule.module.apikit.api.console",
-        "org.mule.module.apikit.api.parsing",
+        "org.mule.module.apikit.api.deserializing",
         "org.mule.module.apikit.spi",
         "org.mule.apikit.model",
         "org.mule.parser.service"
       ],
-      "exportedResources":[
+      "exportedResources": [
         "/META-INF/",
         "/META-INF/mule-apikit.xsd",
         "/META-INF/spring.handlers",

@@ -4,9 +4,9 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.parsing;
+package org.mule.module.apikit.deserializing;
 
-import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
 
 /**
  * Attributes Deserializer Factory. Builds the deserializer according to the indicated strategy.

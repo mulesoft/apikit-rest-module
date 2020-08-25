@@ -22,7 +22,7 @@ import org.mule.runtime.api.util.MultiMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mule.module.apikit.api.parsing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
+import static org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
 
 public class AttributesValidator {
 

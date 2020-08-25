@@ -11,11 +11,11 @@ import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
-import org.mule.module.apikit.api.parsing.AttributesDeserializingStrategy;
+import org.mule.module.apikit.deserializing.AttributeDeserializer;
+import org.mule.module.apikit.deserializing.AttributesDeserializerFactory;
 import org.mule.module.apikit.exception.NotAcceptableException;
-import org.mule.module.apikit.parsing.AttributeDeserializer;
-import org.mule.module.apikit.parsing.AttributesDeserializerFactory;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
+import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
-import static org.mule.module.apikit.parsing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
@@ -84,7 +84,7 @@ public class HeadersValidator {
           copyIncomingHeaders.put(ramlHeader, ramlType.getDefaultValue());
         }
         if (!values.isEmpty() && ramlType.isArray()) {
-          values = parseDelimitedValues(values, attributesDeserializingStrategy);
+          values = deserializeValues(values, attributesDeserializingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
           copyIncomingHeaders.removeAll(ramlHeader);
           copyIncomingHeaders.put(ramlHeader, values);
@@ -157,11 +157,11 @@ public class HeadersValidator {
     }
   }
 
-  private List<String> parseDelimitedValues(List<String> listOfCsv,
-                                            AttributesDeserializingStrategy attributesDeserializingStrategy) {
-    AttributeDeserializer parser =
+  private List<String> deserializeValues(List<String> listOfDelimitedValues,
+                                         AttributesDeserializingStrategy attributesDeserializingStrategy) {
+    AttributeDeserializer deserializer =
         AttributesDeserializerFactory.INSTANCE.getDeserializerByStrategy(attributesDeserializingStrategy);
-    return parser.deserializeListOfValues(listOfCsv);
+    return deserializer.deserializeListOfValues(listOfDelimitedValues);
   }
 
   private void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {

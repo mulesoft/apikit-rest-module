@@ -9,10 +9,10 @@
                           http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-    <apikit:config name="default-parsing-config" raml="${api.location}"
+    <apikit:config name="default-deserializing-config" raml="${api.location}"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
-    <flow name="headers-default-parsing-config-validation-main">
+    <flow name="headers-default-deserializing-config-validation-main">
         <http:listener config-ref="http-listener-simple" path="/headers/validation/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -22,35 +22,35 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="default-parsing-config"/>
+        <apikit:router config-ref="default-deserializing-config"/>
         <error-handler ref="global-server-error-handler"/>
     </flow>
 
-    <flow name="get:\test-array-object-header:default-parsing-config">
-        <flow-ref name="parse-array-header"/>
+    <flow name="get:\test-array-object-header:default-deserializing-config">
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-string-header:default-parsing-config">
-        <flow-ref name="parse-array-header"/>
+    <flow name="get:\test-array-string-header:default-deserializing-config">
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-number-header:default-parsing-config">
-        <flow-ref name="parse-array-header"/>
+    <flow name="get:\test-array-number-header:default-deserializing-config">
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-enum-header:default-parsing-config">
-        <flow-ref name="parse-array-header"/>
+    <flow name="get:\test-array-enum-header:default-deserializing-config">
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-datetime-header:default-parsing-config">
-        <flow-ref name="parse-array-header"/>
+    <flow name="get:\test-array-datetime-header:default-deserializing-config">
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-datetime2616-header:default-parsing-config">
-        <flow-ref name="parse-array-header"/>
+    <flow name="get:\test-array-datetime2616-header:default-deserializing-config">
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <sub-flow name="parse-array-header-and-store">
+    <sub-flow name="deserialize-array-header-and-store">
         <set-payload value="#[output text/plain --- sizeOf(attributes.headers.*'array-header') default '0']"/>
         <munit-tools:store key="first-header">
             <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>

@@ -11,7 +11,7 @@ import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectType;
-import org.mule.module.apikit.parsing.ArrayHeaderDeserializingStrategy;
+import org.mule.module.apikit.deserializing.ArrayHeaderDeserializingStrategy;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.meta.model.ImportedTypeModel;

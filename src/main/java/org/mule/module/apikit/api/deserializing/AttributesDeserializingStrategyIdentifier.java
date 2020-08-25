@@ -4,13 +4,12 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.api.parsing;
+package org.mule.module.apikit.api.deserializing;
 
 /**
- * Attribute deserializing strategies set by configuration will implement this interface.
+ * Set of identifiers for attribute deserializing strategies.
  */
-public interface AttributesDeserializingStrategy {
-
-  AttributesDeserializingStrategyIdentifier getStrategyIdentifier();
-
+public enum AttributesDeserializingStrategyIdentifier {
+  NONE_DESERIALIZING_STRATEGY,
+  ARRAY_HEADER_DESERIALIZING_STRATEGY
 }

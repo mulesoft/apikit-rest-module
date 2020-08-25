@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.parsing;
+package org.mule.module.apikit.deserializing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.NONE;
+import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.NONE;
 
 /**
  * Deserializer of array header attributes based on the strategy defined by {@link ArrayHeaderDeserializingStrategy}

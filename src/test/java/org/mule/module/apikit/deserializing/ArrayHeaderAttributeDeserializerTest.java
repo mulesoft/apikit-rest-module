@@ -4,7 +4,7 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-package org.mule.module.apikit.parsing;
+package org.mule.module.apikit.deserializing;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mule.module.apikit.parsing.ArrayHeaderDelimiter.COMMA;
+import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
 
 @RunWith(Parameterized.class)
 public class ArrayHeaderAttributeDeserializerTest {

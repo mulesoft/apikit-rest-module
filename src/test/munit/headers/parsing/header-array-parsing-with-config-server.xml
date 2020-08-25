@@ -16,7 +16,7 @@
         </apikit:attributes-deserializing-strategies>
     </apikit:config>
 
-    <flow name="headers-parsing-validation-main">
+    <flow name="headers-deserializing-validation-main">
         <http:listener config-ref="http-listener-simple" path="/headers/validation/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -31,30 +31,30 @@
     </flow>
 
     <flow name="get:\test-array-object-header">
-        <flow-ref name="parse-array-header"/>
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
     <flow name="get:\test-array-string-header">
-        <flow-ref name="parse-array-header"/>
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
     <flow name="get:\test-array-number-header">
-        <flow-ref name="parse-array-header"/>
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
     <flow name="get:\test-array-enum-header">
-        <flow-ref name="parse-array-header"/>
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
     <flow name="get:\test-array-datetime-header">
-        <flow-ref name="parse-array-header"/>
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
     <flow name="get:\test-array-datetime2616-header">
-        <flow-ref name="parse-array-header"/>
+        <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <sub-flow name="parse-array-header">
+    <sub-flow name="deserialize-array-header">
         <set-payload value="#[output text/plain --- sizeOf(attributes.headers.*'array-header') default '0']"/>
         <munit-tools:store key="first-header">
             <munit-tools:value>#[attributes.headers.*'array-header'[0]]</munit-tools:value>

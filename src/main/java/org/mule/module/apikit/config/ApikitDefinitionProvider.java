@@ -11,9 +11,9 @@ import org.mule.module.apikit.Console;
 import org.mule.module.apikit.FlowMapping;
 import org.mule.module.apikit.FlowMappings;
 import org.mule.module.apikit.Router;
-import org.mule.module.apikit.parsing.ArrayHeaderDelimiterTypeConverter;
-import org.mule.module.apikit.parsing.ArrayHeaderDeserializingStrategy;
-import org.mule.module.apikit.parsing.AttributesDeserializingStrategies;
+import org.mule.module.apikit.deserializing.ArrayHeaderDelimiterTypeConverter;
+import org.mule.module.apikit.deserializing.ArrayHeaderDeserializingStrategy;
+import org.mule.module.apikit.deserializing.AttributesDeserializingStrategies;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 
