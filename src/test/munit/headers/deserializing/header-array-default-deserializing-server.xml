@@ -12,6 +12,13 @@
     <apikit:config name="default-deserializing-config" raml="${api.location}"
                    outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 
+    <apikit:config name="none-delimiter-deserializing-config" raml="${api.location}"
+                   outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus">
+        <apikit:attributes-deserializing-strategies>
+            <apikit:array-header-deserializing-strategy delimiter="NONE"/>
+        </apikit:attributes-deserializing-strategies>
+    </apikit:config>
+
     <flow name="headers-default-deserializing-config-validation-main">
         <http:listener config-ref="http-listener-simple" path="/headers/validation/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -22,31 +29,31 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="default-deserializing-config"/>
+        <apikit:router config-ref="${apikit.config}"/>
         <error-handler ref="global-server-error-handler"/>
     </flow>
 
-    <flow name="get:\test-array-object-header:default-deserializing-config">
+    <flow name="get:\test-array-object-header:${apikit.config}">
         <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-string-header:default-deserializing-config">
+    <flow name="get:\test-array-string-header:${apikit.config}">
         <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-number-header:default-deserializing-config">
+    <flow name="get:\test-array-number-header:${apikit.config}">
         <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-enum-header:default-deserializing-config">
+    <flow name="get:\test-array-enum-header:${apikit.config}">
         <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-datetime-header:default-deserializing-config">
+    <flow name="get:\test-array-datetime-header:${apikit.config}">
         <flow-ref name="deserialize-array-header"/>
     </flow>
 
-    <flow name="get:\test-array-datetime2616-header:default-deserializing-config">
+    <flow name="get:\test-array-datetime2616-header:${apikit.config}">
         <flow-ref name="deserialize-array-header"/>
     </flow>
 

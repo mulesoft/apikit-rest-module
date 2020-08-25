@@ -16,12 +16,21 @@
                 <munit:parameters>
                     <munit:parameter propertyName="api.version" value="RAML10"/>
                     <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
+                    <munit:parameter propertyName="apikit.config" value="default-deserializing-config"/>
                 </munit:parameters>
             </munit:parameterization>
             <munit:parameterization name="OAS30">
                 <munit:parameters>
                     <munit:parameter propertyName="api.version" value="OAS30"/>
                     <munit:parameter propertyName="api.location" value="munit/headers/validation_oas30.yaml"/>
+                    <munit:parameter propertyName="apikit.config" value="default-deserializing-config"/>
+                </munit:parameters>
+            </munit:parameterization>
+            <munit:parameterization name="RAML10_NONE_STRATEGY">
+                <munit:parameters>
+                    <munit:parameter propertyName="api.version" value="RAML10"/>
+                    <munit:parameter propertyName="api.location" value="munit/headers/validation10.raml"/>
+                    <munit:parameter propertyName="apikit.config" value="none-delimiter-deserializing-config"/>
                 </munit:parameters>
             </munit:parameterization>
         </munit:parameterizations>
@@ -30,7 +39,7 @@
     <munit:test name="success-with-object-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-object-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-object-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -61,7 +70,7 @@
     <munit:test name="fail-with-invalid-object-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-object-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-object-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -89,7 +98,7 @@
     <munit:test name="success-with-single-object-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-object-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-object-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -117,7 +126,7 @@
     <munit:test name="fail-with-csv-object-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-object-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-object-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -145,7 +154,7 @@
     <munit:test name="fail-with-multiple-csv-object-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-object-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-object-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -173,7 +182,7 @@
     <munit:test name="fail-with-invalid-csv-object-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-object-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-object-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -200,7 +209,7 @@
     <munit:test name="success-with-string-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-string-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-string-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -231,7 +240,7 @@
     <munit:test name="success-including-quoted-string-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-string-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-string-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -262,7 +271,7 @@
     <munit:test name="success-with-csv-string-array-header-as-one-value-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-string-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-string-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -290,7 +299,7 @@
     <munit:test name="success-with-multiple-csv-string-array-header-as-multiple-values-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-string-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-string-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -321,7 +330,7 @@
     <munit:test name="success-with-csv-including-quoted-string-as-one-value-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-string-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-string-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -350,7 +359,7 @@
     <munit:test name="success-with-number-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-number-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-number-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -381,7 +390,7 @@
     <munit:test name="fail-with-csv-number-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-number-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-number-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -408,7 +417,7 @@
     <munit:test name="fail-with-multiple-csv-number-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-number-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-number-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -436,7 +445,7 @@
     <munit:test name="success-with-enum-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-enum-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-enum-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -467,7 +476,7 @@
     <munit:test name="fail-with-csv-enum-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-enum-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-enum-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -494,7 +503,7 @@
     <munit:test name="fail-with-multiple-csv-enum-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-enum-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-enum-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -522,7 +531,7 @@
     <munit:test name="fail-with-invalid-enum-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-enum-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-enum-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -550,7 +559,7 @@
     <munit:test name="fail-with-invalid-csv-enum-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-enum-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-enum-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -577,7 +586,7 @@
     <munit:test name="success-with-datetime-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -608,7 +617,7 @@
     <munit:test name="success-including-quoted-datetime-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -641,7 +650,7 @@
     <munit:test name="success-with-csv-datetime-array-header-as-one-value-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -668,7 +677,7 @@
     <munit:test name="success-with-multiple-csv-datetime-array-header-as-multiple-values-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -696,7 +705,7 @@
     <munit:test name="success-with-csv-including-quoted-datetime-as-one-value-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -726,7 +735,7 @@
                 ignore="#['${api.version}' == 'OAS30']">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -759,7 +768,7 @@
     <munit:test name="success-including-quoted-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -793,7 +802,7 @@
                 ignore="#['${api.version}' == 'OAS30']">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"
@@ -820,7 +829,7 @@
     <munit:test name="fail-with-invalid-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
-            <munit:enable-flow-source value="get:\test-array-datetime2616-header:default-deserializing-config"/>
+            <munit:enable-flow-source value="get:\test-array-datetime2616-header:${apikit.config}"/>
         </munit:enable-flow-sources>
         <munit:execution>
             <http:request method="GET" config-ref="http-requester-simple"

@@ -18,6 +18,6 @@ public class ArrayHeaderDelimiterTypeConverter implements TypeConverter<String, 
 
   @Override
   public ArrayHeaderDelimiter convert(String s) {
-    return COMMA.getDelimiterValue().equals(s) ? COMMA : NONE;
+    return COMMA.name().equals(s) ? COMMA : NONE;
   }
 }

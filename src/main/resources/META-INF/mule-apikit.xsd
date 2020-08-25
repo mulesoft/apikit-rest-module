@@ -168,8 +168,8 @@
 
     <xsd:simpleType name="headerDelimiter" final="restriction">
         <xsd:restriction base="mule:nonBlankString">
-            <xsd:enumeration value=""/>
-            <xsd:enumeration value=","/>
+            <xsd:enumeration value="NONE"/>
+            <xsd:enumeration value="COMMA"/>
         </xsd:restriction>
     </xsd:simpleType>
 
