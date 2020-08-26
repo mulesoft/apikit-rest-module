@@ -11,7 +11,6 @@ import org.mule.module.apikit.Console;
 import org.mule.module.apikit.FlowMapping;
 import org.mule.module.apikit.FlowMappings;
 import org.mule.module.apikit.Router;
-import org.mule.module.apikit.deserializing.ArrayHeaderDelimiterTypeConverter;
 import org.mule.module.apikit.deserializing.ArrayHeaderDeserializingStrategy;
 import org.mule.module.apikit.deserializing.AttributesDeserializingStrategies;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
@@ -90,7 +89,7 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
     definitions.add(baseDefinition.withIdentifier("array-header-deserializing-strategy")
         .withTypeDefinition(fromType(ArrayHeaderDeserializingStrategy.class))
         .withSetterParameterDefinition("delimiter",
-                                       fromSimpleParameter("delimiter", new ArrayHeaderDelimiterTypeConverter()).build())
+                                       fromSimpleParameter("delimiter").build())
         .build());
 
     return definitions;
