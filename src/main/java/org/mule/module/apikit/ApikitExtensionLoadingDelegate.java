@@ -11,6 +11,7 @@ import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.model.MetadataType;
 import org.mule.metadata.api.model.ObjectType;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
 import org.mule.module.apikit.deserializing.ArrayHeaderDeserializingStrategy;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.parser.service.ParserMode;
@@ -29,6 +30,7 @@ import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationProvider;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.mule.metadata.api.model.MetadataFormat.JAVA;
 import static org.mule.parser.service.ParserMode.AUTO;
@@ -95,6 +97,9 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .withErrorModel(notImplementedErrorModel);
     extensionDeclarer.withImportedType(new ImportedTypeModel((ObjectType) typeLoader.load(HttpRequestAttributes.class)));
 
+    extensionDeclarer.withSubTypes(typeLoader.load(AttributesDeserializingStrategy.class),
+                                   asList(typeLoader.load(ArrayHeaderDeserializingStrategy.class)));
+
     // config
     final StereotypeModel apikitConfigStereotype = newStereotype("APIKIT_CONFIG", EXTENSION_NAMESPACE).withParent(CONFIG).build();
     ConfigurationDeclarer apikitConfig = extensionDeclarer.withConfig("config")
@@ -120,7 +125,7 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
     parameterGroupDeclarer.withOptionalParameter("attributesDeserializingStrategies")
         .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
         .withExpressionSupport(NOT_SUPPORTED)
-        .ofType(typeBuilder.arrayType().of(typeLoader.load(ArrayHeaderDeserializingStrategy.class)).build());
+        .ofType(typeBuilder.arrayType().of(typeLoader.load(AttributesDeserializingStrategy.class)).build());
 
     // router
     OperationDeclarer routerDeclarer = apikitConfig.withOperation("router");

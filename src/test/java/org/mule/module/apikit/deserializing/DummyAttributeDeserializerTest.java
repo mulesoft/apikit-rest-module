@@ -38,7 +38,7 @@ public class DummyAttributeDeserializerTest {
 
   @Before
   public void init() {
-    deserializer = new DummyAttributeDeserializer(new NoneAttributeDeserializingStrategy());
+    deserializer = new DummyAttributeDeserializer();
     listOfArrayHeaderValues = new ArrayList<>();
   }
 

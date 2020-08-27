@@ -11,6 +11,7 @@ import org.mule.module.apikit.Console;
 import org.mule.module.apikit.FlowMapping;
 import org.mule.module.apikit.FlowMappings;
 import org.mule.module.apikit.Router;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
 import org.mule.module.apikit.deserializing.ArrayHeaderDeserializingStrategy;
 import org.mule.module.apikit.deserializing.AttributesDeserializingStrategies;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
@@ -83,7 +84,7 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
     definitions.add(baseDefinition.withIdentifier("attributes-deserializing-strategies")
         .withTypeDefinition(fromType(AttributesDeserializingStrategies.class))
         .withSetterParameterDefinition("attributesDeserializingStrategies",
-                                       fromChildCollectionConfiguration(ArrayHeaderDeserializingStrategy.class).build())
+                                       fromChildCollectionConfiguration(AttributesDeserializingStrategy.class).build())
         .build());
 
     definitions.add(baseDefinition.withIdentifier("array-header-deserializing-strategy")

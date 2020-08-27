@@ -19,7 +19,7 @@ public class AttributesDeserializerFactoryTest {
         AttributesDeserializerFactory.INSTANCE.getDeserializerByStrategy(new ArrayHeaderDeserializingStrategy());
     assertTrue(ArrayHeaderAttributeDeserializer.class.isInstance(attributeDeserializer));
     attributeDeserializer =
-        AttributesDeserializerFactory.INSTANCE.getDeserializerByStrategy(new NoneAttributeDeserializingStrategy());
+        AttributesDeserializerFactory.INSTANCE.getDeserializerByStrategy(null);
     assertTrue(DummyAttributeDeserializer.class.isInstance(attributeDeserializer));
   }
 

@@ -9,7 +9,8 @@ package org.mule.module.apikit.deserializing;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategy;
 
 /**
- * Attributes Deserializer Factory. Builds the deserializer according to the indicated strategy.
+ * Attributes Deserializer Factory. Builds the deserializer according to the requested strategy.
+ * Defaults to {@link DummyAttributeDeserializer} if no deserializing strategy match found.
  */
 public class AttributesDeserializerFactory {
 
@@ -18,13 +19,14 @@ public class AttributesDeserializerFactory {
   private AttributesDeserializerFactory() {}
 
   public AttributeDeserializer getDeserializerByStrategy(AttributesDeserializingStrategy deserializingStrategy) {
+    if (deserializingStrategy == null) {
+      return new DummyAttributeDeserializer();
+    }
     switch (deserializingStrategy.getStrategyIdentifier()) {
-      case NONE_DESERIALIZING_STRATEGY:
-        return new DummyAttributeDeserializer(deserializingStrategy);
       case ARRAY_HEADER_DESERIALIZING_STRATEGY:
         return new ArrayHeaderAttributeDeserializer((ArrayHeaderDeserializingStrategy) deserializingStrategy);
       default:
-        throw new RuntimeException("No Deserializer found for the attribute strategy provided.");
+        return new DummyAttributeDeserializer();
     }
   }
 }

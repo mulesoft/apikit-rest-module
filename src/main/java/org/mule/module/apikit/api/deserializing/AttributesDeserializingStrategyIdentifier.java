@@ -10,6 +10,5 @@ package org.mule.module.apikit.api.deserializing;
  * Set of identifiers for attribute deserializing strategies.
  */
 public enum AttributesDeserializingStrategyIdentifier {
-  NONE_DESERIALIZING_STRATEGY,
   ARRAY_HEADER_DESERIALIZING_STRATEGY
 }

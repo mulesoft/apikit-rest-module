@@ -18,8 +18,8 @@ import static java.util.Arrays.asList;
  */
 public class DummyAttributeDeserializer extends BaseAttributeDeserializer<AttributesDeserializingStrategy> {
 
-  public DummyAttributeDeserializer(AttributesDeserializingStrategy deserializingStrategy) {
-    super(deserializingStrategy);
+  public DummyAttributeDeserializer() {
+    super(null);
   }
 
   @Override

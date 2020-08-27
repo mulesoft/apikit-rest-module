@@ -10,17 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import sun.reflect.ConstructorAccessor;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mule.module.apikit.MockingUtils.createEnumValue;
 import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
 
 @RunWith(Parameterized.class)
@@ -50,29 +47,12 @@ public class ArrayHeaderAttributeDeserializerTest {
     ArrayHeaderDeserializingStrategy commaDelimitedStrategy = new ArrayHeaderDeserializingStrategy();
     commaDelimitedStrategy.setDelimiter(COMMA);
     ArrayHeaderDeserializingStrategy semicolonDelimitedStrategy = new ArrayHeaderDeserializingStrategy();
-    ArrayHeaderDelimiter semicolon = createEnumValue("SEMICOLON", 2, ";");
+    ArrayHeaderDelimiter semicolon = createEnumValue(ArrayHeaderDelimiter.class, "SEMICOLON", 2, ";");
     semicolonDelimitedStrategy.setDelimiter(semicolon);
     return asList(new Object[][] {
         {commaDelimitedStrategy},
         {semicolonDelimitedStrategy},
     });
-  }
-
-  protected static ArrayHeaderDelimiter createEnumValue(String name, int ordinal, String description) throws Exception {
-    Class<ArrayHeaderDelimiter> monsterClass = ArrayHeaderDelimiter.class;
-    Constructor<?> constructor = monsterClass.getDeclaredConstructors()[0];
-    constructor.setAccessible(true);
-
-    Field constructorAccessorField = Constructor.class.getDeclaredField("constructorAccessor");
-    constructorAccessorField.setAccessible(true);
-    ConstructorAccessor ca = (ConstructorAccessor) constructorAccessorField.get(constructor);
-    if (ca == null) {
-      Method acquireConstructorAccessorMethod = Constructor.class.getDeclaredMethod("acquireConstructorAccessor");
-      acquireConstructorAccessorMethod.setAccessible(true);
-      ca = (ConstructorAccessor) acquireConstructorAccessorMethod.invoke(constructor);
-    }
-    ArrayHeaderDelimiter enumValue = (ArrayHeaderDelimiter) ca.newInstance(new Object[] {name, ordinal, description});
-    return enumValue;
   }
 
   @Before

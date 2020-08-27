@@ -23,7 +23,6 @@ import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.deserializing.AttributesDeserializingStrategies;
-import org.mule.module.apikit.deserializing.NoneAttributeDeserializingStrategy;
 import org.mule.module.apikit.validation.body.schema.v1.cache.JsonSchemaCacheLoader;
 import org.mule.module.apikit.validation.body.schema.v1.cache.XmlSchemaCacheLoader;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
@@ -191,7 +190,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   public AttributesDeserializingStrategy getAttributesDeserializingStrategy(AttributesDeserializingStrategyIdentifier identifier) {
     if (attributesDeserializingStrategies == null
         || isEmpty(attributesDeserializingStrategies.getAttributesDeserializingStrategies())) {
-      return new NoneAttributeDeserializingStrategy();
+      return null;
     }
     return attributesDeserializingStrategies.getAttributesDeserializingStrategies().stream()
         .filter(ps -> ps.getStrategyIdentifier().equals(identifier))
