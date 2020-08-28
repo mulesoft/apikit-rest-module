@@ -187,9 +187,10 @@ public class FlowFinder {
         }
         if (action.hasBody()) {
           for (String contentType : action.getBody().keySet()) {
-            if (restFlowMap.get(key + ":" + getMediaType(contentType)) == null) {
+            String mediaType = retrieveMediaType(contentType, method, fullResource);
+            if (mediaType != null && restFlowMap.get(key + ":" + mediaType) == null) {
               logger.warn(format("Action-Resource-ContentType triplet has no implementation -> %s:%s:%s ",
-                                 method, fullResource, getMediaType(contentType)));
+                                 method, fullResource, mediaType));
             }
           }
         } else {
@@ -200,13 +201,21 @@ public class FlowFinder {
     }
   }
 
+  private String retrieveMediaType(String contentType, String method, String fullResource) {
+    try {
+      return getMediaType(contentType);
+    } catch (UnsupportedMediaTypeException e) {
+      logger.warn(format("Action-Resource-ContentType triplet has no implementation -> %s:%s:%s ",
+                         method, fullResource, contentType));
+    }
+    return null;
+  }
+
   private void loadRoutingTable() {
     if (routingTable == null) {
       routingTable = new RoutingTable(ramlHandler.getApi());
     }
-
   }
-
 
   public Flow getFlow(Resource resource, String method, String contentType) throws UnsupportedMediaTypeException {
     String baseKey = method + ":" + resource.getResolvedUri(ramlHandler.getApi().getVersion());
