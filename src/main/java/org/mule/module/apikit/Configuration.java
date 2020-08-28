@@ -108,13 +108,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     try {
       ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
                                     errorRepositoryFrom(muleContext), parserMode.get());
-      this.routerService.ifPresent(rs -> {
-        try {
-          rs.initialise(ramlHandler.getApi().getUri());
-        } catch (MuleException e) {
-          throw new ApikitRuntimeException("Couldn't load enabled extension", e);
-        }
-      });
+      initRouterService();
     } catch (Exception e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
@@ -122,6 +116,16 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
                                 errorRepositoryFrom(muleContext));
     buildResourcePatternCaches();
     registry.registerConfiguration(this);
+  }
+
+  private void initRouterService() {
+    this.routerService.ifPresent(rs -> {
+      try {
+        rs.initialise(ramlHandler.getApi().getUri());
+      } catch (MuleException e) {
+        throw new ApikitRuntimeException("Couldn't load enabled extension", e);
+      }
+    });
   }
 
   @Deprecated // TODO USE NEW API
