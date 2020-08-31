@@ -49,6 +49,22 @@ public class BodyValidator {
     return validate(action, attributes, payload, config, charset, null);
   }
 
+  /**
+   * search the correct mimeType in action for the given request content type
+   * @param action api spec action
+   * @param requestContentType
+   * @return mimeType defined in api spec
+   * @throws UnsupportedMediaTypeException when request
+   */
+  private static MimeType findMimeType(Action action, String requestContentType) throws UnsupportedMediaTypeException {
+    for (String actionMimeType : action.getBody().keySet()) {
+      if (getMediaType(actionMimeType).equals(requestContentType)) {
+        return action.getBody().get(actionMimeType);
+      }
+    }
+    throw new UnsupportedMediaTypeException();
+  }
+
   public static ValidBody validate(Action action, HttpRequestAttributes attributes, Object payload,
                                    ValidationConfig config, String charset, ErrorTypeRepository errorTypeRepository)
       throws BadRequestException, UnsupportedMediaTypeException {
@@ -61,13 +77,7 @@ public class BodyValidator {
 
     String requestMimeTypeName = getContentType(attributes.getHeaders());
 
-    Entry<String, MimeType> foundMimeType = action.getBody().entrySet().stream()
-        .filter(entry -> getMediaType(entry.getKey()).equals(requestMimeTypeName))
-        .findFirst()
-        .orElseThrow(UnsupportedMediaTypeException::new);
-
-
-    MimeType mimeType = foundMimeType.getValue();
+    MimeType mimeType = findMimeType(action, requestMimeTypeName);
 
     Object repeatableBody = makePayloadRepeatable(payload);
 
