@@ -15,6 +15,7 @@ import org.mule.apikit.ApiType;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.api.config.ValidationConfig;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 import org.mule.module.apikit.api.spi.RouterService;
 import org.mule.module.apikit.api.uri.URIPattern;
@@ -71,6 +72,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   private String outboundHeadersMapName;
   private String httpStatusVarName;
   private FlowMappings flowMappings = new FlowMappings();
+  private AttributesDeserializingStrategies attributesDeserializingStrategies = new AttributesDeserializingStrategies();
 
   private LoadingCache<String, JsonSchema> jsonSchemaCache;
   private LoadingCache<String, Schema> xmlSchemaCache;
@@ -158,6 +160,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     this.api = api;
   }
 
+  @Override
   public boolean isDisableValidations() {
     return disableValidations;
   }
@@ -377,5 +380,14 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Override
   public void dispose() {
     scheduler.shutdownNow();
+  }
+
+  @Override
+  public AttributesDeserializingStrategies getAttributesDeserializingStrategies() {
+    return attributesDeserializingStrategies;
+  }
+
+  public void setAttributesDeserializingStrategies(AttributesDeserializingStrategies attributesDeserializingStrategies) {
+    this.attributesDeserializingStrategies = attributesDeserializingStrategies;
   }
 }

@@ -5,10 +5,13 @@
             targetNamespace="http://www.mulesoft.org/schema/mule/mule-apikit"
             elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-current.xsd" />
-    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core" schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd" />
-    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc" schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/current/mule-schemadoc.xsd" />
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.springframework.org/schema/beans"
+                schemaLocation="http://www.springframework.org/schema/beans/spring-beans-current.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
+                schemaLocation="http://www.mulesoft.org/schema/mule/core/current/mule.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc"
+                schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/current/mule-schemadoc.xsd"/>
 
     <xsd:annotation>
         <xsd:documentation>
@@ -32,10 +35,10 @@
         <xsd:sequence>
             <xsd:element name="flow-mapping" maxOccurs="unbounded" minOccurs="0">
                 <xsd:complexType>
-                    <xsd:attribute name="resource" use="required" type="mule:nonBlankString" />
-                    <xsd:attribute name="action" use="required" type="mule:nonBlankString" />
-                    <xsd:attribute name="content-type" use="optional" type="mule:nonBlankString" />
-                    <xsd:attribute name="flow-ref" use="required" type="mule:nonBlankString" />
+                    <xsd:attribute name="resource" use="required" type="mule:nonBlankString"/>
+                    <xsd:attribute name="action" use="required" type="mule:nonBlankString"/>
+                    <xsd:attribute name="content-type" use="optional" type="mule:nonBlankString"/>
+                    <xsd:attribute name="flow-ref" use="required" type="mule:nonBlankString"/>
                 </xsd:complexType>
             </xsd:element>
         </xsd:sequence>
@@ -47,6 +50,11 @@
                 <xsd:sequence>
                     <xsd:element type="flow-mappings" name="flow-mappings" maxOccurs="1" minOccurs="0"/>
                 </xsd:sequence>
+                <xsd:sequence>
+                    <xsd:element type="attributes-deserializing-strategies" name="attributes-deserializing-strategies"
+                                 maxOccurs="1"
+                                 minOccurs="0"/>
+                </xsd:sequence>
                 <xsd:attribute name="name" type="mule:nonBlankString" use="optional"/>
                 <xsd:attribute name="raml" type="mule:nonBlankString" use="optional"/>
                 <xsd:attribute name="api" type="mule:nonBlankString" use="optional"/>
@@ -54,7 +62,8 @@
                 <xsd:attribute name="httpStatusVarName" type="mule:nonBlankString" use="required"/>
                 <xsd:attribute name="keepApiBaseUri" type="mule:substitutableBoolean" default="false" use="optional"/>
                 <xsd:attribute name="keepRamlBaseUri" type="mule:substitutableBoolean" default="false" use="optional"/>
-                <xsd:attribute name="disableValidations" type="mule:substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="disableValidations" type="mule:substitutableBoolean" default="false"
+                               use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
                             Do no perform validation of uri parameters, headers, query parameters and body schemas.
@@ -62,25 +71,30 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="queryParamsStrictValidation" type="mule:substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="queryParamsStrictValidation" type="mule:substitutableBoolean" default="false"
+                               use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            Query parameters strict validations, all request query parameters must be defined in the RAML.
+                            Query parameters strict validations, all request query parameters must be defined in the
+                            RAML.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="headersStrictValidation" type="mule:substitutableBoolean" default="false" use="optional">
+                <xsd:attribute name="headersStrictValidation" type="mule:substitutableBoolean" default="false"
+                               use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
                             Headers strict validations, all request headers must be defined in the RAML.
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="parser" default="AUTO" type="parserType" use="optional" >
+                <xsd:attribute name="parser" default="AUTO" type="parserType" use="optional">
                     <xsd:annotation>
                         <xsd:documentation>
-                            The parser to be used for request validation. There are three valid values: AMF, RAML and AUTO.
-                            In case of using AUTO, APIkit will try first with AMF and then, if any error was found, will try with RAML
+                            The parser to be used for request validation. There are three valid values: AMF, RAML and
+                            AUTO.
+                            In case of using AUTO, APIkit will try first with AMF and then, if any error was found, will
+                            try with RAML
 
                             Default value: AUTO
                         </xsd:documentation>
@@ -90,7 +104,7 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:simpleType name="parserType" final="restriction" >
+    <xsd:simpleType name="parserType" final="restriction">
         <xsd:restriction base="mule:nonBlankString">
             <xsd:enumeration value="AMF"/>
             <xsd:enumeration value="AUTO"/>
@@ -142,6 +156,24 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:complexType name="attributes-deserializing-strategies">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractMessageProcessorType">
+                <xsd:attribute name="arrayHeaderDelimiter" type="arrayHeaderDelimiter" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The delimiter to be used for deserializing a header of type array.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
+    <xsd:simpleType name="arrayHeaderDelimiter" final="restriction">
+        <xsd:restriction base="mule:nonBlankString">
+            <xsd:enumeration value="COMMA"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
 </xsd:schema>

@@ -32,11 +32,10 @@ import java.util.Optional;
 
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.HeaderName.ACCEPT;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
 import static org.mule.module.apikit.api.UrlUtils.getBaseUriReplacement;
 import static org.mule.module.apikit.api.UrlUtils.replaceHostInURL;
-import static org.mule.module.apikit.helpers.AttributesHelper.getCommaSeparatedParamValues;
+import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.ConfigURLMapping.INSTANCE;
 
 public class Console extends AbstractComponent implements Processor, Initialisable {
@@ -93,7 +92,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     HttpRequestAttributes attributes = EventHelper.getHttpRequestAttributes(event);
     String listenerPath = attributes.getListenerPath();
     String requestPath = attributes.getRequestPath();
-    String acceptHeader = getCommaSeparatedParamValues(attributes.getHeaders(), ACCEPT.getName());
+    String acceptHeader = getAcceptedResponseMediaTypes(attributes.getHeaders());
     String queryString = attributes.getQueryString();
     String method = attributes.getMethod();
     String host = attributes.getHeaders().get("host");

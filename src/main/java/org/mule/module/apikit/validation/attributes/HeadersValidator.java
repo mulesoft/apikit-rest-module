@@ -7,13 +7,14 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.net.MediaType;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
+import org.mule.module.apikit.deserializing.AttributeDeserializer;
+import org.mule.module.apikit.deserializing.AttributesDeserializerFactory;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.runtime.api.util.MultiMap;
 
@@ -29,10 +30,11 @@ import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
+import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
+import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
-import static org.mule.module.apikit.validation.attributes.MimeTypeParser.bestMatch;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
@@ -48,15 +50,18 @@ public class HeadersValidator {
   }
 
   public MultiMap<String, String> validateAndAddDefaults(MultiMap<String, String> incomingHeaders,
-                                                         boolean headersStrictValidation)
+                                                         boolean headersStrictValidation,
+                                                         AttributesDeserializingStrategies attributesDeserializingStrategy)
       throws InvalidHeaderException, NotAcceptableException {
-    MultiMap<String, String> headersWithDefaults = analyseRequestHeaders(incomingHeaders, headersStrictValidation);
+    MultiMap<String, String> headersWithDefaults =
+        analyseRequestHeaders(incomingHeaders, headersStrictValidation, attributesDeserializingStrategy);
     analyseAcceptHeader(headersWithDefaults);
     return headersWithDefaults;
   }
 
   private MultiMap<String, String> analyseRequestHeaders(MultiMap<String, String> incomingHeaders,
-                                                         boolean headersStrictValidation)
+                                                         boolean headersStrictValidation,
+                                                         AttributesDeserializingStrategies attributesDeserializingStrategy)
       throws InvalidHeaderException {
     if (headersStrictValidation) {
       validateHeadersStrictly(incomingHeaders);
@@ -80,7 +85,7 @@ public class HeadersValidator {
           copyIncomingHeaders.put(ramlHeader, ramlType.getDefaultValue());
         }
         if (!values.isEmpty() && ramlType.isArray()) {
-          values = explodeCommaSeparatedValues(values);
+          values = deserializeValues(values, attributesDeserializingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
           copyIncomingHeaders.removeAll(ramlHeader);
           copyIncomingHeaders.put(ramlHeader, values);
@@ -153,22 +158,11 @@ public class HeadersValidator {
     }
   }
 
-  /**
-   * Takes a list of comma separated values, parses each as a JSON array and returns a list of each single value.
-   *
-   * @param listOfCsv
-   * @return
-   */
-  private List<String> explodeCommaSeparatedValues(List<String> listOfCsv) {
-    try {
-      return listOfCsv.stream().map(v -> "[" + v + "]")
-          .map(JSONArray::new)
-          .collect(ArrayList::new, (list, jsonArray) -> jsonArray.forEach(v -> list.add(v.toString())),
-                   ArrayList::addAll);
-    } catch (JSONException e) {
-      //If there is some issue parsing the value as array continue with the actual value
-    }
-    return listOfCsv;
+  private List<String> deserializeValues(List<String> listOfDelimitedValues,
+                                         AttributesDeserializingStrategies deserializingStrategies) {
+    AttributeDeserializer deserializer =
+        AttributesDeserializerFactory.INSTANCE.getDeserializer(ARRAY_HEADER_DESERIALIZING_STRATEGY, deserializingStrategies);
+    return deserializer.deserializeListOfValues(listOfDelimitedValues);
   }
 
   private void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {
@@ -187,7 +181,7 @@ public class HeadersValidator {
       //no response media-types defined, return no body
       return;
     }
-    MediaType bestMatch = bestMatch(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
+    MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
     if (bestMatch == null) {
       throw new NotAcceptableException();
     }
