@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.api.config;
 
+import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
@@ -33,4 +34,6 @@ public interface ValidationConfig {
   default boolean isHeadersStrictValidation() {
     return false;
   }
+
+  AttributesDeserializingStrategies getAttributesDeserializingStrategies();
 }

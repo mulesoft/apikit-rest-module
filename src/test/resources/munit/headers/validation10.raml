@@ -17,7 +17,7 @@ title: Headers Test Case
         default: "hola-header"
         required: false
 
-/test-array-header:
+/test-array-object-header:
   get:
     headers:
       array-header:
@@ -28,6 +28,53 @@ title: Headers Test Case
           properties:
             type: string
             value: string
+
+/test-array-string-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: string
+
+/test-array-number-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: number
+
+/test-array-enum-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: string
+          enum: ["SFO", "LAX", "CLE", "DAL", "NUY", "PHL", "NJC"]
+
+/test-array-datetime-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: datetime
+
+/test-array-datetime2616-header:
+  get:
+    headers:
+      array-header:
+        required: false
+        type: array
+        items:
+          type: datetime
+          format: rfc2616
 
 /multiplicity:
   get:

@@ -31,12 +31,12 @@ paths:
           schema:
             default: hola-header
             type: string
-  /test-array-header:
+  /test-array-object-header:
     get:
       responses:
         default:
           description: ''
-      operationId: GET_test-array-header
+      operationId: GET_test-array-object-header
       parameters:
         - name: array-header
           in: header
@@ -52,6 +52,60 @@ paths:
               required:
                 - type
                 - value
+  /test-array-string-header:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_test-array-string-header
+      parameters:
+        - name: array-header
+          in: header
+          schema:
+            type: array
+            items:
+              type: string
+  /test-array-number-header:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_test-array-number-header
+      parameters:
+        - name: array-header
+          in: header
+          schema:
+            type: array
+            items:
+              type: number
+  /test-array-enum-header:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_test-array-enum-header
+      parameters:
+        - name: array-header
+          in: header
+          schema:
+            type: array
+            items:
+              type: string
+              enum: ["SFO", "LAX", "CLE", "DAL", "NUY", "PHL", "NJC"]
+  /test-array-datetime-header:
+    get:
+      responses:
+        default:
+          description: ''
+      operationId: GET_test-array-date-header
+      parameters:
+        - name: array-header
+          in: header
+          schema:
+            type: array
+            items:
+              type: string
+              format: date-time
   /multiplicity:
     get:
       responses:
