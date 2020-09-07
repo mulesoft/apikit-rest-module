@@ -1,0 +1,178 @@
+openapi: 3.0.1
+info:
+  title: URI Params Combinations
+  version: "1.0"
+servers:
+  - url: 'https://{apiDomain}.ec2.amazonaws.com/'
+    variables:
+      apiDomain:
+        default: apiDomain
+paths:
+  /noUriParamsOverridden:
+    get:
+      operationId: GET_noUriParamsOverridden
+      responses:
+        '200':
+          description: ""
+    put:
+      operationId: PUT_noUriParamsOverridden
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: false
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+  /templateUriParamsInResource/{testParam}:
+    get:
+      operationId: GET_templateUriParamsInResource-testParam
+      responses:
+        '200':
+          description: ""
+    put:
+      operationId: PUT_templateUriParamsInResource-testParam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: false
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+    parameters:
+      - name: testParam
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            - resource
+  /templateUriParamsInMethods/{testParam}:
+    get:
+      operationId: GET_templateUriParamsInMethods-testParam
+      parameters:
+        - name: testParam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - method-get
+      responses:
+        '200':
+          description: ""
+    put:
+      operationId: PUT_templateUriParamsInMethods-testParam
+      parameters:
+        - name: testParam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - method-put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: false
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+  /templateUriParamsInResourceAndMethods/{testParam}:
+    get:
+      operationId: GET_templateUriParamsInResourceAndMethods-testParam
+      parameters:
+        - name: testParam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - method-get
+      responses:
+        '200':
+          description: ""
+    put:
+      operationId: PUT_templateUriParamsInResourceAndMethods-testParam
+      parameters:
+        - name: testParam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - method-put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: false
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+    parameters:
+      - name: testParam
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            - resource
+  /templateUriParamsInResourceOverriddenInOneMethod/{testParam}:
+    get:
+      operationId: GET_templateUriParamsInResourceOverriddenInOneMethod-testParam
+      parameters:
+        - name: testParam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - resource
+      responses:
+        '200':
+          description: ""
+    put:
+      operationId: PUT_templateUriParamsInResourceOverriddenInOneMethod-testParam
+      parameters:
+        - name: testParam
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - method-put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: false
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+    parameters:
+      - name: testParam
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            - resource
+
