@@ -314,7 +314,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
 
   @Override
   public ApiType getType() {
-    return ramlHandler.getApi().getType() ;
+    return ramlHandler != null ? ramlHandler.getApi().getType() : ApiType.AMF;
   }
 
   @Override
