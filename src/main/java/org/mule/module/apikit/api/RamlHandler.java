@@ -6,14 +6,25 @@
  */
 package org.mule.module.apikit.api;
 
-import static java.util.stream.Collectors.toList;
-import static org.mule.apikit.ApiType.AMF;
-import static org.mule.apikit.ApiType.RAML;
-import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
-import static org.mule.apikit.model.ApiVendor.RAML_08;
-import static org.mule.apikit.model.ApiVendor.RAML_10;
-import static org.mule.parser.service.ParserMode.AUTO;
+import org.apache.commons.io.IOUtils;
+import org.mule.amf.impl.model.AMFImpl;
+import org.mule.apikit.ApiType;
+import org.mule.apikit.loader.ApiSyncResourceLoader;
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.ApiVendor;
+import org.mule.apikit.model.api.ApiReference;
+import org.mule.module.apikit.StreamUtils;
+import org.mule.module.apikit.exception.NotFoundException;
+import org.mule.parser.service.ParserMode;
+import org.mule.parser.service.ParserService;
+import org.mule.parser.service.result.ParseResult;
+import org.mule.parser.service.result.ParsingIssue;
+import org.mule.runtime.api.exception.ErrorTypeRepository;
+import org.mule.runtime.api.exception.TypedException;
+import org.raml.model.ActionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,28 +37,18 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
-
-import org.mule.amf.impl.model.AMFImpl;
-import org.mule.apikit.ApiType;
-import org.mule.module.apikit.StreamUtils;
-import org.mule.module.apikit.exception.NotFoundException;
-import org.mule.parser.service.ParserMode;
-import org.mule.parser.service.ParserService;
-import org.mule.apikit.loader.ApiSyncResourceLoader;
-import org.mule.apikit.model.ApiVendor;
-import org.mule.apikit.model.Action;
-import org.mule.apikit.model.ApiSpecification;
-import org.mule.apikit.model.api.ApiReference;
-import org.mule.parser.service.result.ParseResult;
-import org.mule.runtime.api.exception.ErrorTypeRepository;
-import org.mule.runtime.api.exception.TypedException;
-
-import org.raml.model.ActionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static org.mule.apikit.ApiType.AMF;
+import static org.mule.apikit.ApiType.RAML;
+import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
+import static org.mule.apikit.model.ApiVendor.RAML_08;
+import static org.mule.apikit.model.ApiVendor.RAML_10;
+import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.parser.service.ParserMode.AUTO;
+import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 
 public class RamlHandler {
 
@@ -93,9 +94,10 @@ public class RamlHandler {
     if (rootRamlLocation == null) {
       throw new IOException("Raml not found at: " + ramlLocation);
     }
-
-    result = parserService.parse(ApiReference.create(rootRamlLocation), parserMode == null ? AUTO : parserMode);
+    ApiReference apiReference = ApiReference.create(rootRamlLocation);
+    result = parserService.parse(apiReference, parserMode == null ? AUTO : parserMode);
     if (result.success()) {
+      logWarnings();
       this.api = result.get();
       int idx = rootRamlLocation.lastIndexOf("/");
       if (idx > 0) {
@@ -107,8 +109,15 @@ public class RamlHandler {
       this.acceptedClasspathResources = getAcceptedClasspathResources(api, apiResourcesRelativePath);
       this.errorTypeRepository = errorTypeRepository;
     } else {
-      String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(Collectors.joining(" \n"));
+      String errors = result.getErrors().stream().map(e -> "  - " + e.cause()).collect(joining(" \n"));
       throw new RuntimeException("Errors while parsing RAML file in [" + parserMode + "] mode: \n" + errors);
+    }
+  }
+
+  private void logWarnings() {
+    List<ParsingIssue> warnings = result.getWarnings();
+    if (isNotEmpty(warnings)) {
+      LOGGER.warn(getBoilerPlate(warnings.stream().map(e -> "  - " + e.cause()).collect(joining(" \n"))));
     }
   }
 

@@ -22,6 +22,7 @@ import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -156,6 +157,11 @@ public class RamlHandlerTestCase {
     List<String> refs = api.getAllReferences();
     assertTrue(refs.stream().anyMatch(ref -> ref.endsWith("unit/space%20in%20path%20api/example.json")));
     assertTrue(refs.stream().anyMatch(ref -> ref.endsWith("unit/space%20in%20path%20api/more%20spaces/schema.json")));
+  }
+
+  @Test
+  public void oas30WithUnsupportedFeatures() {
+    assertNotNull(createRamlHandler("unit/raml-handler/oas30-api.yaml", true, ParserMode.AMF));
   }
 
   private <A extends Exception, B> void assertException(String message, Supplier<B> supplier) {
