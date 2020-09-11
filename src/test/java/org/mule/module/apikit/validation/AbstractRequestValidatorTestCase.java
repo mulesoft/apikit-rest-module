@@ -6,30 +6,25 @@
  */
 package org.mule.module.apikit.validation;
 
-import static org.mule.apikit.model.api.ApiReference.create;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.mule.extension.http.api.HttpRequestAttributes;
+import org.mule.extension.http.api.HttpRequestAttributesBuilder;
+import org.mule.module.apikit.api.config.ValidationConfig;
+import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.util.MultiMap;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import javax.xml.validation.Schema;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.mule.apikit.model.Resource;
-import org.mule.extension.http.api.HttpRequestAttributes;
-import org.mule.extension.http.api.HttpRequestAttributesBuilder;
-import org.mule.module.apikit.api.RoutingTable;
-import org.mule.module.apikit.api.config.ValidationConfig;
-import org.mule.module.apikit.api.exception.MuleRestException;
-import org.mule.module.apikit.api.uri.URIPattern;
-import org.mule.module.apikit.api.uri.URIResolver;
-import org.mule.module.apikit.api.uri.URIResolver.MatchRule;
-import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
-import org.mule.module.apikit.api.validation.ValidRequest;
-import org.mule.parser.service.ParserMode;
-import org.mule.parser.service.ParserService;
-import org.mule.runtime.api.util.MultiMap;
-import org.mule.runtime.core.api.el.ExpressionManager;
+
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+import static org.junit.Assert.assertNotNull;
+import static org.mule.apikit.model.api.ApiReference.create;
 
 
 /**
@@ -38,9 +33,12 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 @RunWith(Parameterized.class)
 public abstract class AbstractRequestValidatorTestCase {
 
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+  protected TestRestRequestValidatorBuilder testRestRequestValidatorBuilder;
+
   @Parameter(0)
   public ParserMode parser;
-
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> data() {
@@ -50,124 +48,114 @@ public abstract class AbstractRequestValidatorTestCase {
     });
   }
 
-  /**
-   * @return complete path
-   */
-  protected abstract String getPath();
-
-  /**
-   * @return path relative to http.listener path attribute
-   */
-  protected abstract String getRelativePath();
-
-  /**
-   * @return HTTP request method
-   */
-  protected abstract String getMethod();
-
-  /**
-   * @return HTTP request query params
-   */
-  protected MultiMap<String, String> getQueryParams() {
-    return new MultiMap<>();
+  @Before
+  public void setup() {
+    testRestRequestValidatorBuilder = new TestRestRequestValidatorBuilder();
   }
 
-  /**
-   * @return HTTP request uri params, always empty, uri params are resolved
-   * by apikit using api specification
-   */
-  private MultiMap<String, String> getUriParams() {
-    return new MultiMap<>();
-  }
+  protected class TestRestRequestValidatorBuilder {
 
-  /**
-   * @return HTTP request headers to be validated
-   */
-  protected MultiMap<String, String> getHeaders() {
-    return new MultiMap<>();
-  }
+    private HttpRequestAttributesBuilder httpRequestAttributesBuilder;
+    private String apiLocation;
+    private String method;
+    private String relativePath;
+    private String requestPath;
+    private String rawRequestPath;
+    private String charset;
+    private InputStream body;
+    private ValidationConfig validationConfig;
 
-  /**
-   * @return path to api definition
-   */
-  protected abstract String getApiLocation();
+    public TestRestRequestValidatorBuilder() {
+      httpRequestAttributesBuilder =
+          new HttpRequestAttributesBuilder()
+              .listenerPath("/api/*")
+              .version("1")
+              .scheme("http")
+              .requestUri("/")
+              .rawRequestUri("/")
+              .localAddress("")
+              .queryString("")
+              .remoteAddress("");
+    }
 
-  /**
-   * @return default ValidationConfig interface implementation, override this method if needed
-   */
-  protected ValidationConfig getValidationConfig() {
-    return new ValidationConfig() {
+    public TestRestRequestValidatorBuilder withRelativePath(String relativePath) {
+      this.relativePath = relativePath;
+      return this;
+    }
 
-      @Override
-      public boolean isParserV2() {
-        return true;
-      }
+    public TestRestRequestValidatorBuilder withRequestPath(String requestPath) {
+      this.requestPath = requestPath;
+      return this;
+    }
 
-      @Override
-      public ApiKitJsonSchema getJsonSchema(String schemaPath) {
-        return null;
-      }
+    public TestRestRequestValidatorBuilder withRawRequestPath(String rawRequestPath) {
+      this.rawRequestPath = rawRequestPath;
+      return this;
+    }
 
-      @Override
-      public Schema getXmlSchema(String schemaPath) {
-        return null;
-      }
+    public TestRestRequestValidatorBuilder withMethod(String method) {
+      this.method = method;
+      return this;
+    }
 
-      @Override
-      public ExpressionManager getExpressionManager() {
-        return null;
-      }
-    };
-  }
+    public TestRestRequestValidatorBuilder withQueryParams(MultiMap<String, String> queryParams) {
+      this.httpRequestAttributesBuilder.queryParams(queryParams);
+      return this;
+    }
 
-  /**
-   * @return body to be validated
-   */
-  protected abstract InputStream getBody();
+    public TestRestRequestValidatorBuilder withUriParams(MultiMap<String, String> uriParams) {
+      this.httpRequestAttributesBuilder.uriParams(uriParams);
+      return this;
+    }
 
-  /**
-   * @return body charset
-   */
-  protected String getCharset() {
-    return null;
-  }
+    public TestRestRequestValidatorBuilder withListenerPath(String listenerPath) {
+      this.httpRequestAttributesBuilder.listenerPath(listenerPath);
+      return this;
+    }
 
-  /**
-   * @return Execute RestRequestValidator.validate method
-   * @throws MuleRestException when request is invalid
-   */
-  protected ValidRequest validateRequest() throws MuleRestException {
-    HttpRequestAttributes attributes =
-        new HttpRequestAttributesBuilder()
-            .headers(getHeaders())
-            .listenerPath("/api/*")
-            .method(getMethod())
-            .version("1")
-            .scheme("http")
-            .relativePath(getPath())
-            .requestPath(getPath())
-            .rawRequestPath(getPath())
-            .requestUri("/")
-            .rawRequestUri("/")
-            .localAddress("")
-            .queryString("")
-            .queryParams(getQueryParams())
-            .uriParams(getUriParams())
-            .remoteAddress("")
-            .build();
+    public TestRestRequestValidatorBuilder withHeaders(MultiMap<String, String> headers) {
+      this.httpRequestAttributesBuilder.headers(headers);
+      return this;
+    }
 
-    RoutingTable routingTable = new RoutingTable(
-                                                 new ParserService()
-                                                     .parse(create(getApiLocation()), parser)
-                                                     .get());
+    public TestRestRequestValidatorBuilder withApiLocation(String apiLocation) {
+      this.apiLocation = apiLocation;
+      return this;
+    }
 
-    URIResolver uriResolver = new URIResolver(getRelativePath());
-    URIPattern pattern = uriResolver.find(routingTable.keySet(), MatchRule.BEST_MATCH);
-    Resource resource = routingTable.getResource(pattern);
+    public TestRestRequestValidatorBuilder withValidationConfig(ValidationConfig validationConfig) {
+      this.validationConfig = validationConfig;
+      return this;
+    }
 
-    RestRequestValidator requestValidator = new RestRequestValidator(getValidationConfig(), resource, null);
+    public TestRestRequestValidatorBuilder withBody(InputStream body) {
+      this.body = body;
+      return this;
+    }
 
-    return requestValidator.validate(uriResolver.resolve(pattern), attributes, getCharset(), getBody());
+    public TestRestRequestValidatorBuilder withCharset(String payloadCharset) {
+      this.charset = payloadCharset;
+      return this;
+    }
+
+    public TestRestRequestValidator build() {
+      validateMandatory();
+      HttpRequestAttributes httpRequestAttributes = httpRequestAttributesBuilder
+          .method(method)
+          .relativePath(relativePath)
+          .requestPath(requestPath)
+          .rawRequestPath(isNoneBlank(rawRequestPath) ? rawRequestPath : relativePath)
+          .build();
+      return new TestRestRequestValidator(relativePath, parser, create(apiLocation), charset, body, httpRequestAttributes,
+                                          validationConfig);
+    }
+
+    private void validateMandatory() {
+      assertNotNull("API location is mandatory for the test to run", apiLocation);
+      assertNotNull("Request path is mandatory for the test to run", requestPath);
+      assertNotNull("Relative path is mandatory for the test to run", relativePath);
+      assertNotNull("Method is mandatory for the test to run", method);
+    }
   }
 
 }

@@ -1,0 +1,173 @@
+#%RAML 0.8
+---
+title: URI Params Combinations
+version: 1.0
+baseUri: https://{apiDomain}.ec2.amazonaws.com
+baseUriParameters:
+  apiDomain:
+    enum: [ "domain" ]
+
+/noUriParamsOverridden:
+  get:
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/noUriParamsButRequired/{testParam}:
+  get:
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/templateUriParamsInResource/{testParam}:
+  uriParameters:
+    testParam:
+      enum: [ "resource" ]
+  get:
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/baseUriParamsOverriddenInResource/{testParam}:
+  uriParameters:
+    testParam:
+      enum: [ "resource" ]
+    #  baseUriParameters: --> This is not supported by AMF at the same level that uriParameters declaration
+    apiDomain:
+      enum: [ "resource-domain" ]
+  get:
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/baseUriParamsOverriddenInMethods/{testParam}:
+  uriParameters:
+    testParam:
+      enum: [ "resource" ]
+  get:
+    baseUriParameters:
+      apiDomain:
+        enum: [ "domain-get" ]
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    baseUriParameters:
+      apiDomain:
+        enum: [ "domain-put" ]
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/baseUriParamsOverriddenInResourceAndMethods/{testParam}:
+  uriParameters:
+    testParam:
+      enum: [ "resource" ]
+    #  baseUriParameters: --> This is not supported by AMF at the same level that uriParameters declaration
+    apiDomain:
+      enum: [ "resource-domain" ]
+  get:
+    baseUriParameters:
+      apiDomain:
+        enum: [ "domain-get" ]
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    baseUriParameters:
+      apiDomain:
+        enum: [ "domain-put" ]
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/baseUriParamsOverriddenInOneMethod/{testParam}:
+  uriParameters:
+    testParam:
+      enum: [ "resource" ]
+  get:
+    baseUriParameters:
+      apiDomain:
+        enum: [ "domain-get" ]
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
+
+/baseUriParamsOverriddenInResourceAndOneMethod/{testParam}:
+  uriParameters:
+    testParam:
+      enum: [ "resource" ]
+    #  baseUriParameters: --> This is not supported by AMF at the same level that uriParameters declaration
+    apiDomain:
+      enum: [ "resource-domain" ]
+  get:
+    description:
+    responses:
+      200:
+        body:
+          application/json:
+  put:
+    baseUriParameters:
+      apiDomain:
+        enum: [ "domain-put" ]
+    description:
+    body:
+      application/json:
+    responses:
+      204:
+      404:
