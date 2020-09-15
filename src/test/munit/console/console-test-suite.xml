@@ -71,7 +71,8 @@
     <munit:execution>
       <http:request method="GET" config-ref="http-requester-simple" path="/console/" target="console"
                     targetValue="#[message]"/>
-      <http:request method="GET" config-ref="http-requester-simple" path="/console/bower_components/prism/plugins/autolinker/prism-autolinker.min.js" target="consoleAmfInclude"
+      <http:request method="GET" config-ref="http-requester-simple" path="/console/package/build/vendor.js"
+                    target="consoleAmfInclude"
                     targetValue="#[attributes.statusCode]"/>
     </munit:execution>
     <munit:validation>
