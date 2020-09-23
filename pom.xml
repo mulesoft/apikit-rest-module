@@ -11,7 +11,7 @@
     <description>Module for creating REST APIs</description>
 
     <properties>
-        <mule.version>4.1.5</mule.version>
+        <mule.version>4.4.0-20200922</mule.version>
         <licensePath>LICENSE_HEADER.txt</licensePath>
         <formatterConfigPath>formatter.xml</formatterConfigPath>
         <testExtensionModelLoaderId>crafted</testExtensionModelLoaderId>
