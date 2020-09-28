@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.api.deserializing;
 
-import org.mule.module.apikit.deserializing.ArrayHeaderDelimiter;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 /**

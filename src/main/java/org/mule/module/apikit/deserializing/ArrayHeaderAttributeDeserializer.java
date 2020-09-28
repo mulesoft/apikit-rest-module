@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit.deserializing;
 
+import org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
+import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 
 /**
  * MIME-Type Parser
