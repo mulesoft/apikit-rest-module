@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.deserializing;
 
+import org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 
 /**

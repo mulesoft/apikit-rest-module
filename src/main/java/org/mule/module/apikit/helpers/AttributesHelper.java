@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.mule.module.apikit.HeaderName.ACCEPT;
 import static org.mule.module.apikit.HeaderName.CONTENT_TYPE;
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
+import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
 public class AttributesHelper {

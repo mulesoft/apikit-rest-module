@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mule.module.apikit.MockingUtils.createEnumValue;
-import static org.mule.module.apikit.deserializing.ArrayHeaderDelimiter.COMMA;
+import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 
 @RunWith(Parameterized.class)
 public class ArrayHeaderAttributeDeserializerTest {
