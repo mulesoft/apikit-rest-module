@@ -87,7 +87,7 @@ public class HeadersValidator {
         if (!values.isEmpty() && ramlType.isArray()) {
           values = deserializeValues(values, attributesDeserializingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
-          copyIncomingHeaders.removeAll(ramlHeader);
+          copyIncomingHeaders.remove(ramlHeader);
           copyIncomingHeaders.put(ramlHeader, values);
         }
         validateHeader(values, ramlHeader, ramlType);
