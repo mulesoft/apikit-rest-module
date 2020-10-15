@@ -9,15 +9,21 @@ package org.mule.module.apikit.utils;
 import org.mule.runtime.api.meta.MuleVersion;
 import org.mule.runtime.core.api.config.MuleManifest;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 public class MuleVersionUtils {
 
   private MuleVersionUtils(){ }
 
   public static boolean isAtLeast(String version) {
+    if (isBlank(version)) {
+      return false;
+    }
     try {
-      return new MuleVersion(MuleManifest.getProductVersion()).atLeast(version);
+      return new MuleVersion(MuleManifest.getProductVersion().split("-")[0]).atLeast(version);
     } catch (IllegalArgumentException e) {
       return false;
     }
   }
+
 }
