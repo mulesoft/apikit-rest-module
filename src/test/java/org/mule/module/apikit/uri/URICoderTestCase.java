@@ -43,6 +43,12 @@ public class URICoderTestCase {
   }
 
   @Test
+  public void encodedColonIsCorrect() {
+    assertThat(URICoder.encodeRequestPath("api/uri-param/AA%3A11%2070/test"),
+               equalTo("api/uri-param/AA%3A11%2070/test"));
+  }
+
+  @Test
   public void encodeRequestPathWithoutReservedChars() {
     assertThat(URICoder.encodeRequestPath("api/uri-param/AA00000070/test"), equalTo("api/uri-param/AA00000070/test"));
   }

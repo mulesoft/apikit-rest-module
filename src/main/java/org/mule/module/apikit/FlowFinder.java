@@ -6,18 +6,9 @@
  */
 package org.mule.module.apikit;
 
-import static java.lang.String.format;
-import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.api.FlowUtils.getFlowsList;
-import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
-import static org.mule.module.apikit.helpers.FlowName.FLOW_NAME_SEPARATOR;
-import static org.mule.module.apikit.helpers.FlowName.URL_RESOURCE_SEPARATOR;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.mule.apikit.model.Action;
+import org.mule.apikit.model.ApiSpecification;
+import org.mule.apikit.model.Resource;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.uri.URIPattern;
@@ -25,14 +16,24 @@ import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.exception.NotImplementedException;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.module.apikit.helpers.FlowName;
-import org.mule.apikit.model.Action;
-import org.mule.apikit.model.ApiSpecification;
-import org.mule.apikit.model.Resource;
+import org.mule.module.apikit.uri.URICoder;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.core.api.construct.Flow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.String.format;
+import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.module.apikit.api.FlowUtils.getFlowsList;
+import static org.mule.module.apikit.helpers.AttributesHelper.getMediaType;
+import static org.mule.module.apikit.helpers.FlowName.FLOW_NAME_SEPARATOR;
+import static org.mule.module.apikit.helpers.FlowName.URL_RESOURCE_SEPARATOR;
 
 
 public class FlowFinder {
@@ -153,7 +154,7 @@ public class FlowFinder {
 
   private String validateRestFlowKeyAgainstApi(String... coords) {
     String method = coords[0];
-    String resource = coords[1];
+    String resource = URICoder.decode(coords[1]);
     String type = coords.length == 3 ? coords[2] : null;
     String key = format("%s:%s", method, resource);
 
