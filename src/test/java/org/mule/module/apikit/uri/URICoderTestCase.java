@@ -6,12 +6,12 @@
  */
 package org.mule.module.apikit.uri;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 public class URICoderTestCase {
 
@@ -20,8 +20,8 @@ public class URICoderTestCase {
 
   @Test
   public void encodeCorrectEncodedURI() {
-    assertThat(URICoder.encodeRequestPath("api/uri-param/AA%2F11%2F00000070/test"),
-               equalTo("api/uri-param/AA%2F11%2F00000070/test"));
+    assertThat(URICoder.encodeRequestPath("api/uri-param/AA%2F11%2F000000%2A70/test"),
+               equalTo("api/uri-param/AA%2F11%2F000000%2A70/test"));
   }
 
   @Test
@@ -31,9 +31,21 @@ public class URICoderTestCase {
   }
 
   @Test
-  public void halfEncoding() {
+  public void halfEncodingIsIncorrect() {
     expectedException.expectMessage("Request path contains special characters not encoded");
-    URICoder.encodeRequestPath("api/uri-param/AA:11%2070/test");
+    URICoder.encodeRequestPath("api/uri-param/AA11%20*70/test");
+  }
+
+  @Test
+  public void colonInEncodedIsCorrect() {
+    assertThat(URICoder.encodeRequestPath("api/uri-param/AA:11%2070/test"),
+               equalTo("api/uri-param/AA:11%2070/test"));
+  }
+
+  @Test
+  public void encodedColonIsCorrect() {
+    assertThat(URICoder.encodeRequestPath("api/uri-param/AA%3A11%2070/test"),
+               equalTo("api/uri-param/AA%3A11%2070/test"));
   }
 
   @Test
