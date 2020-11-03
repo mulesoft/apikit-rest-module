@@ -7,6 +7,8 @@
 
 package org.mule.module.apikit.uri;
 
+import org.mule.module.apikit.api.exception.ApikitRuntimeException;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
@@ -14,7 +16,6 @@ import java.text.Normalizer.Form;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 
 /**
  * An encoder/decoder for use by URI templates.
@@ -57,9 +58,9 @@ public class URICoder {
   private final static int ENCODE_INITIAL_CAPACITY = 16;
 
   /**
-   *  Reserved chars, not considered when detecting bad encoding
+   * Reserved chars, not considered when detecting bad encoding
    */
-  private final static Set<Character> skipChars = new HashSet<>(Arrays.asList('/', '{', '}', '%'));
+  private final static Set<Character> skipChars = new HashSet<>(Arrays.asList('/', '{', '}', '%', ':'));
 
   /**
    *  Reserved chars, not considered when encoding request path
