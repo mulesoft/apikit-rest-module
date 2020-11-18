@@ -35,7 +35,9 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.joining;
@@ -87,6 +89,16 @@ public class RamlHandler {
                      ErrorTypeRepository errorTypeRepository,
                      ParserMode parserMode)
       throws IOException {
+
+    this(executor, ramlLocation, keepApiBaseUri, errorTypeRepository, parserMode, RamlHandler::logWarnings);
+  }
+
+  public RamlHandler(ScheduledExecutorService executor,
+                     String ramlLocation,
+                     boolean keepApiBaseUri,
+                     ErrorTypeRepository errorTypeRepository,
+                     ParserMode parserMode, BiConsumer<Logger, List<ParsingIssue>> logWarningsFunction)
+      throws IOException {
     this.parserService = new ParserService(executor);
     this.keepApiBaseUri = keepApiBaseUri;
     String rootRamlLocation = findRootRaml(ramlLocation);
@@ -97,7 +109,7 @@ public class RamlHandler {
     ApiReference apiReference = ApiReference.create(rootRamlLocation);
     result = parserService.parse(apiReference, parserMode == null ? AUTO : parserMode);
     if (result.success()) {
-      logWarnings();
+      logWarningsFunction.accept(LOGGER, result.getWarnings());
       this.api = result.get();
       int idx = rootRamlLocation.lastIndexOf("/");
       if (idx > 0) {
@@ -114,10 +126,9 @@ public class RamlHandler {
     }
   }
 
-  private void logWarnings() {
-    List<ParsingIssue> warnings = result.getWarnings();
-    if (isNotEmpty(warnings)) {
-      LOGGER.warn(getBoilerPlate(warnings.stream().map(e -> "  - " + e.cause()).collect(joining(" \n"))));
+  private static void logWarnings(Logger logger, List<ParsingIssue> parsingIssues) {
+    if (isNotEmpty(parsingIssues)) {
+      logger.warn(getBoilerPlate(parsingIssues.stream().map(e -> "  - " + e.cause()).collect(joining(" \n"))));
     }
   }
 
