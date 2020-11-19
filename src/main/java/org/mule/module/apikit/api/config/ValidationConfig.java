@@ -35,5 +35,7 @@ public interface ValidationConfig {
     return false;
   }
 
-  AttributesDeserializingStrategies getAttributesDeserializingStrategies();
+  default AttributesDeserializingStrategies getAttributesDeserializingStrategies() {
+    return new AttributesDeserializingStrategies();
+  }
 }
