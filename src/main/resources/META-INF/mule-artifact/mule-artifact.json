@@ -27,7 +27,8 @@
         "org.mule.module.apikit.api.deserializing",
         "org.mule.module.apikit.spi",
         "org.mule.apikit.model",
-        "org.mule.parser.service"
+        "org.mule.parser.service",
+        "org.mule.parser.service.result"
       ],
       "exportedResources": [
         "/META-INF/",
