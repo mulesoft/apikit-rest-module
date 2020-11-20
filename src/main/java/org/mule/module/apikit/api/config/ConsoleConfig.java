@@ -8,7 +8,6 @@ package org.mule.module.apikit.api.config;
 
 import org.mule.apikit.ApiType;
 import org.mule.module.apikit.api.RamlHandler;
-import org.mule.parser.service.ParserMode;
 
 public interface ConsoleConfig {
 
