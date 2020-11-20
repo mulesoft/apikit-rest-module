@@ -17,7 +17,7 @@ import org.mule.apikit.model.api.ApiReference;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.parser.service.ParserMode;
-import org.mule.parser.service.ParserService;
+import org.mule.parser.service.internal.ParserService;
 import org.mule.parser.service.result.ParsingIssue;
 import org.mule.parser.service.result.internal.ParseResult;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
