@@ -19,7 +19,7 @@ import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.parser.service.ParserMode;
-import org.mule.parser.service.internal.ParserService;
+import org.mule.parser.service.ParserService;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
 import javax.xml.validation.Schema;
