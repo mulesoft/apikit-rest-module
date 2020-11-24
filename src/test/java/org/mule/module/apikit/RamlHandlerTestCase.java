@@ -12,12 +12,19 @@ import org.mule.apikit.model.ApiSpecification;
 import org.mule.apikit.model.ApiVendor;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.parser.service.ParserMode;
+import org.mule.parser.service.result.DefaultParsingIssue;
+import org.mule.parser.service.result.ParsingIssue;
+import org.mule.parser.service.result.UnsupportedParsingIssue;
 import org.mule.runtime.core.api.MuleContext;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.core.StringContains.containsString;
@@ -32,6 +39,8 @@ import static org.mule.parser.service.ParserMode.AUTO;
 
 public class RamlHandlerTestCase {
 
+  private static final String UNSUPPORTED_FEATURE_CAUSE = "Unsupported Feature Cause";
+  private static final String TEST_CAUSE = "Test Cause";
   private static MuleContext muleContext;
 
   @BeforeClass
@@ -164,6 +173,27 @@ public class RamlHandlerTestCase {
     assertNotNull(createRamlHandler("unit/raml-handler/oas30-api.yaml", true, ParserMode.AMF));
   }
 
+  @Test
+  public void testFilteringOutUnsupportedParsingIssue() throws Exception {
+    RamlHandler ramlHandler = mock(RamlHandler.class);
+    Class[] cArg = new Class[2];
+    cArg[0] = List.class;
+    cArg[1] = boolean.class;
+    Method getFilteredParsingIssueStream = RamlHandler.class.getDeclaredMethod("getFilteredParsingIssueStream", cArg);
+    getFilteredParsingIssueStream.setAccessible(true);
+    List<ParsingIssue> parsingIssues =
+        Arrays.asList(new DefaultParsingIssue(TEST_CAUSE), new UnsupportedParsingIssue(UNSUPPORTED_FEATURE_CAUSE));
+    Stream<ParsingIssue> result = (Stream<ParsingIssue>) getFilteredParsingIssueStream.invoke(ramlHandler, parsingIssues, true);
+    List<String> collectedResults = result.map(e -> e.cause()).collect(toList());
+    assertEquals(1, collectedResults.size());
+    assertEquals(TEST_CAUSE, collectedResults.get(0));
+    result = (Stream<ParsingIssue>) getFilteredParsingIssueStream.invoke(ramlHandler, parsingIssues, false);
+    collectedResults = result.map(e -> e.cause()).collect(toList());
+    assertEquals(2, collectedResults.size());
+    assertEquals(TEST_CAUSE, collectedResults.get(0));
+    assertEquals(UNSUPPORTED_FEATURE_CAUSE, collectedResults.get(1));
+  }
+
   private <A extends Exception, B> void assertException(String message, Supplier<B> supplier) {
     try {
       supplier.get();
@@ -182,8 +212,14 @@ public class RamlHandlerTestCase {
   }
 
   private RamlHandler createRamlHandler(String ramlPath, boolean keepRamlBaseUri, ParserMode parser) {
+    return createRamlHandler(ramlPath, keepRamlBaseUri, parser, false);
+  }
+
+  private RamlHandler createRamlHandler(String ramlPath, boolean keepRamlBaseUri, ParserMode parser,
+                                        boolean filterUnsupportedLogging) {
     try {
-      return new RamlHandler(null, ramlPath, keepRamlBaseUri, muleContext.getErrorTypeRepository(), parser);
+      return new RamlHandler(null, ramlPath, keepRamlBaseUri, muleContext.getErrorTypeRepository(), parser,
+                             filterUnsupportedLogging);
     } catch (IOException e) {
       throw new RuntimeException("Error creating RamlHandler", e);
     }

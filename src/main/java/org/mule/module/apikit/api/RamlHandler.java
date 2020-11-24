@@ -20,6 +20,7 @@ import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
 import org.mule.parser.service.result.ParseResult;
 import org.mule.parser.service.result.ParsingIssue;
+import org.mule.parser.service.result.UnsupportedParsingIssue;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.TypedException;
 import org.raml.model.ActionType;
@@ -35,10 +36,9 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -90,14 +90,14 @@ public class RamlHandler {
                      ParserMode parserMode)
       throws IOException {
 
-    this(executor, ramlLocation, keepApiBaseUri, errorTypeRepository, parserMode, RamlHandler::logWarnings);
+    this(executor, ramlLocation, keepApiBaseUri, errorTypeRepository, parserMode, false);
   }
 
   public RamlHandler(ScheduledExecutorService executor,
                      String ramlLocation,
                      boolean keepApiBaseUri,
                      ErrorTypeRepository errorTypeRepository,
-                     ParserMode parserMode, BiConsumer<Logger, List<ParsingIssue>> logWarningsFunction)
+                     ParserMode parserMode, boolean filterUnsupportedLogging)
       throws IOException {
     this.parserService = new ParserService(executor);
     this.keepApiBaseUri = keepApiBaseUri;
@@ -109,7 +109,7 @@ public class RamlHandler {
     ApiReference apiReference = ApiReference.create(rootRamlLocation);
     result = parserService.parse(apiReference, parserMode == null ? AUTO : parserMode);
     if (result.success()) {
-      logWarningsFunction.accept(LOGGER, result.getWarnings());
+      logWarnings(result.getWarnings(), filterUnsupportedLogging);
       this.api = result.get();
       int idx = rootRamlLocation.lastIndexOf("/");
       if (idx > 0) {
@@ -126,10 +126,18 @@ public class RamlHandler {
     }
   }
 
-  private static void logWarnings(Logger logger, List<ParsingIssue> parsingIssues) {
+  private void logWarnings(List<ParsingIssue> parsingIssues, boolean filterUnsupportedLogging) {
     if (isNotEmpty(parsingIssues)) {
-      logger.warn(getBoilerPlate(parsingIssues.stream().map(e -> "  - " + e.cause()).collect(joining(" \n"))));
+      LOGGER
+          .warn(getBoilerPlate(getFilteredParsingIssueStream(parsingIssues, filterUnsupportedLogging).map(e -> "  - " + e.cause())
+              .collect(joining(" \n"))));
     }
+  }
+
+  private Stream<ParsingIssue> getFilteredParsingIssueStream(List<ParsingIssue> parsingIssues, boolean filterUnsupportedLogging) {
+    return parsingIssues.stream()
+        .filter(issue -> !(issue instanceof UnsupportedParsingIssue)
+            || (issue instanceof UnsupportedParsingIssue && !filterUnsupportedLogging));
   }
 
   private List<String> getAcceptedClasspathResources(ApiSpecification api, String apiResourcesRelativePath) {
