@@ -18,8 +18,8 @@ import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.exception.NotFoundException;
 import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
+import org.mule.parser.service.result.ParseResult;
 import org.mule.parser.service.result.ParsingIssue;
-import org.mule.parser.service.result.internal.ParseResult;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.exception.TypedException;
 import org.raml.model.ActionType;
@@ -35,6 +35,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
@@ -322,9 +323,8 @@ public class RamlHandler {
   public String getSuccessStatusCode(Action action) {
 
     for (String status : action.getResponses().keySet()) {
-      if ("default".equalsIgnoreCase(status)) {
+      if ("default".equalsIgnoreCase(status))
         break;
-      }
 
       int code = Integer.parseInt(status);
       if (code >= 200 && code < 300) {
