@@ -38,6 +38,13 @@ types:
           body:
             application/json:
               type: ApplyCreditMemoType
+
+/customers/{customerID}/applications/{applicationID}:
+  post:
+    body:
+      application/json:
+        type: ApplyCreditMemoType
+
 /mapping:
   get:
     responses:
