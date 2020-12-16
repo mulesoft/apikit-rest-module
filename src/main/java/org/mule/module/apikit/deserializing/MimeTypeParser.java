@@ -76,7 +76,9 @@ public class MimeTypeParser {
       fullType = "*/*";
     }
     String[] types = StringUtils.split(fullType, "/");
-    results.type = types[0].trim();
+    if (types.length > 0) {
+      results.type = types[0].trim();
+    }
     if (types.length > 1) {
       results.subType = types[1].trim();
     }
@@ -154,11 +156,15 @@ public class MimeTypeParser {
     float bestFitQ = 0;
     ParseResults target = parseMediaRange(mimeType);
 
+    if (target.type == null || target.subType == null) {
+      return new FitnessAndQuality(bestFitness, bestFitQ);
+    }
+
     for (ParseResults range : parsedRanges) {
-      if ((target.type.equalsIgnoreCase(range.type) || range.type.equals("*") || target.type
+      if ((target.type.equalsIgnoreCase(range.type) || (range.type != null && range.type.equals("*")) || target.type
           .equals("*"))
           && (target.subType.equalsIgnoreCase(range.subType)
-              || range.subType.equals("*") || target.subType
+              || (range.subType != null && range.subType.equals("*")) || target.subType
                   .equals("*"))) {
         for (String k : target.params.keySet()) {
           int paramMatches = 0;
@@ -201,8 +207,9 @@ public class MimeTypeParser {
    */
   public static MediaType bestMatchForAcceptHeader(List<String> supportedRepresentations, String header) {
     List<ParseResults> parseResults = new LinkedList<>();
-    for (String r : StringUtils.split(header, COMMA.getDelimiterValue()))
+    for (String r : StringUtils.split(header, COMMA.getDelimiterValue())) {
       parseResults.add(parseMediaRange(r));
+    }
 
     List<FitnessAndQuality> weightedMatches = new LinkedList<>();
     String quality = "1"; //first representation defined
