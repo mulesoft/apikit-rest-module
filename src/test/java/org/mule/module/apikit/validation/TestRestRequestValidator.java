@@ -11,7 +11,6 @@ import org.mule.apikit.model.api.ApiReference;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.config.ValidationConfig;
-import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
@@ -66,10 +65,6 @@ public class TestRestRequestValidator {
         return null;
       }
 
-      @Override
-      public AttributesDeserializingStrategies getAttributesDeserializingStrategies() {
-        return null;
-      }
     };
   }
 
