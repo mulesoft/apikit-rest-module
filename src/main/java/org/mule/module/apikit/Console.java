@@ -6,6 +6,11 @@
  */
 package org.mule.module.apikit;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.zip.GZIPOutputStream;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.UrlUtils;
 import org.mule.module.apikit.api.console.ConsoleResources;
@@ -15,7 +20,13 @@ import org.mule.module.apikit.helpers.EventHelper;
 import org.mule.module.apikit.helpers.EventWrapper;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
+import org.mule.runtime.api.lifecycle.Disposable;
 import org.mule.runtime.api.lifecycle.Initialisable;
+import org.mule.runtime.api.metadata.MediaType;
+import org.mule.runtime.api.scheduler.Scheduler;
+import org.mule.runtime.api.scheduler.SchedulerConfig;
+import org.mule.runtime.api.scheduler.SchedulerService;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.api.processor.Processor;
@@ -30,6 +41,8 @@ import java.io.FileWriter;
 import java.net.URI;
 import java.util.Optional;
 
+import static java.lang.Boolean.valueOf;
+import static org.mule.apikit.ApiType.AMF;
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
@@ -37,8 +50,9 @@ import static org.mule.module.apikit.api.UrlUtils.getBaseUriReplacement;
 import static org.mule.module.apikit.api.UrlUtils.replaceHostInURL;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.ConfigURLMapping.INSTANCE;
+import static org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON;
 
-public class Console extends AbstractComponent implements Processor, Initialisable {
+public class Console extends AbstractComponent implements Processor, Initialisable, Disposable {
 
   private final ApikitRegistry registry;
   private final ConfigurationComponentLocator locator;
@@ -53,8 +67,17 @@ public class Console extends AbstractComponent implements Processor, Initialisab
 
   private boolean consoleDisabled;
 
+  private boolean streamAMFModel;
+
+  private static final String STREAM_AMF_MODEL = "apikit.console.stream.amf.model";
+
   @Inject
   private MuleContext muleContext;
+
+  @Inject
+  private SchedulerService schedulerService;
+
+  private Scheduler scheduler;
 
   @Inject
   public Console(ApikitRegistry registry, ConfigurationComponentLocator locator) {
@@ -64,7 +87,8 @@ public class Console extends AbstractComponent implements Processor, Initialisab
 
   @Override
   public void initialise() {
-    consoleDisabled = Boolean.valueOf(System.getProperty(CONSOLE_DISABLED, "false"));
+    consoleDisabled = valueOf(System.getProperty(CONSOLE_DISABLED, "false"));
+    streamAMFModel = valueOf(System.getProperty(STREAM_AMF_MODEL, "true"));
     final String name = getLocation().getRootContainerName();
     final Optional<URI> url = getSourceLocation(locator, name);
 
@@ -77,6 +101,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     } else {
       logger.error("There was an error retrieving console source.");
     }
+    this.scheduler = getScheduler();
   }
 
   @Override
@@ -113,8 +138,13 @@ public class Console extends AbstractComponent implements Processor, Initialisab
       eventWrapper.doClientRedirect();
       return eventWrapper.build();
     }
-    Resource resource = consoleResources.getConsoleResource(resourceRelativePath);
-    eventWrapper.setPayload(resource.getContent(), resource.getMediaType());
+
+    Resource resource =
+        streamAMFModel && AMF.equals(config.getType()) && "amf".equals(queryString)
+            ? streamAMFModel(replaceHostInURL(INSTANCE.getUrl(config.getName()), host))
+            : consoleResources.getConsoleResource(resourceRelativePath);
+
+    eventWrapper.setPayload(resource.getContent() == null ? "" : resource.getContent(), resource.getMediaType());
     eventWrapper.addOutboundProperties(resource.getHeaders());
     return eventWrapper.build();
   }
@@ -152,5 +182,58 @@ public class Console extends AbstractComponent implements Processor, Initialisab
     } finally {
       IOUtils.closeQuietly(writer);
     }
+  }
+
+  /**
+   * Triggers AMF model writing in another Thread, in a PipedOutputStream
+   * @param url
+   * @return Resource with a PipedInputStream for reading the model as a Stream
+   */
+  private Resource streamAMFModel(String url) {
+    try {
+      PipedOutputStream pipedOutputStream = new PipedOutputStream();
+      InputStream responsePayload = new PipedInputStream(pipedOutputStream);
+      scheduler.execute(() -> {
+        try {
+          configuration.getRamlHandler().writeAMFModel(url, new GZIPOutputStream(pipedOutputStream));
+        } catch (Exception e) {
+          logger.error("Error trying to stream AMF Model");
+        }
+      });
+
+      return new Resource() {
+
+        @Override
+        public MediaType getMediaType() {
+          return APPLICATION_JSON;
+        }
+
+        @Override
+        public Object getContent() {
+          return responsePayload;
+        }
+
+        @Override
+        public MultiMap<String, String> getHeaders() {
+          MultiMap<String, String> headers = new MultiMap<>();
+          headers.put("Content-Encoding", "gzip");
+          return headers;
+        }
+      };
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  @Override
+  public void dispose() {
+    this.scheduler.shutdownNow();
+  }
+
+  private Scheduler getScheduler() {
+    SchedulerConfig config = SchedulerConfig.config()
+        .withName("CONSOLE-SCHEDULER");
+
+    return schedulerService.ioScheduler(config);
   }
 }

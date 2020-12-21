@@ -11,7 +11,7 @@ import org.mule.runtime.api.util.MultiMap;
 
 public class RamlResource implements Resource {
 
-  String content;
+  private String content;
 
   public RamlResource(String content) {
     this.content = content;

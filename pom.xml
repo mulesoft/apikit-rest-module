@@ -539,6 +539,12 @@
                         <version>${jacoco.version}</version>
                         <classifier>runtime</classifier>
                     </dependency>
+                    <dependency>
+                        <groupId>org.mule.modules</groupId>
+                        <artifactId>mule-compression-module</artifactId>
+                        <version>2.1.1</version>
+                        <classifier>mule-plugin</classifier>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
