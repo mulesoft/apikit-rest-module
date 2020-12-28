@@ -6,6 +6,9 @@
  */
 package org.mule.module.apikit;
 
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mule.apikit.model.ApiSpecification;
@@ -76,6 +79,17 @@ public class RamlHandlerTestCase {
     handler.setApiServer("localhost:8081/");
     String rootRaml = handler.getAMFModel();
     assertThat(rootRaml, containsString("localhost:8081/"));
+  }
+
+  @Test
+  public void streamAMFModelReplacingUrl() throws IOException {
+    RamlHandler handler = createRamlHandler("unit/raml-handler/simple10.raml", false);
+    PipedOutputStream pipedOutputStream = new PipedOutputStream();
+    PipedInputStream pipedInputStream = new PipedInputStream(pipedOutputStream);
+    Thread thread = new Thread(() -> handler.writeAMFModel("http://google.com", pipedOutputStream));
+    thread.start();
+    String model = IOUtils.toString(pipedInputStream);
+    assertThat(model, containsString("http://google.com"));
   }
 
   @Test
