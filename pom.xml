@@ -33,7 +33,7 @@
         <commons.codec.version>1.15</commons.codec.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.1.1</parser.service.version>
+        <parser.service.version>2.1.2-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.2.6</apiconsole.version>
@@ -539,6 +539,12 @@
                         <artifactId>org.jacoco.agent</artifactId>
                         <version>${jacoco.version}</version>
                         <classifier>runtime</classifier>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.mule.modules</groupId>
+                        <artifactId>mule-compression-module</artifactId>
+                        <version>2.1.1</version>
+                        <classifier>mule-plugin</classifier>
                     </dependency>
                 </dependencies>
             </plugin>

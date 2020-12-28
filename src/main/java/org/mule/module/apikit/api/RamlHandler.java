@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.api;
 
+import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.mule.amf.impl.model.AMFImpl;
 import org.mule.apikit.ApiType;
@@ -241,19 +242,31 @@ public class RamlHandler {
     throw throwErrorType(new NotFoundException(resourceRelativePath), errorTypeRepository);
   }
 
-  // TODO: why is an exception for AMF? this should dumping AMF should be the same as dumping a raml
   public String getAMFModel() {
-    ApiSpecification specification = result.get();
-    if (specification.getType().equals(AMF)) {
-      AMFImpl parse = ((AMFImpl) specification);
-      if (!keepApiBaseUri) {
-        String baseUriReplacement = getBaseUriReplacement(apiServer);
-        parse.updateBaseUri(baseUriReplacement);
-      }
-      return parse.dumpAmf();
+    try {
+      return replaceUriInAMFModel(apiServer).dumpAmf();
+    } catch (IllegalStateException e) {
+      return "";
     }
-    return "";
   }
+
+  public synchronized void writeAMFModel(String url, OutputStream outputStream) {
+    replaceUriInAMFModel(url).writeAMFModel(outputStream);
+  }
+
+  private AMFImpl replaceUriInAMFModel(String url) throws IllegalStateException {
+    ApiSpecification specification = result.get();
+    if (!AMF.equals(specification.getType())) {
+      throw new IllegalStateException("Trying to return AMF Model when RAML-Parser is being used");
+    }
+    AMFImpl amfApiSpec = ((AMFImpl) specification);
+    if (!keepApiBaseUri) {
+      String baseUriReplacement = getBaseUriReplacement(url);
+      amfApiSpec.updateBaseUri(baseUriReplacement);
+    }
+    return amfApiSpec;
+  }
+
 
   public String getBaseUriReplacement(String apiServer) {
     return UrlUtils.getBaseUriReplacement(apiServer);
