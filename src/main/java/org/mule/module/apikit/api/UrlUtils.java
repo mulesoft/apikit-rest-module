@@ -33,7 +33,12 @@ public class UrlUtils {
    * @return index of character in requestPath corresponding to the last slash found in base path
    */
   private static int getEndOfBasePathIndex(String baseAndApiPath, String requestPath) {
-    long amountOfSlashesInBasePath = baseAndApiPath.chars().filter(c -> c == '/').count();
+    int amountOfSlashesInBasePath = 0;
+    for (int i = 0; i < baseAndApiPath.length(); i++) {
+      if (baseAndApiPath.charAt(i) == '/') {
+        amountOfSlashesInBasePath++;
+      }
+    }
     int amountOfSlashesInRequestPath = 0;
     int character = 0;
     for (; character < requestPath.length() && amountOfSlashesInRequestPath < amountOfSlashesInBasePath; character++) {
