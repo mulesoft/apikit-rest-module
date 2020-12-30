@@ -6,16 +6,16 @@
  */
 package org.mule.module.apikit.api;
 
-import static java.lang.System.getProperty;
-
-import java.net.MalformedURLException;
 import org.apache.commons.lang3.StringUtils;
 import org.mule.module.apikit.uri.URICoder;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static java.lang.System.getProperty;
 
 public class UrlUtils {
 
@@ -27,9 +27,26 @@ public class UrlUtils {
 
   private UrlUtils() {}
 
+  /**
+   * @param baseAndApiPath http listener base path, example /api/*
+   * @param requestPath    example /api/endpoint
+   * @return index of character in requestPath corresponding to the last slash found in base path
+   */
   private static int getEndOfBasePathIndex(String baseAndApiPath, String requestPath) {
-    int index = baseAndApiPath.lastIndexOf('/') + 1;
-    return index > requestPath.length() ? requestPath.length() : index;
+    int amountOfSlashesInBasePath = 0;
+    for (int i = 0; i < baseAndApiPath.length(); i++) {
+      if (baseAndApiPath.charAt(i) == '/') {
+        amountOfSlashesInBasePath++;
+      }
+    }
+    int amountOfSlashesInRequestPath = 0;
+    int character = 0;
+    for (; character < requestPath.length() && amountOfSlashesInRequestPath < amountOfSlashesInBasePath; character++) {
+      if (requestPath.charAt(character) == '/') {
+        amountOfSlashesInRequestPath++;
+      }
+    }
+    return character;
   }
 
   public static String encode(String url) {
@@ -43,9 +60,9 @@ public class UrlUtils {
    * example : /endpoint
    */
   public static String getRelativePath(String baseAndApiPath, String requestPath) {
-    int slashLastPosition = baseAndApiPath.lastIndexOf('/');
-    return slashLastPosition == -1 || slashLastPosition >= requestPath.length() ? "/"
-        : requestPath.substring(slashLastPosition);
+    int slashLastPosition = getEndOfBasePathIndex(baseAndApiPath, requestPath);
+    return slashLastPosition == 0 || slashLastPosition >= requestPath.length() ? "/"
+        : requestPath.substring(slashLastPosition - 1);
   }
 
   public static String getListenerPath(String listenerPath, String requestPath) {
