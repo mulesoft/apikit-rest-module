@@ -6,11 +6,11 @@
  */
 package org.mule.module.apikit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-
 import org.junit.Test;
 import org.mule.module.apikit.api.UrlUtils;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 public class UrlUtilsTestCase {
 
@@ -23,6 +23,11 @@ public class UrlUtilsTestCase {
                equalTo("/munit/console/example.json"));
     assertThat(UrlUtils.getRelativePath("/console/*", "/console"), equalTo("/"));
     assertThat(UrlUtils.getRelativePath("api", "/api"), equalTo("/"));
+    assertThat(UrlUtils.getRelativePath("/{uriParam}/api/*", "/param/api/test"), equalTo("/test"));
+    assertThat(UrlUtils.getRelativePath("/{uriParam}/{additionalUriParam}/api/*", "/param/additionalParam/api/test"),
+               equalTo("/test"));
+    assertThat(UrlUtils.getRelativePath("/{uriParam}/{additionalUriParam}/api/*", "/param/api/wrong"),
+               equalTo("/"));
   }
 
 }
