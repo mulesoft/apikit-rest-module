@@ -1,0 +1,34 @@
+#%RAML 1.0
+title: Payload validation for union type
+version: v1
+
+types: 
+  dummy1: 
+    type: object
+    properties:
+      message1: string
+  dummy2: 
+    type: object
+    properties:
+      message2: string            
+
+/xmlUnion:
+  post:
+    body:
+      application/xml: 
+        type: dummy1 | dummy2
+    responses:
+      200:
+        body:
+          application/xml: 
+            type: dummy1
+/jsonUnion:
+  post:
+    body:
+      application/json:
+        type: dummy1 | dummy2
+    responses:
+      200:
+        body:
+          application/json:
+            type: dummy1
