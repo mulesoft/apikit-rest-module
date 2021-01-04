@@ -64,15 +64,14 @@ public class QueryParameterValidator {
   private void validateQueryParamsValues(MultiMap<String, String> queryParams) throws InvalidQueryParameterException {
     Map<String, Parameter> queryParamsDefinition = action.getQueryParameters();
 
-    for (String paramKey : queryParams.keySet()) {
-      Parameter parameterDefinition = queryParamsDefinition.get(paramKey);
-      // additional query param not defined in raml(wont validate), or defined in queryString
-      if (parameterDefinition != null) {
-        List<String> values = queryParams.getAll(paramKey);
+    for (Entry<String, Parameter> paramDefinitionEntry : queryParamsDefinition.entrySet()) {
+      Parameter parameterDefinition = paramDefinitionEntry.getValue();
+      String paramKey = paramDefinitionEntry.getKey();
+      List<String> values = queryParams.getAll(paramKey);
 
+      if (!values.isEmpty()) {
         if (parameterDefinition.isArray()) {
           validateQueryParamArray(paramKey, parameterDefinition, values);
-
         } else {
           validateQueryParam(queryParams, paramKey, parameterDefinition, values);
         }
@@ -129,10 +128,9 @@ public class QueryParameterValidator {
       if ("null".equals(value) && isNullable(parameterDefinition)) {
         // remove "null" string from query parameter values, and replace it with null
         // List<String> values = queryParams.getAll(paramKey) is unmodifiableList
-        List<String> copyWithoutNull = values.stream().filter(current -> !"null".equals(current)).collect(Collectors.toList());
-        queryParams.remove(paramKey);
-        queryParams.put(paramKey, copyWithoutNull);
-        queryParams.put(paramKey, (String) null);
+        queryParams.removeAll(paramKey);
+        queryParams.put(paramKey,
+                        values.stream().map(current -> "null".equals(current) ? null : current).collect(Collectors.toList()));
       } else {
         validate(paramKey, parameterDefinition, parameterDefinition.surroundWithQuotesIfNeeded(value));
       }
