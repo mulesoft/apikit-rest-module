@@ -41,41 +41,30 @@ public class QueryParameterValidator {
       validateQueryParametersStrictly(queryParams);
     }
 
-    validateQueryParamsSize(queryParams);
-    validateQueryParamsValues(queryParams);
+    validateQueryParams(queryParams);
 
     return addDefaultValues(queryParams, queryString);
   }
 
-  private void validateQueryParamsSize(MultiMap<String, String> queryParams) throws InvalidQueryParameterException {
-    for (Entry<String, Parameter> queryParam : action.getQueryParameters().entrySet()) {
-      String paramKey = queryParam.getKey();
-      Parameter parameterDefinition = queryParam.getValue();
-      List<String> values = queryParams.getAll(paramKey);
-      if (values.isEmpty() && parameterDefinition.isRequired()) {
-        throw new InvalidQueryParameterException("Required query parameter " + paramKey + " not specified");
-      }
-      if (values.size() > 1 && !(parameterDefinition.isRepeat() || parameterDefinition.isArray())) {
-        throw new InvalidQueryParameterException("Query parameter " + paramKey + " is not repeatable");
-      }
-    }
-  }
-
-  private void validateQueryParamsValues(MultiMap<String, String> queryParams) throws InvalidQueryParameterException {
+  private void validateQueryParams(MultiMap<String, String> queryParams) throws InvalidQueryParameterException {
     Map<String, Parameter> queryParamsDefinition = action.getQueryParameters();
 
-    for (String paramKey : queryParams.keySet()) {
-      Parameter parameterDefinition = queryParamsDefinition.get(paramKey);
-      // additional query param not defined in raml(wont validate), or defined in queryString
-      if (parameterDefinition != null) {
-        List<String> values = queryParams.getAll(paramKey);
+    for (Entry<String, Parameter> paramDefinitionEntry : queryParamsDefinition.entrySet()) {
+      Parameter parameterDefinition = paramDefinitionEntry.getValue();
+      String paramKey = paramDefinitionEntry.getKey();
+      List<String> values = queryParams.getAll(paramKey);
 
-        if (parameterDefinition.isArray()) {
+      if (!values.isEmpty()) {
+        if (parameterDefinition.isRepeat() || parameterDefinition.isArray()) {
           validateQueryParamArray(paramKey, parameterDefinition, values);
-
         } else {
+          if (values.size() > 1) {
+            throw new InvalidQueryParameterException("Query parameter " + paramKey + " is not repeatable");
+          }
           validateQueryParam(queryParams, paramKey, parameterDefinition, values);
         }
+      } else if (parameterDefinition.isRequired()) {
+        throw new InvalidQueryParameterException("Required query parameter " + paramKey + " not specified");
       }
     }
   }
@@ -127,12 +116,9 @@ public class QueryParameterValidator {
     for (String value : values) {
       // if query param value is "null" as String, we check if that query param is nullable(in raml nil type)
       if ("null".equals(value) && isNullable(parameterDefinition)) {
-        // remove "null" string from query parameter values, and replace it with null
-        // List<String> values = queryParams.getAll(paramKey) is unmodifiableList
-        List<String> copyWithoutNull = values.stream().filter(current -> !"null".equals(current)).collect(Collectors.toList());
-        queryParams.remove(paramKey);
-        queryParams.put(paramKey, copyWithoutNull);
-        queryParams.put(paramKey, (String) null);
+        queryParams.removeAll(paramKey);
+        queryParams.put(paramKey,
+                        values.stream().map(current -> "null".equals(current) ? null : current).collect(Collectors.toList()));
       } else {
         validate(paramKey, parameterDefinition, parameterDefinition.surroundWithQuotesIfNeeded(value));
       }
