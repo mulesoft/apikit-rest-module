@@ -33,31 +33,28 @@ public class AttributesValidator {
     String queryString;
 
     // uriparams
-    UriParametersValidator uriParametersValidator = new UriParametersValidator(action);
-    uriParametersValidator.validate(resolvedVariables);
+    UriParametersValidator.validate(action.getResolvedUriParameters(), resolvedVariables);
 
     // queryStrings
-    QueryStringValidator queryStringValidator = ValidatorsCache.INSTANCE.getQueryStringValidator(action);
-    queryStringValidator.validate(attributes.getQueryParams());
+    QueryStringValidator.validate(action.queryString(), attributes.getQueryParams());
 
     // queryparams
-    QueryParameterValidator queryParamValidator =
-        ValidatorsCache.INSTANCE.getQueryParameterValidator(action);
     ValidatedQueryParams validatedQueryParams =
-        queryParamValidator.validate(attributes.getQueryParams(), attributes.getQueryString(),
-                                     config.isQueryParamsStrictValidation());
+        QueryParameterValidator.validate(action.getQueryParameters(), attributes.getQueryParams(),
+                                         attributes.getQueryString(),
+                                         config.isQueryParamsStrictValidation());
     queryParams = validatedQueryParams.getQueryParams();
     queryString = validatedQueryParams.getQueryString();
 
     // headers
-    HeadersValidator headersValidator = ValidatorsCache.INSTANCE.getHeadersValidator(action);
-    headers = headersValidator.validateAndAddDefaults(attributes.getHeaders(),
-                                                      config.isHeadersStrictValidation(),
+    headers = HeadersValidator.validateAndAddDefaults(action.getHeaders(), action.getResponses(), attributes.getHeaders(),
+                                                      config
+                                                          .isHeadersStrictValidation(),
                                                       config
                                                           .getAttributesDeserializingStrategies());
 
     Map<String, String> uriParamsMap = new HashMap<>();
-    resolvedVariables.names().stream().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));
+    resolvedVariables.names().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));
     // regenerate attributes
     return AttributesHelper.replaceParams(attributes,
                                           headers,
