@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import org.mule.apikit.model.Action;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidQueryParameterException;
 import org.mule.runtime.api.util.MultiMap;
@@ -27,32 +26,27 @@ import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 
 public class QueryParameterValidator {
 
-  private final Action action;
-
-  public QueryParameterValidator(Action action) {
-    this.action = action;
-  }
-
-  public ValidatedQueryParams validate(MultiMap<String, String> queryParams, String queryString,
-                                       boolean queryParamsStrictValidation)
+  public static ValidatedQueryParams validate(Map<String, Parameter> queryParameters,
+                                              MultiMap<String, String> incomingQueryParams,
+                                              String queryString,
+                                              boolean queryParamsStrictValidation)
       throws InvalidQueryParameterException {
 
     if (queryParamsStrictValidation) {
-      validateQueryParametersStrictly(queryParams);
+      validateQueryParametersStrictly(queryParameters, incomingQueryParams);
     }
 
-    validateQueryParams(queryParams);
+    validateQueryParams(queryParameters, incomingQueryParams);
 
-    return addDefaultValues(queryParams, queryString);
+    return addDefaultValues(queryParameters, incomingQueryParams, queryString);
   }
 
-  private void validateQueryParams(MultiMap<String, String> queryParams) throws InvalidQueryParameterException {
-    Map<String, Parameter> queryParamsDefinition = action.getQueryParameters();
-
-    for (Entry<String, Parameter> paramDefinitionEntry : queryParamsDefinition.entrySet()) {
+  private static void validateQueryParams(Map<String, Parameter> queryParameters, MultiMap<String, String> incomingQueryParams)
+      throws InvalidQueryParameterException {
+    for (Entry<String, Parameter> paramDefinitionEntry : queryParameters.entrySet()) {
       Parameter parameterDefinition = paramDefinitionEntry.getValue();
       String paramKey = paramDefinitionEntry.getKey();
-      List<String> values = queryParams.getAll(paramKey);
+      List<String> values = incomingQueryParams.getAll(paramKey);
 
       if (!values.isEmpty()) {
         if (parameterDefinition.isRepeat() || parameterDefinition.isArray()) {
@@ -61,7 +55,7 @@ public class QueryParameterValidator {
           if (values.size() > 1) {
             throw new InvalidQueryParameterException("Query parameter " + paramKey + " is not repeatable");
           }
-          validateQueryParam(queryParams, paramKey, parameterDefinition, values);
+          validateQueryParam(incomingQueryParams, paramKey, parameterDefinition, values);
         }
       } else if (parameterDefinition.isRequired()) {
         throw new InvalidQueryParameterException("Required query parameter " + paramKey + " not specified");
@@ -69,13 +63,14 @@ public class QueryParameterValidator {
     }
   }
 
-  private ValidatedQueryParams addDefaultValues(MultiMap<String, String> queryParams, String queryString) {
+  private static ValidatedQueryParams addDefaultValues(Map<String, Parameter> queryParameters,
+                                                       MultiMap<String, String> incomingQueryParams, String queryString) {
     String queryStringWithDefaults = queryString;
-    MultiMap<String, String> queryParamsWithDefaults = queryParams;
+    MultiMap<String, String> queryParamsWithDefaults = incomingQueryParams;
 
-    for (Entry<String, Parameter> queryParam : action.getQueryParameters().entrySet()) {
+    for (Entry<String, Parameter> queryParam : queryParameters.entrySet()) {
       String queryParamKey = queryParam.getKey();
-      List<String> values = queryParams.getAll(queryParamKey);
+      List<String> values = incomingQueryParams.getAll(queryParamKey);
       if (values.isEmpty() && queryParam.getValue().getDefaultValue() != null) {
         String queryParamDefaultValue = queryParam.getValue().getDefaultValue();
         queryStringWithDefaults = addQueryString(queryStringWithDefaults, queryParamKey, queryParamDefaultValue);
@@ -86,9 +81,11 @@ public class QueryParameterValidator {
     return new ValidatedQueryParams(queryParamsWithDefaults, queryStringWithDefaults);
   }
 
-  private void validateQueryParametersStrictly(MultiMap<String, String> queryParams) throws InvalidQueryParameterException {
+  private static void validateQueryParametersStrictly(Map<String, Parameter> queryParameters,
+                                                      MultiMap<String, String> incomingQueryParams)
+      throws InvalidQueryParameterException {
     //check that query parameters are defined in the RAML
-    Set notDefinedQueryParameters = difference(queryParams.keySet(), action.getQueryParameters().keySet());
+    Set notDefinedQueryParameters = difference(incomingQueryParams.keySet(), queryParameters.keySet());
     if (!notDefinedQueryParameters.isEmpty()) {
       throw new InvalidQueryParameterException(format("[%s] %s", on(", ").join(notDefinedQueryParameters),
                                                       "parameters are not defined in RAML."));
@@ -96,7 +93,7 @@ public class QueryParameterValidator {
   }
 
   //only for raml 1.0
-  private void validateQueryParamArray(String paramKey, Parameter expected, Collection<?> paramValues)
+  private static void validateQueryParamArray(String paramKey, Parameter expected, Collection<?> paramValues)
       throws InvalidQueryParameterException {
     StringBuilder builder = new StringBuilder();
 
@@ -110,8 +107,8 @@ public class QueryParameterValidator {
     validate(paramKey, expected, builder.toString());
   }
 
-  private void validateQueryParam(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition,
-                                  List<String> values)
+  private static void validateQueryParam(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition,
+                                         List<String> values)
       throws InvalidQueryParameterException {
     for (String value : values) {
       // if query param value is "null" as String, we check if that query param is nullable(in raml nil type)
@@ -125,7 +122,7 @@ public class QueryParameterValidator {
     }
   }
 
-  private void validate(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
+  private static void validate(String paramKey, Parameter expected, String paramValue) throws InvalidQueryParameterException {
     if (!expected.validate(paramValue)) {
       String msg = format("Invalid value '%s' for query parameter %s. %s",
                           paramValue, paramKey, expected.message(paramValue));
@@ -133,7 +130,7 @@ public class QueryParameterValidator {
     }
   }
 
-  private boolean isNullable(Parameter parameter) {
+  private static boolean isNullable(Parameter parameter) {
     return parameter.validate(null);
   }
 }

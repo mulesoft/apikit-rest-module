@@ -7,6 +7,7 @@
 package org.mule.module.apikit.helpers;
 
 import com.google.common.base.Strings;
+import org.mule.apikit.model.Response;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
@@ -34,7 +35,7 @@ public class AttributesHelper {
 
   public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap) {
     MultiMap<String, String> mapParam = new MultiMap<>();
-    immutableMap.keySet().stream().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
+    immutableMap.keySet().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
     return mapParam;
   }
 
@@ -126,4 +127,17 @@ public class AttributesHelper {
     return Strings.isNullOrEmpty(acceptableResponseMediaTypes) ? ANY_RESPONSE_MEDIA_TYPE : acceptableResponseMediaTypes;
   }
 
+  public static String getSuccessStatus(Map<String, Response> responses) {
+    for (String status : responses.keySet()) {
+      if ("default".equalsIgnoreCase(status)) {
+        return "200";
+      }
+      int code = Integer.parseInt(status);
+      if (code >= 200 && code < 300) {
+        return status;
+      }
+    }
+    //default success status
+    return "200";
+  }
 }
