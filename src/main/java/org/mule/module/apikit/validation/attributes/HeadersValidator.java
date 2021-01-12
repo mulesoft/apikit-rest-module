@@ -7,7 +7,6 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.net.MediaType;
-import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
@@ -35,40 +34,36 @@ import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAc
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
+import static org.mule.module.apikit.helpers.AttributesHelper.getSuccessStatus;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
 public class HeadersValidator {
 
   private static final String PLACEHOLDER_TOKEN = "{?}";
-  private final Action action;
-  private final List<String> mimeTypes;
 
-  public HeadersValidator(Action action) {
-    this.action = action;
-    this.mimeTypes = getResponseMimeTypes(action);
-  }
-
-  public MultiMap<String, String> validateAndAddDefaults(MultiMap<String, String> incomingHeaders,
-                                                         boolean headersStrictValidation,
-                                                         AttributesDeserializingStrategies attributesDeserializingStrategy)
+  public static MultiMap<String, String> validateAndAddDefaults(Map<String, Parameter> headers, Map<String, Response> responses,
+                                                                MultiMap<String, String> incomingHeaders,
+                                                                boolean headersStrictValidation,
+                                                                AttributesDeserializingStrategies attributesDeserializingStrategy)
       throws InvalidHeaderException, NotAcceptableException {
     MultiMap<String, String> headersWithDefaults =
-        analyseRequestHeaders(incomingHeaders, headersStrictValidation, attributesDeserializingStrategy);
-    analyseAcceptHeader(headersWithDefaults);
+        analyseRequestHeaders(headers, incomingHeaders, headersStrictValidation, attributesDeserializingStrategy);
+    analyseAcceptHeader(responses, headersWithDefaults);
     return headersWithDefaults;
   }
 
-  private MultiMap<String, String> analyseRequestHeaders(MultiMap<String, String> incomingHeaders,
-                                                         boolean headersStrictValidation,
-                                                         AttributesDeserializingStrategies attributesDeserializingStrategy)
+  private static MultiMap<String, String> analyseRequestHeaders(Map<String, Parameter> headers,
+                                                                MultiMap<String, String> incomingHeaders,
+                                                                boolean headersStrictValidation,
+                                                                AttributesDeserializingStrategies attributesDeserializingStrategy)
       throws InvalidHeaderException {
     if (headersStrictValidation) {
-      validateHeadersStrictly(incomingHeaders);
+      validateHeadersStrictly(headers, incomingHeaders);
     }
     MultiMap<String, String> copyIncomingHeaders = emptyMultiMap();
 
-    for (Map.Entry<String, Parameter> entry : action.getHeaders().entrySet()) {
+    for (Map.Entry<String, Parameter> entry : headers.entrySet()) {
       final String ramlHeader = entry.getKey();
       final Parameter ramlType = entry.getValue();
 
@@ -97,16 +92,16 @@ public class HeadersValidator {
 
   }
 
-  private MultiMap<String, String> getMutableCopy(MultiMap<String, String> incomingHeaders,
-                                                  MultiMap<String, String> copyIncomingHeaders) {
+  private static MultiMap<String, String> getMutableCopy(MultiMap<String, String> incomingHeaders,
+                                                         MultiMap<String, String> copyIncomingHeaders) {
     if (copyIncomingHeaders.isEmpty()) {
       return copyImmutableMap(incomingHeaders);
     }
     return copyIncomingHeaders;
   }
 
-  private void validateHeadersWithPlaceholderToken(MultiMap<String, String> copyIncomingHeaders, String ramlHeader,
-                                                   Parameter ramlType)
+  private static void validateHeadersWithPlaceholderToken(MultiMap<String, String> copyIncomingHeaders, String ramlHeader,
+                                                          Parameter ramlType)
       throws InvalidHeaderException {
     final String regex = ramlHeader.replace(PLACEHOLDER_TOKEN, ".*");
     for (String incomingHeader : copyIncomingHeaders.keySet()) {
@@ -116,9 +111,10 @@ public class HeadersValidator {
     }
   }
 
-  private void validateHeadersStrictly(Map<String, String> headers) throws InvalidHeaderException {
+  private static void validateHeadersStrictly(Map<String, Parameter> headers, Map<String, String> incomingHeaders)
+      throws InvalidHeaderException {
     //checks that headers are defined in the RAML
-    final Set<String> ramlHeaders = action.getHeaders().keySet().stream()
+    final Set<String> ramlHeaders = headers.keySet().stream()
         .map(String::toLowerCase)
         .collect(toSet());
 
@@ -127,7 +123,7 @@ public class HeadersValidator {
         .map(header -> header.replace(PLACEHOLDER_TOKEN, ".*"))
         .collect(toSet());
 
-    final Set<String> unmatchedHeaders = headers.keySet().stream()
+    final Set<String> unmatchedHeaders = incomingHeaders.keySet().stream()
         .filter(header -> templateHeaders.stream().noneMatch(header::matches))
         .collect(toSet());
 
@@ -143,7 +139,7 @@ public class HeadersValidator {
     }
   }
 
-  private void validateHeader(List<String> values, String name, Parameter type)
+  private static void validateHeader(List<String> values, String name, Parameter type)
       throws InvalidHeaderException {
     if (values.isEmpty()) {
       return;
@@ -158,27 +154,31 @@ public class HeadersValidator {
     }
   }
 
-  private List<String> deserializeValues(List<String> listOfDelimitedValues,
-                                         AttributesDeserializingStrategies deserializingStrategies) {
+  private static List<String> deserializeValues(List<String> listOfDelimitedValues,
+                                                AttributesDeserializingStrategies deserializingStrategies) {
     AttributeDeserializer deserializer =
         AttributesDeserializerFactory.INSTANCE.getDeserializer(ARRAY_HEADER_DESERIALIZING_STRATEGY, deserializingStrategies);
     return deserializer.deserializeListOfValues(listOfDelimitedValues);
   }
 
-  private void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {
+  private static void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {
     String yamlArrayValue = values.stream().collect(Collectors.joining("\n- ", "- ", ""));
     validateTypeValue(name, yamlArrayValue, type);
   }
 
-  private void validateTypeValue(String name, String value, Parameter type) throws InvalidHeaderException {
+  private static void validateTypeValue(String name, String value, Parameter type) throws InvalidHeaderException {
     if (!type.validate(value)) {
       throw new InvalidHeaderException(format("Invalid value '%s' for header '%s'", value, name));
     }
   }
 
-  private void analyseAcceptHeader(MultiMap<String, String> incomingHeaders) throws NotAcceptableException {
-    if (action == null || action.getResponses() == null || mimeTypes.isEmpty()) {
-      //no response media-types defined, return no body
+  private static void analyseAcceptHeader(Map<String, Response> responses, MultiMap<String, String> incomingHeaders)
+      throws NotAcceptableException {
+    if (responses == null) {
+      return;
+    }
+    List<String> mimeTypes = getResponseMimeTypes(responses);
+    if (mimeTypes.isEmpty()) {
       return;
     }
     MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
@@ -187,27 +187,13 @@ public class HeadersValidator {
     }
   }
 
-  private List<String> getResponseMimeTypes(Action action) {
-    String status = getSuccessStatus(action);
-    Response response = action.getResponses().get(status);
+  private static List<String> getResponseMimeTypes(Map<String, Response> responses) {
+    String status = getSuccessStatus(responses);
+    Response response = responses.get(status);
     if (response != null && response.hasBody()) {
       return new ArrayList<>(response.getBody().keySet());
     }
     return new ArrayList<>();
-  }
-
-  protected String getSuccessStatus(Action action) {
-    for (String status : action.getResponses().keySet()) {
-      if ("default".equalsIgnoreCase(status)) {
-        return "200";
-      }
-      int code = Integer.parseInt(status);
-      if (code >= 200 && code < 300) {
-        return status;
-      }
-    }
-    //default success status
-    return "200";
   }
 
 }

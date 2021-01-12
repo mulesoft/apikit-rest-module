@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import org.mule.apikit.model.Action;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidUriParameterException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
@@ -15,15 +14,9 @@ import java.util.Map;
 
 public class UriParametersValidator {
 
-  private final Action action;
-
-  public UriParametersValidator(Action action) {
-    this.action = action;
-  }
-
-  public void validate(ResolvedVariables resolvedVariables)
+  public static void validate(Map<String, Parameter> resolvedUriParameters, ResolvedVariables resolvedVariables)
       throws InvalidUriParameterException {
-    for (Map.Entry<String, Parameter> entry : action.getResolvedUriParameters().entrySet()) {
+    for (Map.Entry<String, Parameter> entry : resolvedUriParameters.entrySet()) {
       String value = (String) resolvedVariables.get(entry.getKey());
       Parameter uriParameter = entry.getValue();
       if (!uriParameter.validate(value)) {

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -49,6 +50,7 @@ import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
 import static org.mule.apikit.model.ApiVendor.RAML_08;
 import static org.mule.apikit.model.ApiVendor.RAML_10;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.module.apikit.helpers.AttributesHelper.getSuccessStatus;
 import static org.mule.parser.service.ParserMode.AUTO;
 import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 
@@ -329,18 +331,7 @@ public class RamlHandler {
   }
 
   public String getSuccessStatusCode(Action action) {
-
-    for (String status : action.getResponses().keySet()) {
-      if ("default".equalsIgnoreCase(status))
-        break;
-
-      int code = Integer.parseInt(status);
-      if (code >= 200 && code < 300) {
-        return status;
-      }
-    }
-    // default success status
-    return "200";
+    return getSuccessStatus(action.getResponses());
   }
 
   public void setApiServer(String apiServer) {
