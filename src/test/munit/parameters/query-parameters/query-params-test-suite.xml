@@ -317,7 +317,7 @@
 			<munit:enable-flow-source value="get:\testNull:query-params-config"/>
 		</munit:enable-flow-sources>
 		<munit:execution>
-			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nullableString=null">
+			<http:request method="GET" config-ref="http-requester-simple" path="/query-params/testNull?nullableString=null&amp;nonNullableString=notnull">
 				<http:response-validator>
 					<http:success-status-code-validator values="1..500"/>
 				</http:response-validator>
