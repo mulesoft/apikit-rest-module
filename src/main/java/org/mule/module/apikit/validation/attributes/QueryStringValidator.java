@@ -7,7 +7,6 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.collect.Maps;
-import org.mule.apikit.model.Action;
 import org.mule.apikit.model.QueryString;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidQueryStringException;
@@ -20,29 +19,23 @@ import java.util.Map.Entry;
 
 public class QueryStringValidator {
 
-  private Action action;
-
-  public QueryStringValidator(Action action) {
-    this.action = action;
-  }
-
-  public void validate(MultiMap<String, String> queryParams) throws InvalidQueryStringException {
-    QueryString expected = action.queryString();
-    if (!shouldProcessQueryString(expected))
+  public static void validate(QueryString queryString, MultiMap<String, String> queryParams) throws InvalidQueryStringException {
+    if (!shouldProcessQueryString(queryString)) {
       return;
+    }
 
-    String queryString = buildQueryString(expected, queryParams);
+    String actualQueryString = buildQueryString(queryString, queryParams);
 
-    if (!expected.validate(queryString)) {
+    if (!queryString.validate(actualQueryString)) {
       throw new InvalidQueryStringException("Invalid value for query string");
     }
   }
 
-  private boolean shouldProcessQueryString(QueryString queryString) {
+  private static boolean shouldProcessQueryString(QueryString queryString) {
     return queryString != null && !queryString.isArray() && !queryString.isScalar();
   }
 
-  private String buildQueryString(QueryString expected, MultiMap<String, String> queryParams) {
+  private static String buildQueryString(QueryString expected, MultiMap<String, String> queryParams) {
     StringBuilder result = new StringBuilder();
 
     Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(expected.facets());
@@ -65,22 +58,26 @@ public class QueryStringValidator {
       }
     }
 
-    for (Entry<String, Parameter> entry : facetsWithDefault.entrySet())
+    for (Entry<String, Parameter> entry : facetsWithDefault.entrySet()) {
       result.append(entry.getKey()).append(": ").append(entry.getValue().getDefaultValue()).append("\n");
+    }
 
-    if (result.length() > 0)
+    if (result.length() > 0) {
       return result.toString();
-    if (expected.getDefaultValue() != null)
+    }
+    if (expected.getDefaultValue() != null) {
       return expected.getDefaultValue();
+    }
 
     return "{}";
   }
 
-  private Map<String, Parameter> getFacetsWithDefaultValue(Map<String, Parameter> facets) {
+  private static Map<String, Parameter> getFacetsWithDefaultValue(Map<String, Parameter> facets) {
     HashMap<String, Parameter> result = Maps.newHashMap();
     for (Entry<String, Parameter> entry : facets.entrySet()) {
-      if (entry.getValue().getDefaultValue() != null)
+      if (entry.getValue().getDefaultValue() != null) {
         result.put(entry.getKey(), entry.getValue());
+      }
     }
     return result;
   }

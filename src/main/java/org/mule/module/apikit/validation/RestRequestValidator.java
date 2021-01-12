@@ -65,7 +65,7 @@ public class RestRequestValidator {
 
   private HttpRequestAttributes addUriParams(ResolvedVariables uriParams, HttpRequestAttributes attributes) {
     final Map<String, String> uriParamsMap = new HashMap<>();
-    uriParams.names().stream().forEach(name -> uriParamsMap.put(name, String.valueOf(uriParams.get(name))));
+    uriParams.names().forEach(name -> uriParamsMap.put(name, String.valueOf(uriParams.get(name))));
     return new HttpRequestAttributesBuilder(attributes).uriParams(uriParamsMap).build();
   }
 }
