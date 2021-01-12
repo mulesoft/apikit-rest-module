@@ -27,7 +27,7 @@
         <project.reactor.version>3.2.0.M1</project.reactor.version>
         <rest.assured.version>3.3.0</rest.assured.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>
-        <httpmime.version>4.5.12</httpmime.version>
+        <httpmime.version>4.5.13</httpmime.version>
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
         <jar.plugin.version>3.0.2</jar.plugin.version>
         <commons.codec.version>1.15</commons.codec.version>
@@ -52,7 +52,7 @@
         <munit.tools.version>2.3.0</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.8.0</mockServerVersion>
-        <jacoco.version>0.8.5</jacoco.version>
+        <jacoco.version>0.8.6</jacoco.version>
         <allureJunitVersion>2.13.5</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
@@ -180,7 +180,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.10</version>
+            <version>3.11</version>
         </dependency>
         <dependency>
             <groupId>org.mule.connectors</groupId>
