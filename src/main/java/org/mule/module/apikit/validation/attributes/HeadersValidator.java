@@ -29,12 +29,13 @@ import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.collections.MapUtils.isEmpty;
 import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
 import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
-import static org.mule.module.apikit.helpers.AttributesHelper.getSuccessStatus;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
@@ -43,13 +44,14 @@ public class HeadersValidator {
   private static final String PLACEHOLDER_TOKEN = "{?}";
 
   public static MultiMap<String, String> validateAndAddDefaults(Map<String, Parameter> headers, Map<String, Response> responses,
+                                                                String successStatusCode,
                                                                 MultiMap<String, String> incomingHeaders,
                                                                 boolean headersStrictValidation,
                                                                 AttributesDeserializingStrategies attributesDeserializingStrategy)
       throws InvalidHeaderException, NotAcceptableException {
     MultiMap<String, String> headersWithDefaults =
         analyseRequestHeaders(headers, incomingHeaders, headersStrictValidation, attributesDeserializingStrategy);
-    analyseAcceptHeader(responses, headersWithDefaults);
+    analyseAcceptHeader(responses, successStatusCode, headersWithDefaults);
     return headersWithDefaults;
   }
 
@@ -172,13 +174,14 @@ public class HeadersValidator {
     }
   }
 
-  private static void analyseAcceptHeader(Map<String, Response> responses, MultiMap<String, String> incomingHeaders)
+  private static void analyseAcceptHeader(Map<String, Response> responses, String successStatusCode,
+                                          MultiMap<String, String> incomingHeaders)
       throws NotAcceptableException {
-    if (responses == null) {
+    if (isEmpty(responses)) {
       return;
     }
-    List<String> mimeTypes = getResponseMimeTypes(responses);
-    if (mimeTypes.isEmpty()) {
+    List<String> mimeTypes = getResponseMimeTypes(responses, successStatusCode);
+    if (isEmpty(mimeTypes)) {
       return;
     }
     MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
@@ -187,9 +190,8 @@ public class HeadersValidator {
     }
   }
 
-  private static List<String> getResponseMimeTypes(Map<String, Response> responses) {
-    String status = getSuccessStatus(responses);
-    Response response = responses.get(status);
+  private static List<String> getResponseMimeTypes(Map<String, Response> responses, String successStatusCode) {
+    Response response = responses.get(successStatusCode);
     if (response != null && response.hasBody()) {
       return new ArrayList<>(response.getBody().keySet());
     }
