@@ -50,7 +50,6 @@ import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
 import static org.mule.apikit.model.ApiVendor.RAML_08;
 import static org.mule.apikit.model.ApiVendor.RAML_10;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.helpers.AttributesHelper.getSuccessStatus;
 import static org.mule.parser.service.ParserMode.AUTO;
 import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 
@@ -343,7 +342,7 @@ public class RamlHandler {
   }
 
   public String getSuccessStatusCode(Action action) {
-    return getSuccessStatus(action.getResponses());
+    return action.getSuccessStatusCode();
   }
 
   public void setApiServer(String apiServer) {
