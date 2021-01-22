@@ -47,7 +47,8 @@ public class AttributesValidator {
     queryString = validatedQueryParams.getQueryString();
 
     // headers
-    headers = HeadersValidator.validateAndAddDefaults(action.getHeaders(), action.getResponses(), attributes.getHeaders(),
+    headers = HeadersValidator.validateAndAddDefaults(action.getHeaders(), action.getResponses(),
+                                                      attributes.getHeaders(),
                                                       config
                                                           .isHeadersStrictValidation(),
                                                       config

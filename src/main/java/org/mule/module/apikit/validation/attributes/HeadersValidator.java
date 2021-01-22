@@ -29,6 +29,8 @@ import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.collections.MapUtils.isEmpty;
 import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
 import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
@@ -172,13 +174,14 @@ public class HeadersValidator {
     }
   }
 
-  private static void analyseAcceptHeader(Map<String, Response> responses, MultiMap<String, String> incomingHeaders)
+  private static void analyseAcceptHeader(Map<String, Response> responses,
+                                          MultiMap<String, String> incomingHeaders)
       throws NotAcceptableException {
-    if (responses == null) {
+    if (isEmpty(responses)) {
       return;
     }
     List<String> mimeTypes = getResponseMimeTypes(responses);
-    if (mimeTypes.isEmpty()) {
+    if (isEmpty(mimeTypes)) {
       return;
     }
     MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
