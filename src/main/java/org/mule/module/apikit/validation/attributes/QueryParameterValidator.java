@@ -112,7 +112,7 @@ public class QueryParameterValidator {
                                              String value) {
     // if query param value is "null" as String, we check if that query param is nullable(in raml nil type)
     if ("null".equals(value) && isNullable(parameterDefinition)) {
-      queryParams.removeAll(paramKey);
+      queryParams.remove(paramKey);
       queryParams.put(paramKey, Arrays.asList((String) null));
     }
   }
