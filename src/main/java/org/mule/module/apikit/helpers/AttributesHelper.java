@@ -34,10 +34,14 @@ public class AttributesHelper {
   private AttributesHelper() {
   }
 
-  public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap, String key, String value) {
+  public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap) {
     MultiMap<String, String> mapParam = new MultiMap<>();
     immutableMap.keySet().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
+    return mapParam;
+  }
 
+  public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap, String key, String value) {
+    MultiMap<String, String> mapParam = copyImmutableMap(immutableMap);
     mapParam.put(key, value);
     return mapParam;
   }
