@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.prependIfMissing;
 import static org.mule.runtime.api.component.ComponentIdentifier.buildFromStringRepresentation;
 
 public class MessageSourceUtils {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(MessageSourceUtils.class);
 
   /**

@@ -13,7 +13,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class MuleVersionUtils {
 
-  private MuleVersionUtils(){ }
+  private MuleVersionUtils() {}
 
   public static boolean isAtLeast(String version) {
     if (isBlank(version)) {
