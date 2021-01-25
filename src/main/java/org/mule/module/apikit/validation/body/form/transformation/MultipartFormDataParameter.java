@@ -11,5 +11,5 @@ import org.mule.apikit.model.parameter.Parameter;
 
 public interface MultipartFormDataParameter {
 
-  void validate(Parameter parameter) throws InvalidFormParameterException ;
+  void validate(Parameter parameter) throws InvalidFormParameterException;
 }

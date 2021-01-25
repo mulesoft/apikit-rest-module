@@ -25,6 +25,7 @@ import org.mule.runtime.core.privileged.exception.MessagingExceptionUtils;
  * @since 1.3.7
  */
 public class EventProcessingExceptionHandler implements RouterExceptionHandler {
+
   private final Method createMessagingException;
 
   public EventProcessingExceptionHandler() {

@@ -48,9 +48,9 @@ public class AttributesValidator {
 
     // headers
     headers = HeadersValidator.validateAndAddDefaults(action.getHeaders(), action.getResponses(),
-            attributes.getHeaders(),
-            config
-                    .isHeadersStrictValidation());
+                                                      attributes.getHeaders(),
+                                                      config
+                                                          .isHeadersStrictValidation());
 
     Map<String, String> uriParamsMap = new HashMap<>();
     resolvedVariables.names().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));

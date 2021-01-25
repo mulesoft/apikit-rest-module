@@ -31,8 +31,7 @@ public class AttributesHelper {
   private static final String ANY_RESPONSE_MEDIA_TYPE = "*/*";
   private static final String COMMA_SEPARATOR = ",";
 
-  private AttributesHelper() {
-  }
+  private AttributesHelper() {}
 
   public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap) {
     MultiMap<String, String> mapParam = new MultiMap<>();
