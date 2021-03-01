@@ -18,6 +18,7 @@ import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.module.apikit.api.exception.ApikitRuntimeException;
 import org.mule.module.apikit.api.spi.RouterService;
+import org.mule.module.apikit.api.spi.RouterServiceV2;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
@@ -79,7 +80,9 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
 
   private RamlHandler ramlHandler;
   private FlowFinder flowFinder;
-  private Optional<RouterService> routerService;
+  private RouterService routerService;
+  private RouterServiceV2 routerServiceV2;
+
 
   // DO NOT USE: does nothing just keeping it for Backwards compatibility, the routerService optional does the jobs for this.
   private boolean extensionEnabled;
@@ -104,11 +107,12 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   @Override
   public void initialise() throws InitialisationException {
     xmlEntitiesConfiguration();
-    this.routerService = findExtension();
+    this.routerServiceV2 = findExtensionV2();
+    this.routerService = routerServiceV2 == null ? findExtension() : null;
     this.scheduler = getScheduler();
 
     try {
-      ramlHandler = new RamlHandler(this.scheduler, getApi(), isKeepApiBaseUri(),
+      ramlHandler = new RamlHandler(scheduler, getApi(), isKeepApiBaseUri(),
                                     errorRepositoryFrom(muleContext), parserMode.get());
       initRouterService();
     } catch (Exception e) {
@@ -121,13 +125,17 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   }
 
   private void initRouterService() {
-    this.routerService.ifPresent(rs -> {
-      try {
-        rs.initialise(ramlHandler.getApi().getUri());
-      } catch (MuleException e) {
-        throw new ApikitRuntimeException("Couldn't load enabled extension", e);
+    try {
+      if (routerServiceV2 != null) {
+        routerServiceV2.initialise(ramlHandler.getApi().getUri(), getScheduler());
+        return;
       }
-    });
+      if (routerService != null) {
+        routerService.initialise(ramlHandler.getApi().getUri());
+      }
+    } catch (MuleException e) {
+      throw new ApikitRuntimeException("Couldn't load enabled extension", e);
+    }
   }
 
   @Deprecated // TODO USE NEW API
@@ -348,15 +356,27 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     return expressionManager;
   }
 
-  private Optional<RouterService> findExtension() {
+  private RouterService findExtension() {
+    return findExtension(RouterService.class);
+  }
+
+  private RouterServiceV2 findExtensionV2() {
+    return findExtension(RouterServiceV2.class);
+  }
+
+  private <T> T findExtension(Class<T> clazz) {
     ClassLoader executionClassLoader = muleContext.getExecutionClassLoader();
-    ServiceLoader<RouterService> routerServices = ServiceLoader.load(RouterService.class, executionClassLoader);
-    Iterator<RouterService> iterator = routerServices.iterator();
-    return iterator.hasNext() ? Optional.of(iterator.next()) : Optional.empty();
+    ServiceLoader<T> routerServices = ServiceLoader.load(clazz, executionClassLoader);
+    Iterator<T> iterator = routerServices.iterator();
+    return iterator.hasNext() ? iterator.next() : null;
   }
 
   public Optional<RouterService> getExtension() {
-    return this.routerService;
+    return Optional.ofNullable(routerService);
+  }
+
+  public Optional<RouterServiceV2> getExtensionV2() {
+    return Optional.ofNullable(routerServiceV2);
   }
 
   private void xmlEntitiesConfiguration() {
@@ -390,4 +410,5 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   public void setAttributesDeserializingStrategies(AttributesDeserializingStrategies attributesDeserializingStrategies) {
     this.attributesDeserializingStrategies = attributesDeserializingStrategies;
   }
+
 }

@@ -18,6 +18,7 @@ import org.mule.module.apikit.api.exception.InvalidUriParameterException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.spi.AbstractRouter;
 import org.mule.module.apikit.api.spi.RouterService;
+import org.mule.module.apikit.api.spi.RouterServiceV2;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
@@ -129,12 +130,12 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
   private Publisher<CoreEvent> processWithExtension(CoreEvent event) {
     try {
-      Optional<RouterService> extension = configuration.getExtension();
-      if (extension.isPresent()) {
-        return extension.get().process(event, this);
-      } else {
-        return processEvent(event);
+      Optional<RouterServiceV2> extensionV2 = configuration.getExtensionV2();
+      if (extensionV2.isPresent()) {
+        return extensionV2.get().process(event, this);
       }
+      Optional<RouterService> extension = configuration.getExtension();
+      return extension.isPresent() ? extension.get().process(event, this) : processEvent(event);
     } catch (MuleRestException e) {
       return error(throwErrorType(e, errorRepositoryFrom(muleContext)));
     } catch (MuleException e) {
