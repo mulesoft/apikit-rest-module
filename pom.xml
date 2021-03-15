@@ -29,6 +29,7 @@
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <httpmime.version>4.5.13</httpmime.version>
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
+        <jar.plugin.version>3.0.2</jar.plugin.version>
         <commons.codec.version>1.15</commons.codec.version>
 
         <!-- PARSERS -->
@@ -554,7 +555,9 @@
                 <version>${mule.plugin.maven.plugin.version}</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${jar.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
