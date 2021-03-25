@@ -42,7 +42,7 @@
         <commons.io.version>2.7</commons.io.version>
         <guava.version>28.1-jre</guava.version>
         <jackson.version>2.11.3</jackson.version>
-        <libthrift.version>0.13.0</libthrift.version>
+        <libthrift.version>0.14.0</libthrift.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
