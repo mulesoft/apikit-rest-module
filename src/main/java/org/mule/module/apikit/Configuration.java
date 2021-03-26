@@ -380,6 +380,8 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   }
 
   private void xmlEntitiesConfiguration() {
+    System.setProperty("amf.plugins.xml.validateUnion", "true");
+
     String externalEntities = System.getProperty(MULE_EXTERNAL_ENTITIES_PROPERTY, "false");
     System.setProperty("raml.xml.expandExternalEntities", externalEntities);
     System.setProperty("amf.plugins.xml.expandExternalEntities", externalEntities);
