@@ -6,12 +6,14 @@
  */
 package org.mule.module.apikit.validation;
 
+import org.junit.Assert;
 import org.mule.apikit.model.Resource;
 import org.mule.apikit.model.api.ApiReference;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
+import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
@@ -24,6 +26,9 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 
 import javax.xml.validation.Schema;
 import java.io.InputStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestRestRequestValidator {
 
@@ -89,4 +94,18 @@ public class TestRestRequestValidator {
     return requestValidator.validate(uriResolver.resolve(pattern), httpRequestAttributes, charset, body);
   }
 
+  /**
+   * Assert if exception {@param expectedThrowable} is thrown with a message containing {@param containsMessage} when
+   * validating a given request.
+   *
+   * @param expectedThrowable expected throwable exception of class {@param T}
+   * @param containsMessage if not null it will validate that it is contained at the exception error message
+   */
+  public <T extends Throwable> void assertThrows(Class<T> expectedThrowable, String containsMessage) {
+    Throwable exception = Assert.assertThrows(expectedThrowable, () -> validateRequest());
+    if (containsMessage != null) {
+      String actual = exception.getMessage();
+      assertTrue(actual.contains(containsMessage));
+    }
+  }
 }

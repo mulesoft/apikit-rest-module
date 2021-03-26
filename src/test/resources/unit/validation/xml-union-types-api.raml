@@ -1,0 +1,37 @@
+#%RAML 1.0
+title: dummy
+version: v1
+
+types: 
+  dummy1: 
+    type: object
+    properties:
+      message1: string
+  dummy2: 
+    type: object
+    properties:
+      message2: string
+  unionElement:
+    type: dummy1 | dummy2
+
+/xmlUnion:
+  post:
+    body:
+      application/xml: 
+        type: unionElement
+
+/xmlUnionInline:
+  post:
+    body:
+      application/xml:
+        type: dummy1 | dummy2
+
+/xmlUnionInlineWithSerializationProperties:
+  post:
+    body:
+      application/xml:
+        type: dummy1 | dummy2
+        xml:
+          name: someName
+          namespace: http://test.namespace.com
+
