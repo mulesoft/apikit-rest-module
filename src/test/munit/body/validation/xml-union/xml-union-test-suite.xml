@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+  xmlns="http://www.mulesoft.org/schema/mule/core"
+  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+  <munit:config name="xml-union-test-suite"/>
+
+  <munit:test name="valid-xml-union-test">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="xml-union-main"/>
+      <munit:enable-flow-source value="post:\xmlUnion:application\xml:xml-union-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/xml-union/xmlUnion">
+        <http:body>
+          <![CDATA[#['<unionElement><message1>test</message1></unionElement>']]]>
+        </http:body>
+        <http:headers>
+          #[{'Content-Type': 'application/xml'}]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+    </munit:validation>
+  </munit:test>
+
+  <munit:test name="invalid-xml-union-test">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="xml-union-main"/>
+      <munit:enable-flow-source value="post:\xmlUnion:application\xml:xml-union-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <http:request method="POST" config-ref="http-requester-simple" path="/xml-union/xmlUnion">
+        <http:body>
+          <![CDATA[#['<unionElement><message3>test</message3></unionElement>']]]>
+        </http:body>
+        <http:headers>
+          #[{'Content-Type': 'application/xml'}]
+        </http:headers>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+    </munit:validation>
+  </munit:test>
+
+</mule>
