@@ -42,7 +42,6 @@
         <commons.io.version>2.7</commons.io.version>
         <guava.version>28.1-jre</guava.version>
         <jackson.version>2.11.3</jackson.version>
-        <libthrift.version>0.13.0</libthrift.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
@@ -104,10 +103,6 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.thrift</groupId>
-                    <artifactId>libthrift</artifactId>
                 </exclusion>
                 <!--exported by runtime-->
                 <exclusion>
@@ -308,22 +303,6 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jsonSchema</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>${libthrift.version}</version>
-            <exclusions>
-                <!--exported by runtime-->
-                <exclusion>
-                    <groupId>javax.annotation</groupId>
-                    <artifactId>javax.annotation-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- END OF: exclusions due to RP-592, they are limited because of java 7 -->
 
