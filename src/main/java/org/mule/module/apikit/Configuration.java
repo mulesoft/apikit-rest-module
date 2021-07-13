@@ -6,11 +6,9 @@
  */
 package org.mule.module.apikit;
 
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import org.apache.commons.lang.StringUtils;
+import static java.lang.Runtime.getRuntime;
+import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
+
 import org.mule.apikit.ApiType;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
@@ -34,19 +32,26 @@ import org.mule.runtime.api.scheduler.SchedulerConfig;
 import org.mule.runtime.api.scheduler.SchedulerService;
 import org.mule.runtime.core.api.MuleContext;
 import org.mule.runtime.core.api.el.ExpressionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.xml.validation.Schema;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
 
-import static java.lang.Runtime.getRuntime;
-import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
+import javax.inject.Inject;
+import javax.xml.validation.Schema;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class Configuration implements Disposable, Initialisable, ValidationConfig, ConsoleConfig {
 
@@ -72,7 +77,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   private boolean keepRamlBaseUri;
   private String outboundHeadersMapName;
   private String httpStatusVarName;
-  private FlowMappings flowMappings = new FlowMappings();
+  private List<FlowMapping> flowMappings = new ArrayList<>();
   private AttributesDeserializingStrategies attributesDeserializingStrategies = new AttributesDeserializingStrategies();
 
   private LoadingCache<String, JsonSchema> jsonSchemaCache;
@@ -118,7 +123,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     } catch (Exception e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
-    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings(),
+    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings,
                                 errorRepositoryFrom(muleContext));
     buildResourcePatternCaches();
     registry.registerConfiguration(this);
@@ -217,11 +222,11 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     this.keepApiBaseUri = keepApiBaseUri;
   }
 
-  public FlowMappings getFlowMappings() {
+  public List<FlowMapping> getFlowMappings() {
     return flowMappings;
   }
 
-  public void setFlowMappings(FlowMappings flowMappings) {
+  public void setFlowMappings(List<FlowMapping> flowMappings) {
     this.flowMappings = flowMappings;
   }
 
