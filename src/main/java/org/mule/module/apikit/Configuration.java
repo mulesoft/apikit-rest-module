@@ -6,6 +6,8 @@
  */
 package org.mule.module.apikit;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.config.ConsoleConfig;
 import org.mule.module.apikit.api.config.ValidationConfig;
@@ -27,8 +29,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-//import org.mule.module.apikit.exception.NotFoundException;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -46,7 +46,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   private boolean keepRamlBaseUri;
   private String outboundHeadersMapName;
   private String httpStatusVarName;
-  private FlowMappings flowMappings = new FlowMappings();
+  private List<FlowMapping> flowMappings = new ArrayList<>();
 
 
   private final static String DEFAULT_OUTBOUND_HEADERS_MAP_NAME = "outboundHeaders";
@@ -85,7 +85,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     } catch (IOException e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
-    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings());
+    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings);
     buildResourcePatternCaches();
     registry.registerConfiguration(this);
     ApikitErrorTypes.initialise(muleContext);
@@ -147,11 +147,11 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     this.keepRamlBaseUri = keepRamlBaseUri;
   }
 
-  public FlowMappings getFlowMappings() {
+  public List<FlowMapping> getFlowMappings() {
     return flowMappings;
   }
 
-  public void setFlowMappings(FlowMappings flowMappings) {
+  public void setFlowMappings(List<FlowMapping> flowMappings) {
     this.flowMappings = flowMappings;
   }
 
