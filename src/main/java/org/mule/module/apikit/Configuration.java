@@ -9,7 +9,9 @@ package org.mule.module.apikit;
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +42,7 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -66,7 +69,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
   private boolean keepRamlBaseUri;
   private String outboundHeadersMapName;
   private String httpStatusVarName;
-  private FlowMappings flowMappings = new FlowMappings();
+  private List<FlowMapping> flowMappings = new ArrayList<>();
 
   private LoadingCache<String, JsonSchema> jsonSchemaCache;
   private LoadingCache<String, Schema> xmlSchemaCache;
@@ -111,7 +114,7 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     } catch (final Exception e) {
       throw new InitialisationException(e.fillInStackTrace(), this);
     }
-    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings.getFlowMappings(),
+    flowFinder = new FlowFinder(ramlHandler, getName(), locator, flowMappings,
                                 errorRepositoryFrom(muleContext));
     buildResourcePatternCaches();
     registry.registerConfiguration(this);
@@ -199,11 +202,11 @@ public class Configuration implements Initialisable, ValidationConfig, ConsoleCo
     this.keepApiBaseUri = keepApiBaseUri;
   }
 
-  public FlowMappings getFlowMappings() {
+  public List<FlowMapping> getFlowMappings() {
     return flowMappings;
   }
 
-  public void setFlowMappings(FlowMappings flowMappings) {
+  public void setFlowMappings(List<FlowMapping> flowMappings) {
     this.flowMappings = flowMappings;
   }
 
