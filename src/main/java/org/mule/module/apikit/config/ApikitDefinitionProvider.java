@@ -6,10 +6,14 @@
  */
 package org.mule.module.apikit.config;
 
+import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromChildConfiguration;
+import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromSimpleParameter;
+import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromSimpleReferenceParameter;
+import static org.mule.runtime.dsl.api.component.TypeDefinition.fromType;
+
 import org.mule.module.apikit.Configuration;
 import org.mule.module.apikit.Console;
 import org.mule.module.apikit.FlowMapping;
-import org.mule.module.apikit.FlowMappings;
 import org.mule.module.apikit.Router;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.runtime.dsl.api.component.ComponentBuildingDefinition;
@@ -17,12 +21,6 @@ import org.mule.runtime.dsl.api.component.ComponentBuildingDefinitionProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromChildCollectionConfiguration;
-import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromChildConfiguration;
-import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromSimpleParameter;
-import static org.mule.runtime.dsl.api.component.AttributeDefinition.Builder.fromSimpleReferenceParameter;
-import static org.mule.runtime.dsl.api.component.TypeDefinition.fromType;
 
 public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProvider {
 
@@ -51,14 +49,10 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
         .withSetterParameterDefinition("queryParamsStrictValidation", fromSimpleParameter("queryParamsStrictValidation").build())
         .withSetterParameterDefinition("headersStrictValidation", fromSimpleParameter("headersStrictValidation").build())
         .withSetterParameterDefinition("parser", fromSimpleParameter("parser").build())
-        .withSetterParameterDefinition("flowMappings", fromChildConfiguration(FlowMappings.class).build())
+        .withSetterParameterDefinition("flowMappings",
+                                       fromChildConfiguration(List.class).withWrapperIdentifier("flow-mappings").build())
         .withSetterParameterDefinition("attributesDeserializingStrategies",
                                        fromChildConfiguration(AttributesDeserializingStrategies.class).build())
-        .build());
-
-    definitions.add(baseDefinition.withIdentifier("flow-mappings")
-        .withTypeDefinition(fromType(FlowMappings.class))
-        .withSetterParameterDefinition("flowMappings", fromChildCollectionConfiguration(FlowMapping.class).build())
         .build());
 
     definitions.add(baseDefinition.withIdentifier("flow-mapping")
