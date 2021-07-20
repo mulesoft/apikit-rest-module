@@ -5,6 +5,7 @@
   "ignoreDeps": [
     "mule-core",
     "mule-service-http",
+    "mule-http-connector",
     "mule-modules-all",
     "mule-module-spring-config",
     "mule-service-scheduler",
