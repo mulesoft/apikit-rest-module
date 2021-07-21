@@ -1,0 +1,18 @@
+#%RAML 1.0
+---
+title: API for test routing!
+
+types:
+  Order:
+    type: object
+    properties:
+      orderID:
+        type: string
+
+/getOrder:
+  get:
+    responses:
+      200:
+        body:
+            application/json:
+              type: Order
