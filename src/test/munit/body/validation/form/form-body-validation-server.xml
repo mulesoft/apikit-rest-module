@@ -22,7 +22,6 @@
       </http:error-response>
     </http:listener>
     <apikit:router config-ref="form-body-validation-config"/>
-    <logger level="INFO" message="#[payload]" />
     <error-handler ref="global-server-error-handler"/>
   </flow>
 
