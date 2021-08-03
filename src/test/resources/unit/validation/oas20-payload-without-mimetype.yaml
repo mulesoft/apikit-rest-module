@@ -1,0 +1,33 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: se-20854-api
+
+schemes:
+  - http
+paths:
+  /withSchema:
+    post:
+      summary: Creates a new user.
+      parameters:
+        - in: body
+          name: user
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: OK
+  /withoutSchema:
+    post:
+      parameters:
+        - in: body
+definitions:
+  User:
+    required:
+      - id
+      - name
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
