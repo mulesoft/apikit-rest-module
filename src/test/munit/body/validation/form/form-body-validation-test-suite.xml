@@ -81,6 +81,42 @@
     </munit:validation>
   </munit:test>
 
+  <munit:test name="post-binary-file-when-definition-contains-default-values">
+    <munit:enable-flow-sources>
+      <munit:enable-flow-source value="form-body-validation-main"/>
+      <munit:enable-flow-source value="post:\multiple-optional-multipart:multipart\form-data:form-body-validation-config"/>
+    </munit:enable-flow-sources>
+    <munit:execution>
+      <set-payload value="#[readUrl('classpath://munit/body/form/bbva.jpg', 'application/octet-stream')]"/>
+      <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multiple-optional-multipart">
+        <http:body>#[
+          %dw 2.0
+          output multipart/form-data boundary="test"
+          ---
+          {
+            parts: {
+              file: {
+                headers: {
+                  'Content-Disposition': 'form-data; name="filename"; filename="Test Assignment.txt"',
+                  'Content-Type': 'application/octet-stream'
+                },
+                content: payload
+              }
+            }
+          }]
+        </http:body>
+        <http:response-validator>
+          <http:success-status-code-validator values="1..500"/>
+        </http:response-validator>
+      </http:request>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+      <munit-tools:assert-that expression="#[attributes.headers.'content-type']" is='#[MunitTools::containsString("application/json")]'/>
+      <munit-tools:assert-that expression="#[output application/java --- sizeOf(payload)]" is="#[MunitTools::equalTo(3)]"/>
+    </munit:validation>
+  </munit:test>
+
   <munit:test name="multiple-required-form-parameters">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="form-body-validation-main"/>

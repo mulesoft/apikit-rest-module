@@ -24,11 +24,11 @@ import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
  */
 public class MultipartFormDataBinaryParameter implements MultipartFormDataParameter {
 
-  private final byte[] byteArray;
+  private final int length;
   private final MediaType mediaType;
 
-  public MultipartFormDataBinaryParameter(byte[] inputStream, MediaType mediaType) {
-    this.byteArray = inputStream;
+  public MultipartFormDataBinaryParameter(int length, MediaType mediaType) {
+    this.length = length;
     this.mediaType = mediaType;
   }
 
@@ -49,8 +49,8 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     if (minValue == 0 && maxValue == 0) {
       return;
     }
-    if (byteArray.length < minValue ||
-        byteArray.length > maxValue) {
+    if (length < minValue ||
+        length > maxValue) {
       throw new InvalidFormParameterException(
                                               format("Length must be between : %s and %s", properties.getMinLength(),
                                                      properties.getMaxLength()));

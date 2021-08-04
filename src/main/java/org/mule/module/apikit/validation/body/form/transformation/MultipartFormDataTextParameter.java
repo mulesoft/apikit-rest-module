@@ -18,10 +18,8 @@ import org.mule.runtime.api.metadata.MediaType;
 public class MultipartFormDataTextParameter implements MultipartFormDataParameter {
 
   private final String body;
-  private final MediaType mediaType;
 
-  public MultipartFormDataTextParameter(String body, MediaType mediaType) {
-    this.mediaType = mediaType;
+  public MultipartFormDataTextParameter(String body) {
     this.body = body;
   }
 

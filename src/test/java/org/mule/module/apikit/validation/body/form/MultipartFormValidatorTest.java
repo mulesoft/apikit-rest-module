@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
+import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.OptionalLong;
+import org.mule.runtime.api.streaming.CursorProvider;
+import org.mule.runtime.api.streaming.bytes.CursorStream;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
 import static org.junit.Assert.assertEquals;
 
@@ -47,15 +51,67 @@ public class MultipartFormValidatorTest {
     TypedValue typedValue = getTypedValue();
     TypedValue validatedTypedValue = multipartFormValidator.validate(typedValue);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
-    assertEquals(typedValue.getByteLength().getAsLong(), validatedTypedValue.getByteLength().getAsLong());
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
 
   private TypedValue getTypedValue() {
     DataType dataType = DataType.builder(DataType.INPUT_STREAM)
         .mediaType(MediaType.parse("multipart/form-data; boundary=\"" + BOUNDARY + "\"")).build();
-    ByteArrayInputStream in = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
-    return new TypedValue(new RewindableInputStream(in), dataType, OptionalLong.of(in.available()));
+    return new TypedValue(new CursorStreamProvider() {
+
+      @Override
+      public CursorStream openCursor() {
+        return new CursorStream() {
+
+          private final InputStream content = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
+
+          @Override
+          public int read() throws IOException {
+            return content.read();
+          }
+
+          @Override
+          public long getPosition() {
+            return 0;
+          }
+
+          @Override
+          public void seek(long position) {
+
+          }
+
+          @Override
+          public void release() {
+
+          }
+
+          @Override
+          public boolean isReleased() {
+            return false;
+          }
+
+          @Override
+          public CursorProvider getProvider() {
+            return null;
+          }
+        };
+      }
+
+      @Override
+      public void close() {
+
+      }
+
+      @Override
+      public void releaseResources() {
+
+      }
+
+      @Override
+      public boolean isClosed() {
+        return false;
+      }
+    }, dataType);
   }
 
 }
