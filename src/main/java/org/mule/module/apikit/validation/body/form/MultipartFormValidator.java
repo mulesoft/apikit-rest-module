@@ -7,20 +7,21 @@
 package org.mule.module.apikit.validation.body.form;
 
 
+import static org.mule.runtime.api.metadata.DataType.INPUT_STREAM;
+
+import java.util.Map.Entry;
 import org.mule.apikit.model.parameter.Parameter;
-import org.mule.module.apikit.StreamUtils;
+import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
-import org.mule.module.apikit.validation.body.form.transformation.MultipartFormData;
-import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataBuilder;
-import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataParameter;
+import org.mule.module.apikit.validation.body.form.transformation.Multipart;
+import org.mule.module.apikit.validation.body.form.transformation.MultipartBuilder;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalLong;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
 public class MultipartFormValidator implements FormValidator<TypedValue> {
 
@@ -31,41 +32,34 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
   }
 
   @Override
-  public TypedValue validate(TypedValue originalPayload) throws InvalidFormParameterException {
-    InputStream inputStream = StreamUtils.unwrapCursorStream(originalPayload.getValue());
-    String boundary = getBoundary(originalPayload);
-    MultipartFormDataBuilder multipartFormDataBuilder = new MultipartFormDataBuilder(inputStream, boundary);
-    Map<String, MultipartFormDataParameter> actualParameters = multipartFormDataBuilder.getFormDataParameters();
+  public TypedValue validate(TypedValue payload) throws BadRequestException {
+    CursorStreamProvider cursorStream = (CursorStreamProvider) payload.getValue();
 
-    boolean hasDefaultValues = false;
-    for (String expectedKey : formParameters.keySet()) {
-      List<Parameter> params = formParameters.get(expectedKey);
-      if (params != null && params.size() == 1) {
-        Parameter expected = params.get(0);
-        if (actualParameters.containsKey(expectedKey)) {
-          MultipartFormDataParameter multipartFormDataParameter = actualParameters.get(expectedKey);
-          multipartFormDataParameter.validate(expected);
-        } else {
-          if (expected.getDefaultValue() != null) {
-            multipartFormDataBuilder.addDefault(expectedKey, expected.getDefaultValue());
-            hasDefaultValues = true;
-          } else if (expected.isRequired()) {
-            throw new InvalidFormParameterException("Required form parameter " + expectedKey + " not specified");
-          }
-        }
+    MultipartBuilder multipartBuilder =
+        new MultipartBuilder(cursorStream, payload.getDataType().getMediaType().toString(), getBoundary(payload));
+
+    for (Entry<String, List<Parameter>> formParameter : formParameters.entrySet()) {
+
+      Parameter parameter = formParameter.getValue().get(0);
+      multipartBuilder.withExpectedParameter(formParameter.getKey(), parameter);
+
+      if (parameter.getDefaultValue() != null) {
+        multipartBuilder.withDefaultValue(formParameter.getKey(), parameter.getDefaultValue());
       }
+
     }
-    if (!hasDefaultValues && !(originalPayload.getValue() instanceof InputStream)) {
-      return originalPayload;
-    }
-    return getTypedValue(multipartFormDataBuilder.build());
+    return getTypedValue(multipartBuilder.build());
   }
 
-  private TypedValue getTypedValue(MultipartFormData multipartFormData) throws InvalidFormParameterException {
-    InputStream is = multipartFormData.getInputStream();
-    final MediaType mediaType = MediaType.parse(multipartFormData.getContentType());
-    DataType dataType = DataType.builder(DataType.INPUT_STREAM).mediaType(mediaType).build();
-    return new TypedValue(is, dataType, OptionalLong.of(multipartFormData.getLength()));
+  private TypedValue getTypedValue(Multipart multipart) throws InvalidFormParameterException {
+    Object is = multipart.content();
+    MediaType mediaType = MediaType.parse(multipart.contentType());
+    DataType dataType = DataType
+        .builder(INPUT_STREAM)
+        .mediaType(mediaType)
+        .build();
+
+    return new TypedValue<>(is, dataType);
   }
 
   private String getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
@@ -75,5 +69,4 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
     }
     return boundary;
   }
-
 }
