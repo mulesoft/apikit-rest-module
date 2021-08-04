@@ -14,31 +14,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MultipartFormData {
+/**
+ * New Multipart generated from input multipart, adding default values
+ */
+public class MultipartWithDefaults implements Multipart {
 
   private final HttpEntity multipartFormEntity;
 
-  public MultipartFormData(HttpEntity multipartFormEntity) {
+  public MultipartWithDefaults(HttpEntity multipartFormEntity) {
     this.multipartFormEntity = multipartFormEntity;
   }
 
-  //TODO: Enhance performance using piped streams
-  public InputStream getInputStream() throws InvalidFormParameterException {
+  @Override
+  public InputStream content() throws InvalidFormParameterException {
     try {
-      ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-      this.multipartFormEntity.writeTo(outStream);
-      outStream.flush();
-      return new ByteArrayInputStream(outStream.toByteArray());
+      return multipartFormEntity.getContent();
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
     }
   }
 
-  public long getLength() {
-    return this.multipartFormEntity.getContentLength();
-  }
-
-  public String getContentType() {
-    return this.multipartFormEntity.getContentType().getValue();
+  @Override
+  public String contentType() {
+    return multipartFormEntity.getContentType().getValue();
   }
 }

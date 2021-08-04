@@ -19,12 +19,12 @@ import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataBinaryParameter;
 
-public class MultipartFormDataBinaryParameterTestCase {
+public class MultipartWithDefaultsBinaryParameterTestCase {
 
   @Test(expected = InvalidFormParameterException.class)
   public void invalidContentType() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -37,7 +37,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test
   public void parameterWithoutFileProperties() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -49,7 +49,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test
   public void validContentTypeAndNoSizeRestriction() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -63,7 +63,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test(expected = InvalidFormParameterException.class)
   public void sizeLowerThanMinLength() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -77,7 +77,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test(expected = InvalidFormParameterException.class)
   public void sizeBiggerThanMaxLength() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -91,7 +91,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test
   public void validSize() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -105,7 +105,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test
   public void anyFileTypeAllowed() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
@@ -119,7 +119,7 @@ public class MultipartFormDataBinaryParameterTestCase {
   @Test
   public void emptyFileTypes() throws Exception {
     MultipartFormDataBinaryParameter parameterValidator =
-        new MultipartFormDataBinaryParameter("testing payload".getBytes(), parse("image/jpeg"));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse("image/jpeg"));
 
     Parameter parameter = mock(Parameter.class);
 
