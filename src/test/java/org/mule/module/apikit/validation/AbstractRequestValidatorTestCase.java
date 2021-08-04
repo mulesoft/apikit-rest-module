@@ -18,6 +18,7 @@ import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.util.MultiMap;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
@@ -130,6 +131,11 @@ public abstract class AbstractRequestValidatorTestCase {
 
     public TestRestRequestValidatorBuilder withBody(InputStream body) {
       this.body = body;
+      return this;
+    }
+
+    public TestRestRequestValidatorBuilder withBody(String body) {
+      this.body = new ByteArrayInputStream(body.getBytes());
       return this;
     }
 
