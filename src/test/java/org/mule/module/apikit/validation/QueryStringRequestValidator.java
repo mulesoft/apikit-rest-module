@@ -50,4 +50,35 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .validateRequest();
   }
 
+  @Test
+  public void validQueryStringWithInvalidYAMLValue() throws MuleRestException {
+    MultiMap<String, String> queryParams = new MultiMap<>();
+    queryParams.put("code", "*validC*de*");
+    queryParams.put("codes", "validCode");
+    queryParams.put("codes", "*validC*de*");
+    testRestRequestValidatorBuilder
+        .withApiLocation("unit/query-string/special-chars-api.raml")
+        .withMethod("GET")
+        .withRequestPath("/api/query-string-validation")
+        .withRelativePath("/query-string-validation")
+        .withQueryParams(queryParams)
+        .build()
+        .validateRequest();
+  }
+
+  @Test
+  public void invalidQueryStringExceedingLengthWithInvalidYAMLValue() throws MuleRestException {
+    expectedException.expect(InvalidQueryStringException.class);
+    expectedException.expectMessage("Invalid value for query string");
+    MultiMap<String, String> queryParams = new MultiMap<>();
+    queryParams.put("code", "*invalidC*deLength*");
+    testRestRequestValidatorBuilder
+        .withApiLocation("unit/query-string/special-chars-api.raml")
+        .withMethod("GET")
+        .withRequestPath("/api/query-string-validation")
+        .withRelativePath("/query-string-validation")
+        .withQueryParams(queryParams)
+        .build()
+        .validateRequest();
+  }
 }
