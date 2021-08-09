@@ -38,28 +38,35 @@ public class QueryStringValidator {
   private static String buildQueryString(QueryString expected, MultiMap<String, String> queryParams) {
     StringBuilder result = new StringBuilder();
 
-    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(expected.facets());
+    Map<String, Parameter> facets = expected.facets();
+    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(facets);
+    Parameter facet;
 
     for (Object property : queryParams.keySet()) {
+      facet = facets.get(property.toString());
       facetsWithDefault.remove(property.toString());
       final List<String> actualQueryParam = queryParams.getAll(property.toString());
 
       result.append("\n").append(property).append(": ");
 
       if (actualQueryParam.size() > 1 || expected.isFacetArray(property.toString())) {
-        for (Object o : actualQueryParam) {
-          result.append("\n  - ").append(o);
+        for (String value : actualQueryParam) {
+          result.append("\n  - ").append(facet != null ? facet.surroundWithQuotesIfNeeded(value) : value);
         }
         result.append("\n");
       } else {
-        for (Object o : actualQueryParam) {
-          result.append(o).append("\n");
+        for (String value : actualQueryParam) {
+          result.append(facet != null ? facet.surroundWithQuotesIfNeeded(value) : value).append("\n");
         }
       }
     }
 
+    String defaultValue;
     for (Entry<String, Parameter> entry : facetsWithDefault.entrySet()) {
-      result.append(entry.getKey()).append(": ").append(entry.getValue().getDefaultValue()).append("\n");
+      facet = facets.get(entry.getKey());
+      defaultValue = entry.getValue().getDefaultValue();
+      result.append(entry.getKey()).append(": ")
+          .append(facet != null ? facet.surroundWithQuotesIfNeeded(defaultValue) : defaultValue).append("\n");
     }
 
     if (result.length() > 0) {

@@ -1,0 +1,31 @@
+#%RAML 1.0
+title: Query String Validation Test API
+version: 1.0.0
+
+/query-string-validation:
+  get:
+    displayName: validateQueryStrings
+    queryString:
+      properties:
+        code:
+          required: true
+          displayName: code
+          type: string
+          maxLength: 11
+        codes:
+          required: false
+          displayName: codes
+          type: string[]
+        defcode:
+          required: false
+          displayName: defcode
+          type: string
+          maxLength: 13
+          default: "*s*medefault" # Needs quotes if leading asterisk in value
+    responses:
+      200:
+        description: successful operation
+        body:
+          application/json:
+            displayName: response
+            description: successful operation
