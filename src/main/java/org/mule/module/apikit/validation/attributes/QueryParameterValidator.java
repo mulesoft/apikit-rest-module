@@ -23,6 +23,7 @@ import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
+import static org.mule.module.apikit.validation.attributes.ValidationUtils.escapeAndSurroundWithQuotesIfNeeded;
 
 public class QueryParameterValidator {
 
@@ -94,7 +95,7 @@ public class QueryParameterValidator {
     paramValues.forEach(paramValue -> {
       String value = valueOf(paramValue);
       builder.append("- ");
-      builder.append(expected.surroundWithQuotesIfNeeded(value));
+      builder.append(escapeAndSurroundWithQuotesIfNeeded(expected, value));
       builder.append("\n");
     });
 
@@ -104,7 +105,7 @@ public class QueryParameterValidator {
   private static void validateQueryParam(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition,
                                          String value)
       throws InvalidQueryParameterException {
-    validate(paramKey, parameterDefinition, parameterDefinition.surroundWithQuotesIfNeeded(value));
+    validate(paramKey, parameterDefinition, value);
     replaceNullStringValue(queryParams, paramKey, parameterDefinition, value);
   }
 

@@ -30,6 +30,7 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .withRequestPath("/api/locations")
         .withRelativePath("/locations")
         .withQueryParams(queryParams)
+        .withQueryString("start=2&lat=12&long=13")
         .build()
         .validateRequest();
   }
@@ -46,6 +47,7 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .withRequestPath("/api/locations")
         .withRelativePath("/locations")
         .withQueryParams(queryParams)
+        .withQueryString("start=5")
         .build()
         .validateRequest();
   }
@@ -62,6 +64,7 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .withRequestPath("/api/query-string-validation")
         .withRelativePath("/query-string-validation")
         .withQueryParams(queryParams)
+        .withQueryString("code=*validC*de*&codes=validCode&codes=*validC*de*")
         .build()
         .validateRequest();
   }
@@ -78,6 +81,7 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .withRequestPath("/api/query-string-validation")
         .withRelativePath("/query-string-validation")
         .withQueryParams(queryParams)
+        .withQueryString("code=*invalidC*deLength*")
         .build()
         .validateRequest();
   }
