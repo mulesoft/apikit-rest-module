@@ -1,0 +1,113 @@
+#%RAML 1.0
+title: Test consistency between query parameters and query string validation
+version: v1
+
+types:
+  stringItem:
+    type: string
+    minLength: 2
+    maxLength: 5
+  numericItem:
+    type: number
+  integerItem:
+    type: integer
+  booleanItem:
+    type: boolean
+  datetimeItem:
+    type: datetime
+  objectItem:
+    type: object
+    additionalProperties: false
+    properties:
+      stringProp?: string
+      numberProp?: number
+      integerProp?: integer
+      booleanProp?: boolean
+      datetimeProp?: datetime
+      stringProps?: string[]
+      numberProps?: number[]
+      integerProps?: integer[]
+      booleanProps?: boolean[]
+      datetimeProps?: datetime[]
+  stringItems:
+    type: array
+    items: stringItem
+  numericItems:
+    type: array
+    items: numericItem
+  integerItems:
+    type: array
+    items: integerItem
+  booleanItems:
+    type: array
+    items: booleanItem
+  datetimeItems:
+    type: array
+    items: datetimeItem
+  objectItems:
+    type: array
+    items: objectItem
+  query:
+    type: object
+    additionalProperties: false
+    properties:
+      stringItemParam?:
+        type: stringItem
+      numericItemParam?:
+        type: numericItem
+      integerItemParam?:
+        type: integerItem
+      booleanItemParam?:
+        type: booleanItem
+      datetimeItemParam?:
+        type: datetimeItem
+      objectItemParam?:
+        type: objectItem
+      stringItemParams?:
+        type: stringItems
+      numericItemParams?:
+        type: numericItems
+      integerItemParams?:
+        type: integerItems
+      booleanItemParams?:
+        type: booleanItems
+      datetimeItemParams?:
+        type: datetimeItems
+      objectItemParams?:
+        type: objectItems
+
+/testQueryParams:
+  get:
+    queryParameters:
+      stringItemParam?:
+        type: stringItem
+      numericItemParam?:
+        type: numericItem
+      integerItemParam?:
+        type: integerItem
+      booleanItemParam?:
+        type: booleanItem
+      datetimeItemParam?:
+        type: datetimeItem
+      objectItemParam?:
+        type: objectItem
+      stringItemParams?:
+        type: stringItems
+      numericItemParams?:
+        type: numericItems
+      integerItemParams?:
+        type: integerItems
+      booleanItemParams?:
+        type: booleanItems
+      datetimeItemParams?:
+        type: datetimeItems
+      objectItemParams?:
+        type: objectItems
+    responses:
+      200:
+/testQueryString:
+  get:
+    queryString:
+      type: query
+    responses:
+      200:
