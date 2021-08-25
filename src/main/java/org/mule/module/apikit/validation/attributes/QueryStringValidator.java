@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static org.mule.module.apikit.validation.attributes.ValidationUtils.escapeAndSurroundWithQuotesIfNeeded;
+
 public class QueryStringValidator {
 
   public static void validate(QueryString queryString, MultiMap<String, String> queryParams) throws InvalidQueryStringException {
@@ -51,12 +53,12 @@ public class QueryStringValidator {
 
       if (actualQueryParam.size() > 1 || expected.isFacetArray(property.toString())) {
         for (String value : actualQueryParam) {
-          result.append("\n  - ").append(facet != null ? facet.surroundWithQuotesIfNeeded(value) : value);
+          result.append("\n  - ").append(escapeAndSurroundWithQuotesIfNeeded(facet, value));
         }
         result.append("\n");
       } else {
         for (String value : actualQueryParam) {
-          result.append(facet != null ? facet.surroundWithQuotesIfNeeded(value) : value).append("\n");
+          result.append(escapeAndSurroundWithQuotesIfNeeded(facet, value)).append("\n");
         }
       }
     }
@@ -66,7 +68,7 @@ public class QueryStringValidator {
       facet = facets.get(entry.getKey());
       defaultValue = entry.getValue().getDefaultValue();
       result.append(entry.getKey()).append(": ")
-          .append(facet != null ? facet.surroundWithQuotesIfNeeded(defaultValue) : defaultValue).append("\n");
+          .append(escapeAndSurroundWithQuotesIfNeeded(facet, defaultValue)).append("\n");
     }
 
     if (result.length() > 0) {

@@ -104,6 +104,11 @@ public abstract class AbstractRequestValidatorTestCase {
       return this;
     }
 
+    public TestRestRequestValidatorBuilder withQueryString(String queryString) {
+      this.httpRequestAttributesBuilder.queryString(queryString);
+      return this;
+    }
+
     public TestRestRequestValidatorBuilder withUriParams(MultiMap<String, String> uriParams) {
       this.httpRequestAttributesBuilder.uriParams(uriParams);
       return this;
