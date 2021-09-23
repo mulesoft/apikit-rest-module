@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Empty body test in Raml 1.0",
+    "title": "Empty body test",
     "version": "undefined"
   },
   "paths": {

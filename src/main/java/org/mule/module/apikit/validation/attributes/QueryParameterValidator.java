@@ -83,7 +83,7 @@ public class QueryParameterValidator {
     Set notDefinedQueryParameters = difference(incomingQueryParams.keySet(), queryParameters.keySet());
     if (!notDefinedQueryParameters.isEmpty()) {
       throw new InvalidQueryParameterException(format("[%s] %s", on(", ").join(notDefinedQueryParameters),
-                                                      "parameters are not defined in RAML."));
+                                                      "parameters are not defined in API spec."));
     }
   }
 
