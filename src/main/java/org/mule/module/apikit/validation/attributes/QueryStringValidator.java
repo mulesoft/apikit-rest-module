@@ -17,68 +17,104 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
+import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.validation.attributes.ValidationUtils.escapeAndSurroundWithQuotesIfNeeded;
 
 public class QueryStringValidator {
 
-  public static void validate(QueryString queryString, MultiMap<String, String> queryParams) throws InvalidQueryStringException {
+  public static ValidatedQueryParams validate(QueryString queryString, String rawQueryString,
+                                              MultiMap<String, String> queryParams)
+      throws InvalidQueryStringException {
     if (!shouldProcessQueryString(queryString)) {
-      return;
+      return null;
     }
 
-    String actualQueryString = buildQueryString(queryString, queryParams);
+    Map<String, Parameter> facets = queryString.facets();
+    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(facets);
+    MultiMap<String, String> queryParamsCopy = copyImmutableMap(queryParams);
+    StringBuilder queryStringYaml = queryStringAsYaml(queryString, facets, facetsWithDefault, queryParamsCopy);
+    validateQueryString(queryStringYaml, queryString);
 
-    if (!queryString.validate(actualQueryString)) {
+    return new ValidatedQueryParams(queryParamsCopy, addDefaultValues(facetsWithDefault, queryParamsCopy, rawQueryString));
+  }
+
+  /**
+   * Builds a YAML from provided Query String.
+   *
+   * @param queryString
+   * @param facets
+   * @param facetsWithDefault
+   * @param queryParamsCopy
+   * @return StringBuilder for the Query String as YAML
+   */
+  private static StringBuilder queryStringAsYaml(QueryString queryString, Map<String, Parameter> facets,
+                                                 Map<String, Parameter> facetsWithDefault,
+                                                 MultiMap<String, String> queryParamsCopy) {
+    StringBuilder queryStringYaml = new StringBuilder();
+    Parameter facet;
+    for (Object property : queryParamsCopy.keySet()) {
+      facet = facets.get(property.toString());
+      facetsWithDefault.remove(property.toString());
+      final List<String> actualQueryParam = queryParamsCopy.getAll(property.toString());
+
+      queryStringYaml.append("\n").append(property).append(": ");
+
+      if (actualQueryParam.size() > 1 || queryString.isFacetArray(property.toString())) {
+        for (String value : actualQueryParam) {
+          queryStringYaml.append("\n  - ").append(escapeAndSurroundWithQuotesIfNeeded(facet, value));
+        }
+        queryStringYaml.append("\n");
+      } else {
+        for (String value : actualQueryParam) {
+          queryStringYaml.append(escapeAndSurroundWithQuotesIfNeeded(facet, value)).append("\n");
+        }
+      }
+    }
+    return queryStringYaml;
+  }
+
+  /**
+   * Adds default values to raw Query String and Query parameters map.
+   *
+   * @param facetsWithDefault
+   * @param queryParamsCopy
+   * @param rawQueryString
+   * @return encoded raw Query String with defaults values
+   */
+  private static String addDefaultValues(Map<String, Parameter> facetsWithDefault, MultiMap<String, String> queryParamsCopy,
+                                         String rawQueryString) {
+    String defaultValue;
+    for (Entry<String, Parameter> entry : facetsWithDefault.entrySet()) {
+      defaultValue = entry.getValue().getDefaultValue();
+      rawQueryString = addQueryString(rawQueryString, entry.getKey(), defaultValue);
+      queryParamsCopy.put(entry.getKey(), entry.getValue().getDefaultValue());
+    }
+
+    return rawQueryString;
+  }
+
+  /**
+   * Validates YAML Query String.
+   *
+   * @param queryStringYaml
+   * @param queryString
+   * @throws InvalidQueryStringException
+   */
+  private static void validateQueryString(StringBuilder queryStringYaml, QueryString queryString)
+      throws InvalidQueryStringException {
+    // If no YAML, empty value ends up in an empty JSON object
+    if (queryStringYaml.length() == 0) {
+      queryStringYaml.append("{}");
+    }
+
+    if (!queryString.validate(queryStringYaml.toString())) {
       throw new InvalidQueryStringException("Invalid value for query string");
     }
   }
 
   private static boolean shouldProcessQueryString(QueryString queryString) {
     return queryString != null && !queryString.isArray() && !queryString.isScalar();
-  }
-
-  private static String buildQueryString(QueryString expected, MultiMap<String, String> queryParams) {
-    StringBuilder result = new StringBuilder();
-
-    Map<String, Parameter> facets = expected.facets();
-    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(facets);
-    Parameter facet;
-
-    for (Object property : queryParams.keySet()) {
-      facet = facets.get(property.toString());
-      facetsWithDefault.remove(property.toString());
-      final List<String> actualQueryParam = queryParams.getAll(property.toString());
-
-      result.append("\n").append(property).append(": ");
-
-      if (actualQueryParam.size() > 1 || expected.isFacetArray(property.toString())) {
-        for (String value : actualQueryParam) {
-          result.append("\n  - ").append(escapeAndSurroundWithQuotesIfNeeded(facet, value));
-        }
-        result.append("\n");
-      } else {
-        for (String value : actualQueryParam) {
-          result.append(escapeAndSurroundWithQuotesIfNeeded(facet, value)).append("\n");
-        }
-      }
-    }
-
-    String defaultValue;
-    for (Entry<String, Parameter> entry : facetsWithDefault.entrySet()) {
-      facet = facets.get(entry.getKey());
-      defaultValue = entry.getValue().getDefaultValue();
-      result.append(entry.getKey()).append(": ")
-          .append(escapeAndSurroundWithQuotesIfNeeded(facet, defaultValue)).append("\n");
-    }
-
-    if (result.length() > 0) {
-      return result.toString();
-    }
-    if (expected.getDefaultValue() != null) {
-      return expected.getDefaultValue();
-    }
-
-    return "{}";
   }
 
   private static Map<String, Parameter> getFacetsWithDefaultValue(Map<String, Parameter> facets) {
