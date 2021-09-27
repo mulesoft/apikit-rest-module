@@ -73,7 +73,7 @@
       <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
       <logger level="INFO" message="#[payload]"/>
       <munit-tools:assert-that expression="#[output text/plain --- payload.description]"
-                               is="#[MunitTools::equalTo('[notDefinedQueryParam] parameters are not defined in RAML.')]"/>
+                               is="#[MunitTools::equalTo('[notDefinedQueryParam] parameters are not defined in API spec.')]"/>
     </munit:validation>
   </munit:test>
 
