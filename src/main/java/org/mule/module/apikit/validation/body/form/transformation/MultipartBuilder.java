@@ -6,6 +6,7 @@
  */
 package org.mule.module.apikit.validation.body.form.transformation;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
@@ -33,9 +34,10 @@ public class MultipartBuilder {
   private final Map<String, String> defaultValues = new HashMap<>();
   private final Map<String, Parameter> formParameters = new HashMap<>();
 
-  private static Pattern NAME_PATTERN = compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
+  private static Pattern NAME_PATTERN =
+      compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]", CASE_INSENSITIVE);
   private static Pattern FILE_NAME_PATTERN = compile("filename=\"([^\"]+)\"");
-  private static Pattern CONTENT_TYPE_PATTERN = compile("Content-Type:\\s*([^\\n]+)");
+  private static Pattern CONTENT_TYPE_PATTERN = compile("Content-Type:\\s*([^\\n]+)", CASE_INSENSITIVE);
 
   public MultipartBuilder(CursorStreamProvider cursorProvider, String contentType, String boundary) {
     this.cursorProvider = cursorProvider;

@@ -53,7 +53,7 @@
           parts: {
           file: {
           headers: {
-          'Content-Disposition': 'form-data; name="first"; filename="bbva.jpeg"',
+          'content-Disposition': 'form-data; name="first"; filename="bbva.jpeg"',
           'Content-Type': 'image/jpeg'
           },
           content: payload
@@ -87,7 +87,7 @@
           parts: {
           file: {
           headers: {
-          'Content-Disposition': 'form-data; name="first"; filename="bbva.jpeg"',
+          'Content-disposition': 'form-data; name="first"; filename="bbva.jpeg"',
           'Content-Type': 'application/octet-stream'
           },
           content: payload
@@ -123,7 +123,7 @@
           file: {
           headers: {
           'Content-Disposition': 'form-data; name="first"; filename="bbva.jpeg"',
-          'Content-Type': 'image/jpeg'
+          'content-type': 'image/jpeg'
           },
           content: payload
           }
@@ -156,8 +156,8 @@
           parts: {
           file: {
           headers: {
-          'Content-Disposition': 'form-data; name="first"; filename="bbva.jpeg"',
-          'Content-Type': 'image/jpeg'
+          'COntent-Disposition': 'form-data; name="first"; filename="bbva.jpeg"',
+          'content-Type': 'image/jpeg'
           },
           content: payload
           }
