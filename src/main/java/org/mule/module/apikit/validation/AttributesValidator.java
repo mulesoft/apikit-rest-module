@@ -35,14 +35,20 @@ public class AttributesValidator {
     // uriparams
     UriParametersValidator.validate(action.getResolvedUriParameters(), resolvedVariables);
 
+    ValidatedQueryParams validatedQueryParams;
+
     // queryStrings
-    QueryStringValidator.validate(action.queryString(), attributes.getQueryParams());
+    validatedQueryParams =
+        QueryStringValidator.validate(action.queryString(), attributes.getQueryString(), attributes.getQueryParams());
 
     // queryparams
-    ValidatedQueryParams validatedQueryParams =
-        QueryParameterValidator.validate(action.getQueryParameters(), attributes.getQueryParams(),
-                                         attributes.getQueryString(),
-                                         config.isQueryParamsStrictValidation());
+    if (validatedQueryParams == null) {
+      validatedQueryParams =
+          QueryParameterValidator.validate(action.getQueryParameters(), attributes.getQueryParams(),
+                                           attributes.getQueryString(),
+                                           config.isQueryParamsStrictValidation());
+    }
+
     queryParams = validatedQueryParams.getQueryParams();
     queryString = validatedQueryParams.getQueryString();
 
