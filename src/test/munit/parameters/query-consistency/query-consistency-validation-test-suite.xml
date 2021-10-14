@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+
+    http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+	<munit:config name="query-consistent-test-suite">
+		<munit:parameterizations>
+			<munit:parameterization name="RAML">
+				<munit:parameters>
+					<munit:parameter propertyName="parser.type" value="RAML"/>
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="AMF">
+				<munit:parameters>
+					<munit:parameter propertyName="parser.type" value="AMF"/>
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+
+	<munit:test name="query-params-default-values-passed-to-flow">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryParams:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple" path="/api/testQueryParams">
+				<http:query-params>
+					#[output application/java
+					---
+					{
+					"stringItemParam" : "value"
+					}]
+				</http:query-params>
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:retrieve key="q-params"/>
+			<munit-tools:assert-that expression="#[payload[0]]"
+									 is="#[MunitTools::equalTo('value')]"/>
+			<munit-tools:assert-that expression="#[payload[1]]"
+									 is="#[MunitTools::equalTo('- True\n- false')]"/>
+			<munit-tools:assert-that expression="#[payload[2]]"
+									 is="#[MunitTools::equalTo('- &quot;def&quot;\n- &quot;ault&quot;')]"/>
+			<munit-tools:assert-that expression="#[payload[3]]"
+									 is="#[MunitTools::equalTo('123.456')]"/>
+			<munit-tools:assert-that expression="#[payload[4]]"
+									 is="#[MunitTools::equalTo('789')]"/>
+			<munit-tools:assert-that expression="#[payload[5]]"
+									 is="#[MunitTools::equalTo('2016-02-28T16:41:41.090Z')]"/>
+			<munit-tools:assert-that expression="#[payload[6]]"
+									 is="#[MunitTools::equalTo('- 123.456\n- 789.123')]"/>
+			<munit-tools:assert-that expression="#[payload[7]]"
+									 is="#[MunitTools::equalTo('- 123\n- 456')]"/>
+			<munit-tools:assert-that expression="#[payload[8]]"
+									 is="#[MunitTools::equalTo('- &quot;2016-02-28T16:41:41.090Z&quot;\n- &quot;2018-12-18T16:41:41.090Z&quot;')]"/>
+			<munit-tools:assert-that expression="#[payload[9]]"
+									 is="#[MunitTools::equalTo('false')]"/>
+			<munit-tools:retrieve key="q-string"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('stringItemParam=value&amp;booleanItemParams=-+True%0A-+false&amp;stringItemParams=-+%22def%22%0A-+%22ault%22&amp;numericItemParam=123.456&amp;integerItemParam=789&amp;datetimeItemParam=2016-02-28T16%3A41%3A41.090Z&amp;numericItemParams=-+123.456%0A-+789.123&amp;integerItemParams=-+123%0A-+456&amp;datetimeItemParams=-+%222016-02-28T16%3A41%3A41.090Z%22%0A-+%222018-12-18T16%3A41%3A41.090Z%22&amp;booleanItemParam=false')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="query-string-default-values-passed-to-flow">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryString:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryString?stringItemParam=value">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:retrieve key="q-params"/>
+			<munit-tools:assert-that expression="#[payload[0]]"
+									 is="#[MunitTools::equalTo('value')]"/>
+			<munit-tools:assert-that expression="#[payload[1]]"
+									 is="#[MunitTools::equalTo('- True\n- false')]"/>
+			<munit-tools:assert-that expression="#[payload[2]]"
+									 is="#[MunitTools::equalTo('- &quot;def&quot;\n- &quot;ault&quot;')]"/>
+			<munit-tools:assert-that expression="#[payload[3]]"
+									 is="#[MunitTools::equalTo('123.456')]"/>
+			<munit-tools:assert-that expression="#[payload[4]]"
+									 is="#[MunitTools::equalTo('789')]"/>
+			<munit-tools:assert-that expression="#[payload[5]]"
+									 is="#[MunitTools::equalTo('2016-02-28T16:41:41.090Z')]"/>
+			<munit-tools:assert-that expression="#[payload[6]]"
+									 is="#[MunitTools::equalTo('- 123.456\n- 789.123')]"/>
+			<munit-tools:assert-that expression="#[payload[7]]"
+									 is="#[MunitTools::equalTo('- 123\n- 456')]"/>
+			<munit-tools:assert-that expression="#[payload[8]]"
+									 is="#[MunitTools::equalTo('- &quot;2016-02-28T16:41:41.090Z&quot;\n- &quot;2018-12-18T16:41:41.090Z&quot;')]"/>
+			<munit-tools:assert-that expression="#[payload[9]]"
+									 is="#[MunitTools::equalTo('false')]"/>
+			<munit-tools:retrieve key="q-string"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('stringItemParam=value&amp;booleanItemParams=-+True%0A-+false&amp;stringItemParams=-+%22def%22%0A-+%22ault%22&amp;numericItemParam=123.456&amp;integerItemParam=789&amp;datetimeItemParam=2016-02-28T16%3A41%3A41.090Z&amp;numericItemParams=-+123.456%0A-+789.123&amp;integerItemParams=-+123%0A-+456&amp;datetimeItemParams=-+%222016-02-28T16%3A41%3A41.090Z%22%0A-+%222018-12-18T16%3A41%3A41.090Z%22&amp;booleanItemParam=false')]"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>
+

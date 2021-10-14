@@ -1,0 +1,27 @@
+#%RAML 1.0
+title: Test default values
+version: v1
+
+/testQueryParams:
+  get:
+    queryParameters:
+      stringItemParam?:
+        type: string
+        minLength: 2
+        maxLength: 5
+        default: "defaultValue"
+    responses:
+      200:
+/testQueryString:
+  get:
+    queryString:
+      type: object
+      additionalProperties: false
+      properties:
+        stringItemParam?:
+          type: string
+          minLength: 2
+          maxLength: 5
+          default: "defaultValue"
+    responses:
+      200:
