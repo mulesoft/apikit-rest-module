@@ -19,10 +19,10 @@
 				<http:body>#[payload]</http:body>
 				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
 			</http:error-response>
-	</http:listener>
-	<apikit:router config-ref="scalar-types-validation-config" />
-	<error-handler ref="global-server-error-handler"/>
-  </flow>
+		</http:listener>
+		<apikit:router config-ref="scalar-types-validation-config"/>
+		<error-handler ref="global-server-error-handler"/>
+	</flow>
 
   <flow name="get:\resource:scalar-types-validation-config">
 	<set-payload value="#[output application/json --- attributes.queryParams]"/>

@@ -13,9 +13,9 @@ import org.mule.runtime.api.util.MultiMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertThrows;
 
@@ -36,91 +36,130 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
 
   @Test
   public void validateString() throws MuleRestException {
-    assertConsistencyOnSuccess(STRING_ITEM_PARAM, Arrays.asList("ABC"));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAM, Arrays.asList("123"));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAM, Arrays.asList("\"123\""));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAM, Arrays.asList("A\"B\"C"));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAM, Arrays.asList("\"ABC\""));
-    assertConsistencyOnFail(STRING_ITEM_PARAM, Arrays.asList("exceedsMaxLength"));
-    assertConsistencyOnFail(STRING_ITEM_PARAM, Arrays.asList("\"1234\""));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAM, asList("ABC"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAM, asList("123"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAM, asList("\"123\""));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAM, asList("A\"B\"C"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAM, asList("\"ABC\""));
+    assertConsistencyOnFail(STRING_ITEM_PARAM, asList("exceedsMaxLength"));
+    assertConsistencyOnFail(STRING_ITEM_PARAM, asList("\"1234\""));
   }
 
   @Test
   public void validateNumber() throws MuleRestException {
-    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAM, Arrays.asList("123.12"));
-    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAM, Arrays.asList("123"));
-    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAM, Arrays.asList("00000123"));
-    assertConsistencyOnFail(NUMERIC_ITEM_PARAM, Arrays.asList("\"123\""));
+    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAM, asList("123.12"));
+    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAM, asList("123"));
+    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAM, asList("00000123"));
+    assertConsistencyOnFail(NUMERIC_ITEM_PARAM, asList("\"123\""));
   }
 
   @Test
   public void validateInteger() throws MuleRestException {
-    assertConsistencyOnSuccess(INTEGER_ITEM_PARAM, Arrays.asList("123"));
-    assertConsistencyOnFail(INTEGER_ITEM_PARAM, Arrays.asList("12.34"));
+    assertConsistencyOnSuccess(INTEGER_ITEM_PARAM, asList("123"));
+    assertConsistencyOnFail(INTEGER_ITEM_PARAM, asList("12.34"));
   }
 
   @Test
   public void validateBoolean() throws MuleRestException {
-    assertConsistencyOnSuccess(BOOLEAN_ITEM_PARAM, Arrays.asList("false"));
-    assertConsistencyOnSuccess(BOOLEAN_ITEM_PARAM, Arrays.asList("True"));
-    assertConsistencyOnFail(BOOLEAN_ITEM_PARAM, Arrays.asList("ABC"));
+    assertConsistencyOnSuccess(BOOLEAN_ITEM_PARAM, asList("false"));
+    assertConsistencyOnSuccess(BOOLEAN_ITEM_PARAM, asList("True"));
+    assertConsistencyOnFail(BOOLEAN_ITEM_PARAM, asList("ABC"));
   }
 
   @Test
   public void validateDatetime() throws MuleRestException {
-    assertConsistencyOnSuccess(DATETIME_ITEM_PARAM, Arrays.asList("2016-02-28T16:41:41.090Z"));
-    assertConsistencyOnFail(DATETIME_ITEM_PARAM, Arrays.asList("12016-02-28T16:41:41.090Z"));
+    assertConsistencyOnSuccess(DATETIME_ITEM_PARAM, asList("2016-02-28T16:41:41.090Z"));
+    assertConsistencyOnFail(DATETIME_ITEM_PARAM, asList("12016-02-28T16:41:41.090Z"));
   }
 
   @Test
   public void validateObject() throws MuleRestException {
-    assertConsistencyOnSuccess(OBJECT_ITEM_PARAM, Arrays
-        .asList("{\"stringProp\":\"test\",\"numberProp\":0.10,\"integerProp\":3,\"booleanProp\":false,\"datetimeProp\":\"2016-02-28T16:41:41.090Z\",\"stringProps\":[\"A\",\"B\"],\"numberProps\":[0,1.26],\"integerProps\": [0, 1, 2],\"booleanProps\":[false,true,true],\"datetimeProps\":[\"2016-02-28T16:41:41.090Z\",\"2016-02-28T16:41:41.090Z\"]}"));
-    assertConsistencyOnFail(OBJECT_ITEM_PARAM, Arrays.asList("{\"integerProp\":3.4}"));
+    assertConsistencyOnSuccess(OBJECT_ITEM_PARAM,
+                               asList("{\"stringProp\":\"test\",\"numberProp\":0.10,\"integerProp\":3,\"booleanProp\":false,\"datetimeProp\":\"2016-02-28T16:41:41.090Z\",\"stringProps\":[\"A\",\"B\"],\"numberProps\":[0,1.26],\"integerProps\": [0, 1, 2],\"booleanProps\":[false,true,true],\"datetimeProps\":[\"2016-02-28T16:41:41.090Z\",\"2016-02-28T16:41:41.090Z\"]}"));
+    assertConsistencyOnFail(OBJECT_ITEM_PARAM, asList("{\"integerProp\":3.4}"));
   }
 
   @Test
   public void validateStingArray() throws MuleRestException {
-    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, Arrays.asList("ABC", "DEF"));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, Arrays.asList("123", "456"));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, Arrays.asList("A\"B\"C", "D\"E\"F"));
-    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, Arrays.asList("\"ABC\"", "\"DEF\""));
-    assertConsistencyOnFail(STRING_ITEM_PARAMS, Arrays.asList("ABC", "exceedsMaxLength"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, asList("ABC", "DEF"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, asList("123", "456"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, asList("A\"B\"C", "D\"E\"F"));
+    assertConsistencyOnSuccess(STRING_ITEM_PARAMS, asList("\"ABC\"", "\"DEF\""));
+    assertConsistencyOnFail(STRING_ITEM_PARAMS, asList("ABC", "exceedsMaxLength"));
 
   }
 
   @Test
   public void validateNumberArray() throws MuleRestException {
-    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAMS, Arrays.asList("123.34", "456.67"));
-    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAMS, Arrays.asList("123", "456"));
-    assertConsistencyOnFail(NUMERIC_ITEM_PARAMS, Arrays.asList("123", "ABC"));
+    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAMS, asList("123.34", "456.67"));
+    assertConsistencyOnSuccess(NUMERIC_ITEM_PARAMS, asList("123", "456"));
+    assertConsistencyOnFail(NUMERIC_ITEM_PARAMS, asList("123", "ABC"));
   }
 
   @Test
   public void validateIntegerArray() throws MuleRestException {
-    assertConsistencyOnSuccess(INTEGER_ITEM_PARAMS, Arrays.asList("123", "456"));
-    assertConsistencyOnFail(INTEGER_ITEM_PARAMS, Arrays.asList("123", "45.67"));
+    assertConsistencyOnSuccess(INTEGER_ITEM_PARAMS, asList("123", "456"));
+    assertConsistencyOnFail(INTEGER_ITEM_PARAMS, asList("123", "45.67"));
   }
 
   @Test
   public void validateBooleanArray() throws MuleRestException {
-    assertConsistencyOnSuccess(BOOLEAN_ITEM_PARAMS, Arrays.asList("false", "True"));
-    assertConsistencyOnFail(BOOLEAN_ITEM_PARAMS, Arrays.asList("false", "ABC"));
+    assertConsistencyOnSuccess(BOOLEAN_ITEM_PARAMS, asList("false", "True"));
+    assertConsistencyOnFail(BOOLEAN_ITEM_PARAMS, asList("false", "ABC"));
   }
 
   @Test
   public void validateDatetimeArray() throws MuleRestException {
-    assertConsistencyOnSuccess(DATETIME_ITEM_PARAMS, Arrays.asList("2016-02-28T16:41:41.090Z", "2018-08-25T16:41:41.090Z"));
-    assertConsistencyOnFail(DATETIME_ITEM_PARAMS, Arrays.asList("12016-02-28T16:41:41.090Z", "2018-08-25T16:41:41.090Z"));
+    assertConsistencyOnSuccess(DATETIME_ITEM_PARAMS, asList("2016-02-28T16:41:41.090Z", "2018-08-25T16:41:41.090Z"));
+    assertConsistencyOnFail(DATETIME_ITEM_PARAMS, asList("12016-02-28T16:41:41.090Z", "2018-08-25T16:41:41.090Z"));
   }
 
   @Test
   public void validateObjectArray() throws MuleRestException {
-    assertConsistencyOnSuccess(OBJECT_ITEM_PARAMS, Arrays
-        .asList("{\"stringProp\":\"test\",\"numberProp\":0.10,\"integerProp\":3,\"booleanProp\":false,\"datetimeProp\":\"2016-02-28T16:41:41.090Z\",\"stringProps\":[\"A\",\"B\"],\"numberProps\":[0,1.26],\"integerProps\": [0, 1, 2],\"booleanProps\":[false,true,true],\"datetimeProps\":[\"2016-02-28T16:41:41.090Z\",\"2016-02-28T16:41:41.090Z\"]}",
-                "{\"stringProp\":\"test2\",\"numberProp\":1.23,\"integerProp\":4,\"booleanProp\":True,\"datetimeProp\":\"2016-02-28T16:41:41.090Z\",\"stringProps\":[\"C\",\"D\"],\"numberProps\":[56,242.66],\"integerProps\":[3,4,5],\"booleanProps\":[true,false,true],\"datetimeProps\":[\"2016-02-28T16:41:41.090Z\",\"2016-02-28T16:41:41.090Z\"]}"));
-    assertConsistencyOnFail(OBJECT_ITEM_PARAMS, Arrays.asList("{\"integerProp\":3.4}", "{\"stringProp\":\"test2\"}"));
+    assertConsistencyOnSuccess(OBJECT_ITEM_PARAMS,
+                               asList("{\"stringProp\":\"test\",\"numberProp\":0.10,\"integerProp\":3,\"booleanProp\":false,\"datetimeProp\":\"2016-02-28T16:41:41.090Z\",\"stringProps\":[\"A\",\"B\"],\"numberProps\":[0,1.26],\"integerProps\": [0, 1, 2],\"booleanProps\":[false,true,true],\"datetimeProps\":[\"2016-02-28T16:41:41.090Z\",\"2016-02-28T16:41:41.090Z\"]}",
+                                      "{\"stringProp\":\"test2\",\"numberProp\":1.23,\"integerProp\":4,\"booleanProp\":True,\"datetimeProp\":\"2016-02-28T16:41:41.090Z\",\"stringProps\":[\"C\",\"D\"],\"numberProps\":[56,242.66],\"integerProps\":[3,4,5],\"booleanProps\":[true,false,true],\"datetimeProps\":[\"2016-02-28T16:41:41.090Z\",\"2016-02-28T16:41:41.090Z\"]}"));
+    assertConsistencyOnFail(OBJECT_ITEM_PARAMS, asList("{\"integerProp\":3.4}", "{\"stringProp\":\"test2\"}"));
   }
+
+  @Test
+  public void validateEmpty() throws MuleRestException {
+    MultiMap<String, String> queryParams = MultiMap.emptyMultiMap();
+    String queryString = "";
+    validateRequest(queryParams, queryString, "/testQueryString");
+    validateRequest(queryParams, queryString, "/testQueryParams");
+  }
+
+  @Test
+  public void invalidDefaultValueInSpecIsNotBeingValidatedForQueryString() throws MuleRestException {
+    MultiMap<String, String> queryParams = MultiMap.emptyMultiMap();
+    String queryString = "";
+    testRestRequestValidatorBuilder
+        .withApiLocation("unit/query-consistency/invalid-default.raml")
+        .withMethod("GET")
+        .withRequestPath("/api/testQueryString")
+        .withRelativePath("/testQueryString")
+        .withQueryParams(queryParams)
+        .withQueryString(queryString)
+        .build()
+        .validateRequest();
+  }
+
+  @Test
+  public void invalidDefaultValueInSpecIsNotBeingValidatedForQueryParams() throws MuleRestException {
+    MultiMap<String, String> queryParams = MultiMap.emptyMultiMap();
+    String queryString = "";
+    testRestRequestValidatorBuilder
+        .withApiLocation("unit/query-consistency/invalid-default.raml")
+        .withMethod("GET")
+        .withRequestPath("/api/testQueryParams")
+        .withRelativePath("/testQueryParams")
+        .withQueryParams(queryParams)
+        .withQueryString(queryString)
+        .build()
+        .validateRequest();
+  }
+
 
   private void assertConsistencyOnSuccess(String queryName, List<String> queryValues) throws MuleRestException {
     MultiMap<String, String> queryParams = getQueryParams(queryName, queryValues);
