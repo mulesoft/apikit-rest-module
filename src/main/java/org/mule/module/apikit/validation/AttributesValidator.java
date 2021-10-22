@@ -20,12 +20,14 @@ import org.mule.module.apikit.validation.attributes.ValidatedQueryParams;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AttributesValidator {
 
   public static HttpRequestAttributes validateAndAddDefaults(HttpRequestAttributes attributes, Action action,
-                                                             ResolvedVariables resolvedVariables, ValidationConfig config)
+                                                             ResolvedVariables resolvedVariables,
+                                                             List<String> supportedSuccessMimeTypes, ValidationConfig config)
       throws MuleRestException {
 
     MultiMap<String, String> headers;
@@ -53,12 +55,9 @@ public class AttributesValidator {
     queryString = validatedQueryParams.getQueryString();
 
     // headers
-    headers = HeadersValidator.validateAndAddDefaults(action.getHeaders(), action.getResponses(), action.getSuccessStatusCode(),
-                                                      attributes.getHeaders(),
-                                                      config
-                                                          .isHeadersStrictValidation(),
-                                                      config
-                                                          .getAttributesDeserializingStrategies());
+    headers =
+        HeadersValidator.validateAndAddDefaults(action.getHeaders(), attributes.getHeaders(), config.isHeadersStrictValidation(),
+                                                supportedSuccessMimeTypes, config.getAttributesDeserializingStrategies());
 
     Map<String, String> uriParamsMap = new HashMap<>();
     resolvedVariables.names().forEach(name -> uriParamsMap.put(name, String.valueOf(resolvedVariables.get(name))));

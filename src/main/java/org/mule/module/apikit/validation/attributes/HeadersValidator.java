@@ -7,7 +7,6 @@
 package org.mule.module.apikit.validation.attributes;
 
 import com.google.common.net.MediaType;
-import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
@@ -17,7 +16,6 @@ import org.mule.module.apikit.deserializing.AttributesDeserializerFactory;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.runtime.api.util.MultiMap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +28,6 @@ import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
-import static org.apache.commons.collections.MapUtils.isEmpty;
 import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
 import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
@@ -43,15 +40,15 @@ public class HeadersValidator {
 
   private static final String PLACEHOLDER_TOKEN = "{?}";
 
-  public static MultiMap<String, String> validateAndAddDefaults(Map<String, Parameter> headers, Map<String, Response> responses,
-                                                                String successStatusCode,
+  public static MultiMap<String, String> validateAndAddDefaults(Map<String, Parameter> headers,
                                                                 MultiMap<String, String> incomingHeaders,
                                                                 boolean headersStrictValidation,
+                                                                List<String> supportedSuccessMimeTypes,
                                                                 AttributesDeserializingStrategies attributesDeserializingStrategy)
       throws InvalidHeaderException, NotAcceptableException {
     MultiMap<String, String> headersWithDefaults =
         analyseRequestHeaders(headers, incomingHeaders, headersStrictValidation, attributesDeserializingStrategy);
-    analyseAcceptHeader(responses, successStatusCode, headersWithDefaults);
+    analyseAcceptHeader(supportedSuccessMimeTypes, headersWithDefaults);
     return headersWithDefaults;
   }
 
@@ -174,28 +171,15 @@ public class HeadersValidator {
     }
   }
 
-  private static void analyseAcceptHeader(Map<String, Response> responses, String successStatusCode,
-                                          MultiMap<String, String> incomingHeaders)
+  private static void analyseAcceptHeader(List<String> supportedSuccessMimeTypes, MultiMap<String, String> incomingHeaders)
       throws NotAcceptableException {
-    if (isEmpty(responses)) {
+    if (isEmpty(supportedSuccessMimeTypes)) {
       return;
     }
-    List<String> mimeTypes = getResponseMimeTypes(responses, successStatusCode);
-    if (isEmpty(mimeTypes)) {
-      return;
-    }
-    MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
+    MediaType bestMatch = bestMatchForAcceptHeader(supportedSuccessMimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
     if (bestMatch == null) {
       throw new NotAcceptableException();
     }
-  }
-
-  private static List<String> getResponseMimeTypes(Map<String, Response> responses, String successStatusCode) {
-    Response response = responses.get(successStatusCode);
-    if (response != null && response.hasBody()) {
-      return new ArrayList<>(response.getBody().keySet());
-    }
-    return new ArrayList<>();
   }
 
 }

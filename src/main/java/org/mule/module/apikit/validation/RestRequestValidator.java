@@ -8,6 +8,7 @@ package org.mule.module.apikit.validation;
 
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.Resource;
+import org.mule.apikit.model.Response;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.api.config.ValidationConfig;
@@ -18,7 +19,9 @@ import org.mule.module.apikit.api.validation.ValidBody;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -56,7 +59,8 @@ public class RestRequestValidator {
           .build();
     }
 
-    HttpRequestAttributes validAttributes = AttributesValidator.validateAndAddDefaults(attributes, action, uriParams, config);
+    HttpRequestAttributes validAttributes =
+        AttributesValidator.validateAndAddDefaults(attributes, action, uriParams, getSupportedSuccessMimeTypes(action), config);
     ValidBody validBody = BodyValidator.validate(action, attributes, body, config, payloadCharset, errorTypeRepository);
     return ValidRequest.builder()
         .withAttributes(validAttributes)
@@ -69,4 +73,13 @@ public class RestRequestValidator {
     uriParams.names().forEach(name -> uriParamsMap.put(name, String.valueOf(uriParams.get(name))));
     return new HttpRequestAttributesBuilder(attributes).uriParams(uriParamsMap).build();
   }
+
+  private List<String> getSupportedSuccessMimeTypes(Action action) {
+    Response response = action.getResponses().get(action.getSuccessStatusCode());
+    if (response != null && response.hasBody()) {
+      return new ArrayList<>(response.getBody().keySet());
+    }
+    return new ArrayList<>();
+  }
+
 }
