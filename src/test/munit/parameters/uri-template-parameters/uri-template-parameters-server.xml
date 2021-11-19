@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+       http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+
+    <apikit:config name="uri-template-params-config" raml="munit/parameters/uri-template-parameters.yaml" parser="AMF"
+                   outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+
+    <flow name="uri-template-params-main">
+        <http:listener config-ref="http-listener-simple" path="/uri-params/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="uri-template-params-config"/>
+        <error-handler ref="global-server-error-handler"/>
+    </flow>
+
+    <flow name="get:\labelTemplate\array\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\labelTemplate\object\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\labelTemplate\primitive\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\matrixTemplate\array\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\matrixTemplate\object\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\matrixTemplate\primitive\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\simpleTemplate\array\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\simpleTemplate\object\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+    <flow name="get:\simpleTemplate\primitive\(param)_(explodedParam):uri-template-params-config">
+        <munit-tools:store key="param">
+            <munit-tools:value>#[attributes.uriParams.param]</munit-tools:value>
+        </munit-tools:store>
+        <munit-tools:store key="explodedParam">
+            <munit-tools:value>#[attributes.uriParams.explodedParam]</munit-tools:value>
+        </munit-tools:store>
+    </flow>
+
+</mule>

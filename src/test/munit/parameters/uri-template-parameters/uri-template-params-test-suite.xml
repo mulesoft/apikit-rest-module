@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	  xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+	<munit:config name="uri-template-params-test-suite"/>
+
+	<munit:test name="primitive-matrix-style-uri-param-INCORRECT-PLEASE-ERASE-ME">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\matrixTemplate\primitive\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/matrixTemplate/primitive/test_mine"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('test')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('mine')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="array-matrix-style-uri-param-INCORRECT-PLEASE-ERASE-ME">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\matrixTemplate\array\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/matrixTemplate/array/%5B1%2C2%2C3%5D_%5B4%2C5%2C6%5D"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('[1,2,3]')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('[4,5,6]')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="object-matrix-style-uri-param-INCORRECT-PLEASE-ERASE-ME">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\matrixTemplate\object\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/matrixTemplate/object/%7B%22role%22%3A%22Admin%22%2C%22firstName%22%3A%22John%22%2C%22Age%22%3A20%7D_%7B%22role%22%3A%22Admin%22%2C%22firstName%22%3A%22John%22%2C%22Age%22%3A20%7D"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<!-- ABOVE ARE THE TESTS THAT EXAMPLE THE ONLY WAY SUPPORTED SO FAR TO SEND URI (PATH) PARAMETERS THROUGH APIKIT-->
+	<!-- =========================================================================================================== -->
+	<!-- BELOW ARE THE TESTS THAT EXAMPLE THE CORRECT WAY SUPPORTED BY OAS 3 TO SEND URI (PATH) PARAMETERS -->
+
+	<munit:test name="primitive-simple-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\simpleTemplate\primitive\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/simpleTemplate/primitive/test_mine"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('test')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('mine')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="array-simple-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\simpleTemplate\array\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/simpleTemplate/array/1,2,3_4,5,6"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('[1,2,3]')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('[4,5,6]')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="object-simple-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\simpleTemplate\object\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/simpleTemplate/object/role,Admin,firstName,John,Age,20_role=Admin,firstName=John,Age=20"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="primitive-label-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\labelTemplate\primitive\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/labelTemplate/primitive/.test_.mine"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('test')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('mine')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="array-label-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\labelTemplate\array\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/labelTemplate/array/.1,2,3_.4.5.6"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('[1,2,3]')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('[4,5,6]')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="object-label-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\labelTemplate\object\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/labelTemplate/object/.role,Admin,firstName,John,Age,20_.role=Admin.firstName=John.Age=20"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="primitive-matrix-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\matrixTemplate\primitive\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/matrixTemplate/primitive/;param=test_;explodedParam=mine"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('test')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('mine')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="array-matrix-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\matrixTemplate\array\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/matrixTemplate/array/;param=1,2,3_;explodedParam=4;explodedParam=5;explodedParam=6"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('[1,2,3]')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('[4,5,6]')]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="object-matrix-style-uri-param">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="uri-template-params-main"/>
+			<munit:enable-flow-source
+					value="get:\matrixTemplate\object\(param)_(explodedParam):uri-template-params-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/uri-params/matrixTemplate/object/;param=role,Admin,firstName,John,Age,20_;role=Admin;firstName=John;Age=20"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(204)]"/>
+			<munit-tools:retrieve key="param"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+			<munit-tools:retrieve key="explodedParam"/>
+			<munit-tools:assert-that expression="#[payload]"
+									 is="#[MunitTools::equalTo('{&quot;role&quot;:&quot;Admin&quot;,&quot;firstName&quot;:&quot;John&quot;,&quot;Age&quot;:20}')]"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>
+

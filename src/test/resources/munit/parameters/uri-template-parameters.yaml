@@ -1,0 +1,132 @@
+openapi: 3.0.0
+info:
+  title: Sample API with URI Template Parameters
+  version: v1
+paths:
+  '/simpleTemplate_{simpleArrayParam}_{simpleObjectParam}/simpleTemplate_{simpleExplodedArrayParam}_{simpleExplodedObjectParam}':
+    get:
+      operationId: GET_templateUriParamsWithSimpleStyleParam
+      parameters:
+        - name: simpleArrayParam
+          in: path
+          required: true
+          style: simple # default, can be omitted
+          explode: false # default, can be omitted
+          schema:
+            $ref: "#/components/schemas/numberArray"
+        - name: simpleExplodedArrayParam
+          in: path
+          required: true
+          style: simple
+          explode: true
+          schema:
+            $ref: "#/components/schemas/numberArray"
+        - name: simpleObjectParam
+          in: path
+          required: true
+          style: simple # default, can be omitted
+          explode: false # default, can be omitted
+          schema:
+            $ref: "#/components/schemas/userObject"
+        - name: simpleExplodedObjectParam
+          in: path
+          required: true
+          style: simple
+          explode: true
+          schema:
+            $ref: "#/components/schemas/userObject"
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+  '/labelTemplate_{labelArrayParam}_{labelObjectParam}/labelTemplate_{labelExplodedArrayParam}_{labelExplodedObjectParam}':
+    get:
+      operationId: GET_templateUriParamsWithLabelStyleParam
+      parameters:
+        - name: labelArrayParam
+          in: path
+          required: true
+          style: label
+          explode: false
+          schema:
+            $ref: "#/components/schemas/numberArray"
+        - name: labelExplodedArrayParam
+          in: path
+          required: true
+          style: label
+          explode: true
+          schema:
+            $ref: "#/components/schemas/numberArray"
+        - name: labelObjectParam
+          in: path
+          required: true
+          style: label
+          explode: false
+          schema:
+            $ref: "#/components/schemas/userObject"
+        - name: labelExplodedObjectParam
+          in: path
+          required: true
+          style: label
+          explode: true
+          schema:
+            $ref: "#/components/schemas/userObject"
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+  '/matrixTemplate_{matrixArrayParam}_{matrixObjectParam}/matrixTemplate_{matrixExplodedArrayParam}_{matrixExplodedObjectParam}':
+    get:
+      operationId: GET_templateUriParamsWithMatrixStyleParam
+      parameters:
+        - name: matrixArrayParam
+          in: path
+          required: true
+          style: matrix
+          explode: false
+          schema:
+            $ref: "#/components/schemas/numberArray"
+        - name: matrixExplodedArrayParam
+          in: path
+          required: true
+          style: matrix
+          explode: true
+          schema:
+            $ref: "#/components/schemas/numberArray"
+        - name: matrixObjectParam
+          in: path
+          required: true
+          style: matrix
+          explode: false
+          schema:
+            $ref: "#/components/schemas/userObject"
+        - name: matrixExplodedObjectParam
+          in: path
+          required: true
+          style: matrix
+          explode: true
+          schema:
+            $ref: "#/components/schemas/userObject"
+      responses:
+        '204':
+          description: ""
+        '404':
+          description: ""
+
+components:
+  schemas:
+    numberArray:
+      type: array
+      items:
+        type: number
+    userObject:
+      type: object
+      properties:
+        role:
+          type: string
+        firstName:
+          type: string
+        age:
+          type: number

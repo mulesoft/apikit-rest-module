@@ -14,18 +14,21 @@
 	<munit:parameterizations>
 		<munit:parameterization name="RAML">
 			<munit:parameters>
+				<munit:parameter propertyName="api.version" value="RAML"/>
 				<munit:parameter propertyName="parser.type" value="RAML"/>
 				<munit:parameter propertyName="api.location" value="munit/parameters/uri-parameters.raml"/>
 			</munit:parameters>
 		</munit:parameterization>
 		<munit:parameterization name="AMF-RAML10">
 			<munit:parameters>
+				<munit:parameter propertyName="api.version" value="RAML10"/>
 				<munit:parameter propertyName="parser.type" value="AMF"/>
 				<munit:parameter propertyName="api.location" value="munit/parameters/uri-parameters.raml"/>
 			</munit:parameters>
 		</munit:parameterization>
 		<munit:parameterization name="AMF-OAS30">
 			<munit:parameters>
+				<munit:parameter propertyName="api.version" value="OAS30"/>
 				<munit:parameter propertyName="parser.type" value="AMF"/>
 				<munit:parameter propertyName="api.location" value="munit/parameters/uri-parameters.yaml"/>
 			</munit:parameters>
