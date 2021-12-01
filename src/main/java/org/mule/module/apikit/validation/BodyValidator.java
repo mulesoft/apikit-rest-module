@@ -8,6 +8,7 @@ package org.mule.module.apikit.validation;
 
 import org.mule.apikit.model.Action;
 import org.mule.apikit.model.MimeType;
+import org.mule.apikit.model.parameter.Parameter;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.exception.BadRequestException;
@@ -24,7 +25,8 @@ import org.mule.module.apikit.validation.body.schema.v2.RestSchemaV2Validator;
 import org.mule.runtime.api.exception.ErrorTypeRepository;
 import org.mule.runtime.api.metadata.TypedValue;
 
-import java.util.Map.Entry;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static java.lang.String.format;
@@ -38,7 +40,7 @@ public class BodyValidator {
 
   private static final String JSON = "json";
   private static final String XML = "xml";
-  private static final String MULTIPART = "multipart/";
+  private static final String MULTIPART = "multipart/form-data";
   private static final String URL_ENCODED = "application/x-www-form-urlencoded";
 
   private BodyValidator() {}
@@ -136,7 +138,8 @@ public class BodyValidator {
       throws BadRequestException {
     ValidBody validBody = new ValidBody(payload);
 
-    if (mimeType.getFormParameters() != null) {
+    Map<String, List<Parameter>> formParameters = mimeType.getFormParameters();
+    if (formParameters != null && !formParameters.isEmpty()) {
       TypedValue payloadAsTypedValue = validBody.getPayloadAsTypedValue();
       FormValidator formValidator = new FormValidatorFactory(mimeType,
                                                              config.getExpressionManager()).createValidator(requestMimeTypeName,

@@ -12,7 +12,7 @@ import org.mule.runtime.core.api.el.ExpressionManager;
 
 public class FormValidatorFactory {
 
-  private static final String MULTIPART_FORM = "multipart/";
+  private static final String MULTIPART_FORM = "multipart/form-data";
   private static final String URLENCODED_FORM = "application/x-www-form-urlencoded";
   private final MimeType mimeType;
   private final ExpressionManager expressionManager;
