@@ -33,7 +33,7 @@
         <commons.codec.version>1.15</commons.codec.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.2.6</parser.service.version>
+        <parser.service.version>2.2.9</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.2</apiconsole.version>
