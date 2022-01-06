@@ -9,6 +9,7 @@ package org.mule.module.apikit.validation.body.form;
 
 import static org.mule.runtime.api.metadata.DataType.INPUT_STREAM;
 
+import java.io.InputStream;
 import java.util.Map.Entry;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
@@ -33,10 +34,15 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
 
   @Override
   public TypedValue validate(TypedValue payload) throws BadRequestException {
-    CursorStreamProvider cursorStream = (CursorStreamProvider) payload.getValue();
-
     MultipartBuilder multipartBuilder =
-        new MultipartBuilder(cursorStream, payload.getDataType().getMediaType().toString(), getBoundary(payload));
+        new MultipartBuilder(payload.getDataType().getMediaType().toString(), getBoundary(payload));
+
+    Object value = payload.getValue();
+    if (value instanceof CursorStreamProvider) {
+      multipartBuilder.withCursorProvider((CursorStreamProvider) value);
+    } else {
+      multipartBuilder.withInputStream((InputStream) value);
+    }
 
     for (Entry<String, List<Parameter>> formParameter : formParameters.entrySet()) {
 
