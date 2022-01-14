@@ -19,7 +19,7 @@ import org.mule.runtime.api.metadata.TypedValue;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.OptionalLong;
+
 import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.api.streaming.bytes.CursorStream;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
@@ -46,18 +46,30 @@ public class MultipartFormValidatorTest {
           "--test--\r\n";
 
   @Test
-  public void validate() throws Exception {
+  public void validateCursor() throws Exception {
+    validateTypedValue(getTypedValue(getCursorStreamProvider()));
+  }
+
+  @Test
+  public void validateInputStream() throws Exception {
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(MULTIPART_BODY.getBytes()))));
+  }
+
+  public void validateTypedValue(TypedValue typedValue) throws Exception {
     MultipartFormValidator multipartFormValidator = new MultipartFormValidator(Collections.emptyMap());
-    TypedValue typedValue = getTypedValue();
     TypedValue validatedTypedValue = multipartFormValidator.validate(typedValue);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
     Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
   }
 
-  private TypedValue getTypedValue() {
+  private TypedValue getTypedValue(Object value) {
     DataType dataType = DataType.builder(DataType.INPUT_STREAM)
         .mediaType(MediaType.parse("multipart/form-data; boundary=\"" + BOUNDARY + "\"")).build();
-    return new TypedValue(new CursorStreamProvider() {
+    return new TypedValue(value, dataType);
+  }
+
+  private CursorStreamProvider getCursorStreamProvider() {
+    return new CursorStreamProvider() {
 
       @Override
       public CursorStream openCursor() {
@@ -111,7 +123,7 @@ public class MultipartFormValidatorTest {
       public boolean isClosed() {
         return false;
       }
-    }, dataType);
+    };
   }
 
 }

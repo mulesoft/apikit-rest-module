@@ -11,6 +11,7 @@ import static org.mule.module.apikit.StreamUtils.BUFFER_SIZE;
 import static org.mule.runtime.api.metadata.MediaType.TEXT;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,16 +30,17 @@ public class MultipartBuilder {
 
   private final String boundary;
   private final String contentType;
-  private final CursorStreamProvider cursorProvider;
   private final Map<String, String> defaultValues = new HashMap<>();
   private final Map<String, Parameter> formParameters = new HashMap<>();
 
   private static Pattern NAME_PATTERN = compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
   private static Pattern FILE_NAME_PATTERN = compile("filename=\"([^\"]+)\"");
   private static Pattern CONTENT_TYPE_PATTERN = compile("Content-Type:\\s*([^\\n]+)");
+  private CursorStreamProvider cursorProvider;
+  private InputStream inputStream;
 
-  public MultipartBuilder(CursorStreamProvider cursorProvider, String contentType, String boundary) {
-    this.cursorProvider = cursorProvider;
+
+  public MultipartBuilder(String contentType, String boundary) {
     this.boundary = boundary;
     this.contentType = contentType;
   }
@@ -53,6 +55,16 @@ public class MultipartBuilder {
     return this;
   }
 
+  public MultipartBuilder withInputStream(InputStream inputStream) {
+    this.inputStream = inputStream;
+    return this;
+  }
+
+  public MultipartBuilder withCursorProvider(CursorStreamProvider cursorProvider) {
+    this.cursorProvider = cursorProvider;
+    return this;
+  }
+
   /**
    * Create the Multipart Content processing the incoming multipart
    * @return @Multipart
@@ -60,15 +72,16 @@ public class MultipartBuilder {
    */
   public Multipart build() throws InvalidFormParameterException {
     try {
-      MultipartStream multipartStream =
-          new MultipartStream(cursorProvider.openCursor(), boundary.getBytes(MIME.UTF8_CHARSET), BUFFER_SIZE);
+      InputStream inputStream = cursorProvider != null ? cursorProvider.openCursor() : this.inputStream;
+      MultipartStream multipartStream = new MultipartStream(inputStream, boundary.getBytes(MIME.UTF8_CHARSET), BUFFER_SIZE);
 
       boolean nextPart = multipartStream.skipPreamble();
 
       Set<String> parametersInPayload = new HashSet<>();
 
       MultipartEntityBuilder multipartEntityBuilder =
-          defaultValues.size() == 0 ? new MultipartEntityBuilderWithoutDefaults(contentType, cursorProvider)
+          defaultValues.size() == 0 && cursorProvider != null
+              ? new MultipartEntityBuilderWithoutDefaults(contentType, cursorProvider)
               : new MultipartEntityBuilderWithDefaults(boundary);
 
       while (nextPart) {
