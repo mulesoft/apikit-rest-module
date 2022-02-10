@@ -2,6 +2,7 @@
 title: Illustrate query parameter variations
 types:
   lat-long: # lat & long required; mutually exclusive with location
+    additionalProperties: false #if lat-long is used, no additional properties are allowed
     properties:
       lat: number
       long: number

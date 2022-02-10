@@ -1,0 +1,14 @@
+#%RAML 1.0
+title: Union query string
+version: v1
+
+types:
+  UnionTypes:
+    properties:
+      stringOrNumber: string | number
+      nullableString: string | nil
+      nonNullableString: string
+
+/unionQueryString:
+  get:
+    queryString: UnionTypes
