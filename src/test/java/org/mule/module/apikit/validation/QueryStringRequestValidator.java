@@ -6,17 +6,14 @@
  */
 package org.mule.module.apikit.validation;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mule.module.apikit.api.exception.InvalidQueryStringException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.runtime.api.util.MultiMap;
 
-public class QueryStringRequestValidator extends AbstractRequestValidatorTestCase {
+import static java.util.Collections.singleton;
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+public class QueryStringRequestValidator extends AbstractRequestValidatorTestCase {
 
   @Test
   public void validQueryString() throws MuleRestException {
@@ -36,9 +33,7 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
   }
 
   @Test
-  public void invalidQueryString() throws MuleRestException {
-    expectedException.expect(InvalidQueryStringException.class);
-    expectedException.expectMessage("Invalid value for query string");
+  public void invalidQueryString() {
     MultiMap<String, String> queryParams = new MultiMap<>();
     queryParams.put("start", "5");
     testRestRequestValidatorBuilder
@@ -48,6 +43,36 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .withRelativePath("/locations")
         .withQueryParams(queryParams)
         .withQueryString("start=5")
+        .build()
+        .assertThrows(InvalidQueryStringException.class, "Invalid value for query string");
+  }
+
+  @Test
+  public void notNullableParameterQueryString() {
+    MultiMap<String, String> queryParams = new MultiMap<>();
+    queryParams.put("start", singleton(null));
+    testRestRequestValidatorBuilder
+        .withApiLocation("unit/query-string/api.raml")
+        .withMethod("GET")
+        .withRequestPath("/api/locations")
+        .withRelativePath("/locations")
+        .withQueryParams(queryParams)
+        .withQueryString("start")
+        .build()
+        .assertThrows(InvalidQueryStringException.class, "Invalid value for query string");
+  }
+
+  @Test
+  public void nullableParameterQueryString() throws MuleRestException {
+    MultiMap<String, String> queryParams = new MultiMap<>();
+    queryParams.put("nullableString", singleton(null));
+    testRestRequestValidatorBuilder
+        .withApiLocation("unit/query-string/api.raml")
+        .withMethod("GET")
+        .withRequestPath("/api/unionQueryString")
+        .withRelativePath("/unionQueryString")
+        .withQueryParams(queryParams)
+        .withQueryString("nullableString")
         .build()
         .validateRequest();
   }
@@ -70,9 +95,7 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
   }
 
   @Test
-  public void invalidQueryStringExceedingLengthWithInvalidYAMLValue() throws MuleRestException {
-    expectedException.expect(InvalidQueryStringException.class);
-    expectedException.expectMessage("Invalid value for query string");
+  public void invalidQueryStringExceedingLengthWithInvalidYAMLValue() {
     MultiMap<String, String> queryParams = new MultiMap<>();
     queryParams.put("code", "*invalidC*deLength*");
     testRestRequestValidatorBuilder
@@ -83,6 +106,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
         .withQueryParams(queryParams)
         .withQueryString("code=*invalidC*deLength*")
         .build()
-        .validateRequest();
+        .assertThrows(InvalidQueryStringException.class, "Invalid value for query string");
   }
 }
