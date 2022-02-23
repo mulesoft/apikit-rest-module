@@ -11,9 +11,10 @@ import org.mule.apikit.model.parameter.Parameter;
 public class ValidationUtils {
 
   static String escapeAndSurroundWithQuotesIfNeeded(Parameter facet, String value) {
-    return facet != null && (facet.isScalar() || (facet.isArray() && (!value.startsWith("{") && !value.startsWith("-"))))
-        ? facet.surroundWithQuotesIfNeeded(value.replace("\"", "\\\""))
-        : value;
+    return facet != null && value != null
+        && (facet.isScalar() || (facet.isArray() && (!value.startsWith("{") && !value.startsWith("-"))))
+            ? facet.surroundWithQuotesIfNeeded(value.replace("\"", "\\\""))
+            : value;
   }
 
 }

@@ -31,6 +31,9 @@ types:
         subject: My Email 2
         to: [ Mike ]
         body: This is the text for email 2.
+  UnionQueryString:
+    properties:
+      nullableString: string |  nil
 
 /locations:
   get:
@@ -63,3 +66,8 @@ types:
     get:
       queryString:
         type: datetime
+
+/unionQueryString:
+  get:
+    queryString:
+      type: UnionQueryString
