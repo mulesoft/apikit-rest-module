@@ -24,8 +24,6 @@ import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.api.streaming.bytes.CursorStream;
 import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
-import static org.junit.Assert.assertEquals;
-
 public class MultipartFormValidatorTest {
 
   public static final String BOUNDARY = "test";

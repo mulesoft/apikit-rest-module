@@ -26,7 +26,7 @@ public class MultipartFormDataTextParameter implements MultipartFormDataParamete
   @Override
   public void validate(Parameter expected) throws InvalidFormParameterException {
     if (!expected.validate(body)) {
-      throw new InvalidFormParameterException("Value " + body + " for parameter " + expected.getDisplayName() + " is invalid");
+      throw new InvalidFormParameterException(expected.message(body));
     }
   }
 }
