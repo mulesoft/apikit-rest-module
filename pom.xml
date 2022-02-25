@@ -41,7 +41,7 @@
         <!-- RP-592: ADDING THIS TO HAVE CONTROL OF THIS VERSIONS SINCE RAML PARSER CAN'T UPDATE DO TO A LIMITATION WITH JAVA 7.-->
         <commons.io.version>2.8.0</commons.io.version>
         <guava.version>28.1-jre</guava.version>
-        <jackson.version>2.12.6</jackson.version>
+        <jackson.version>2.13.1</jackson.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
