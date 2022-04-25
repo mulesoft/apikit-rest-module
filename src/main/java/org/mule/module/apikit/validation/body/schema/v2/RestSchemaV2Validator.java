@@ -6,16 +6,16 @@
  */
 package org.mule.module.apikit.validation.body.schema.v2;
 
-import static java.util.stream.Collectors.*;
-
-import org.mule.module.apikit.api.exception.BadRequestException;
-import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
 import org.mule.apikit.model.MimeType;
 import org.mule.apikit.validation.ApiValidationResult;
+import org.mule.module.apikit.api.exception.BadRequestException;
+import org.mule.module.apikit.validation.body.schema.IRestSchemaValidatorStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+import static java.util.stream.Collectors.joining;
 
 public class RestSchemaV2Validator implements IRestSchemaValidatorStrategy {
 

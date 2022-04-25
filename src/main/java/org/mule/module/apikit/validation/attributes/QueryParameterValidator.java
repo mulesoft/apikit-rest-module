@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
-import static org.mule.module.apikit.validation.attributes.ValidationUtils.escapeAndSurroundWithQuotesIfNeeded;
 
 public class QueryParameterValidator {
 
@@ -90,16 +89,12 @@ public class QueryParameterValidator {
   //only for raml 1.0
   private static void validateQueryParamArray(String paramKey, Parameter expected, Collection<?> paramValues)
       throws InvalidQueryParameterException {
-    StringBuilder builder = new StringBuilder();
-
-    paramValues.forEach(paramValue -> {
-      String value = valueOf(paramValue);
-      builder.append("- ");
-      builder.append(escapeAndSurroundWithQuotesIfNeeded(expected, value));
-      builder.append("\n");
-    });
-
-    validate(paramKey, expected, builder.toString());
+    if (!expected.validateArray(paramValues)) {
+      String msg = format("Invalid value '%s' for query parameter %s. %s",
+                          paramValues.stream().map(String::valueOf).collect(Collectors.joining(", ")), paramKey,
+                          expected.messageFromValues(paramValues));
+      throw new InvalidQueryParameterException(msg);
+    }
   }
 
   private static void validateQueryParam(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition,

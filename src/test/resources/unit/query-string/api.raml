@@ -18,19 +18,6 @@ types:
       subject: string
       to: array
       body: string
-  Emails:
-    type: Email[]
-    minItems: 1
-    uniqueItems: true
-    example: # example that contains array
-      - # start item 1
-        subject: My Email 1
-        to: [ John, Ana ]
-        body: This is the text for email 1.
-      - # start item 2
-        subject: My Email 2
-        to: [ Mike ]
-        body: This is the text for email 2.
   UnionQueryString:
     properties:
       nullableString: string |  nil
@@ -52,11 +39,6 @@ types:
             location: 1,2
 
 /emails:
-  get:
-    queryString:
-      type: Emails
-      default: []
-
   /details:
     get:
       queryString:

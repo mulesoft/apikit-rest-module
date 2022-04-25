@@ -6,15 +6,15 @@
  */
 package org.mule.module.apikit.validation.body.schema;
 
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mule.apikit.validation.ApiValidationResult;
-import org.mule.module.apikit.validation.body.schema.v2.RestSchemaV2Validator;
 import org.mule.apikit.model.MimeType;
+import org.mule.apikit.validation.ApiValidationResult;
 import org.mule.module.apikit.api.exception.BadRequestException;
+import org.mule.module.apikit.validation.body.schema.v2.RestSchemaV2Validator;
 
-import static java.util.Arrays.*;
+import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

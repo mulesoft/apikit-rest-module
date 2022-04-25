@@ -26,6 +26,7 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   private static final String INTEGER_ITEM_PARAM = "integerItemParam";
   private static final String BOOLEAN_ITEM_PARAM = "booleanItemParam";
   private static final String DATETIME_ITEM_PARAM = "datetimeItemParam";
+  private static final String UNION_ITEM_PARAM = "unionItemParam";
   private static final String OBJECT_ITEM_PARAM = "objectItemParam";
   private static final String STRING_ITEM_PARAMS = "stringItemParams";
   private static final String NUMERIC_ITEM_PARAMS = "numericItemParams";
@@ -70,6 +71,14 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   public void validateDatetime() throws MuleRestException {
     assertConsistencyOnSuccess(DATETIME_ITEM_PARAM, asList("2016-02-28T16:41:41.090Z"));
     assertConsistencyOnFail(DATETIME_ITEM_PARAM, asList("12016-02-28T16:41:41.090Z"));
+  }
+
+  @Test
+  public void validateUnion() throws MuleRestException {
+    assertConsistencyOnSuccess(UNION_ITEM_PARAM, asList("ABC"));
+    assertConsistencyOnSuccess(UNION_ITEM_PARAM, asList("123"));
+    assertConsistencyOnSuccess(UNION_ITEM_PARAM, asList("{\"someField\": \"someValue\"}"));
+    assertConsistencyOnSuccess(UNION_ITEM_PARAM, asList("\n- \"firstValue\"\n- \"secondValue\"\n"));
   }
 
   @Test

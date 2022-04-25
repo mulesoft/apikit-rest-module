@@ -20,6 +20,12 @@ types:
   datetimeItem:
     type: datetime
     default: "2016-02-28T16:41:41.090Z"
+  unionItem:
+    type: string | any
+    default: "something"
+  nonStringUnionItem:
+    type: number | boolean
+    default: 123
   objectItem:
     type: object
     additionalProperties: false
@@ -29,6 +35,8 @@ types:
       integerProp?: integer
       booleanProp?: boolean
       datetimeProp?: datetime
+      unionProp?: string | any
+      nonStringUnionItem?: number | boolean
       stringProps?: string[]
       numberProps?: number[]
       integerProps?: integer[]
@@ -54,6 +62,14 @@ types:
     type: array
     items: datetimeItem
     default: ["2016-02-28T16:41:41.090Z","2018-12-18T16:41:41.090Z"]
+  unionItems:
+    type: array
+    items: unionItem
+    default: ["some","default","value"]
+  nonStringUnionItems:
+    type: array
+    items: nonStringUnionItem
+    default: [123,true,4.23]
   objectItems:
     type: array
     items: objectItem
@@ -71,6 +87,10 @@ types:
         type: booleanItem
       datetimeItemParam?:
         type: datetimeItem
+      unionItemParam?:
+        type: unionItem
+      nonStringUnionItemParam?:
+        type: nonStringUnionItem
       objectItemParam?:
         type: objectItem
       stringItemParams?:
@@ -83,6 +103,10 @@ types:
         type: booleanItems
       datetimeItemParams?:
         type: datetimeItems
+      unionItemParams?:
+        type: unionItems
+      nonStringUnionItemParams?:
+        type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
 
@@ -99,6 +123,10 @@ types:
         type: booleanItem
       datetimeItemParam?:
         type: datetimeItem
+      unionItemParam?:
+        type: unionItem
+      nonStringUnionItemParam?:
+        type: nonStringUnionItem
       objectItemParam?:
         type: objectItem
       stringItemParams?:
@@ -111,6 +139,10 @@ types:
         type: booleanItems
       datetimeItemParams?:
         type: datetimeItems
+      unionItemParams?:
+        type: unionItems
+      nonStringUnionItemParams?:
+        type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
     responses:
