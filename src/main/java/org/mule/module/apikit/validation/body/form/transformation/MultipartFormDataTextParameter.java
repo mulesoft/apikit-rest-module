@@ -6,9 +6,8 @@
  */
 package org.mule.module.apikit.validation.body.form.transformation;
 
-import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.apikit.model.parameter.Parameter;
-import org.mule.runtime.api.metadata.MediaType;
+import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 
 /**
  * This class is intended to validate multipart form-data

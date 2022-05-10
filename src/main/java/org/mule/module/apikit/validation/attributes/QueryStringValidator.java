@@ -13,13 +13,11 @@ import org.mule.module.apikit.api.exception.InvalidQueryStringException;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import static org.mule.module.apikit.helpers.AttributesHelper.addQueryString;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
-import static org.mule.module.apikit.validation.attributes.ValidationUtils.escapeAndSurroundWithQuotesIfNeeded;
 
 public class QueryStringValidator {
 
@@ -30,49 +28,15 @@ public class QueryStringValidator {
       return null;
     }
 
-    Map<String, Parameter> facets = queryString.facets();
-    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(facets);
+    Map<String, Parameter> facetsWithDefault = getFacetsWithDefaultValue(queryString.facets());
     MultiMap<String, String> queryParamsCopy = copyImmutableMap(queryParams);
-    StringBuilder queryStringYaml = queryStringAsYaml(queryString, facets, facetsWithDefault, queryParamsCopy);
-    validateQueryString(queryStringYaml, queryString);
+    queryParamsCopy.keySet().forEach(facetsWithDefault::remove);
+    validateQueryString(queryParamsCopy, queryString);
 
     return new ValidatedQueryParams(queryParamsCopy, addDefaultValues(facetsWithDefault, queryParamsCopy, rawQueryString));
   }
 
-  /**
-   * Builds a YAML from provided Query String.
-   *
-   * @param queryString
-   * @param facets
-   * @param facetsWithDefault
-   * @param queryParamsCopy
-   * @return StringBuilder for the Query String as YAML
-   */
-  private static StringBuilder queryStringAsYaml(QueryString queryString, Map<String, Parameter> facets,
-                                                 Map<String, Parameter> facetsWithDefault,
-                                                 MultiMap<String, String> queryParamsCopy) {
-    StringBuilder queryStringYaml = new StringBuilder();
-    Parameter facet;
-    for (Object property : queryParamsCopy.keySet()) {
-      facet = facets.get(property.toString());
-      facetsWithDefault.remove(property.toString());
-      final List<String> actualQueryParam = queryParamsCopy.getAll(property.toString());
 
-      queryStringYaml.append("\n").append(property).append(": ");
-
-      if (actualQueryParam.size() > 1 || queryString.isFacetArray(property.toString())) {
-        for (String value : actualQueryParam) {
-          queryStringYaml.append("\n  - ").append(escapeAndSurroundWithQuotesIfNeeded(facet, value));
-        }
-        queryStringYaml.append("\n");
-      } else {
-        for (String value : actualQueryParam) {
-          queryStringYaml.append(escapeAndSurroundWithQuotesIfNeeded(facet, value)).append("\n");
-        }
-      }
-    }
-    return queryStringYaml;
-  }
 
   /**
    * Adds default values to raw Query String and Query parameters map.
@@ -97,18 +61,13 @@ public class QueryStringValidator {
   /**
    * Validates YAML Query String.
    *
-   * @param queryStringYaml
+   * @param queryParamsCopy
    * @param queryString
    * @throws InvalidQueryStringException
    */
-  private static void validateQueryString(StringBuilder queryStringYaml, QueryString queryString)
+  private static void validateQueryString(MultiMap<String, String> queryParamsCopy, QueryString queryString)
       throws InvalidQueryStringException {
-    // If no YAML, empty value ends up in an empty JSON object
-    if (queryStringYaml.length() == 0) {
-      queryStringYaml.append("{}");
-    }
-
-    if (!queryString.validate(queryStringYaml.toString())) {
+    if (!queryString.validate(new HashMap<>(queryParamsCopy.toListValuesMap()))) {
       throw new InvalidQueryStringException("Invalid value for query string");
     }
   }

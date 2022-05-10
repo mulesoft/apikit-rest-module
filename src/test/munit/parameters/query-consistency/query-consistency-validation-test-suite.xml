@@ -54,22 +54,30 @@
 			<munit-tools:assert-that expression="#[payload[2]]"
 									 is="#[MunitTools::equalTo('- &quot;def&quot;\n- &quot;ault&quot;')]"/>
 			<munit-tools:assert-that expression="#[payload[3]]"
-									 is="#[MunitTools::equalTo('123.456')]"/>
-			<munit-tools:assert-that expression="#[payload[4]]"
-									 is="#[MunitTools::equalTo('789')]"/>
-			<munit-tools:assert-that expression="#[payload[5]]"
 									 is="#[MunitTools::equalTo('2016-02-28T16:41:41.090Z')]"/>
-			<munit-tools:assert-that expression="#[payload[6]]"
-									 is="#[MunitTools::equalTo('- 123.456\n- 789.123')]"/>
-			<munit-tools:assert-that expression="#[payload[7]]"
-									 is="#[MunitTools::equalTo('- 123\n- 456')]"/>
-			<munit-tools:assert-that expression="#[payload[8]]"
+			<munit-tools:assert-that expression="#[payload[4]]"
 									 is="#[MunitTools::equalTo('- &quot;2016-02-28T16:41:41.090Z&quot;\n- &quot;2018-12-18T16:41:41.090Z&quot;')]"/>
+			<munit-tools:assert-that expression="#[payload[5]]"
+									 is="#[MunitTools::equalTo('- 123\n- true\n- 4.23')]"/>
+			<munit-tools:assert-that expression="#[payload[6]]"
+									 is="#[MunitTools::equalTo('123')]"/>
+			<munit-tools:assert-that expression="#[payload[7]]"
+									 is="#[MunitTools::equalTo('123.456')]"/>
+			<munit-tools:assert-that expression="#[payload[8]]"
+									 is="#[MunitTools::equalTo('- &quot;some&quot;\n- &quot;default&quot;\n- &quot;value&quot;')]"/>
 			<munit-tools:assert-that expression="#[payload[9]]"
+									 is="#[MunitTools::equalTo('789')]"/>
+			<munit-tools:assert-that expression="#[payload[10]]"
+									 is="#[MunitTools::equalTo('- 123.456\n- 789.123')]"/>
+			<munit-tools:assert-that expression="#[payload[11]]"
+									 is="#[MunitTools::equalTo('- 123\n- 456')]"/>
+			<munit-tools:assert-that expression="#[payload[12]]"
 									 is="#[MunitTools::equalTo('false')]"/>
+			<munit-tools:assert-that expression="#[payload[13]]"
+									 is="#[MunitTools::equalTo('something')]"/>
 			<munit-tools:retrieve key="q-string"/>
 			<munit-tools:assert-that expression="#[payload]"
-									 is="#[MunitTools::equalTo('stringItemParam=value&amp;booleanItemParams=-+True%0A-+false&amp;stringItemParams=-+%22def%22%0A-+%22ault%22&amp;numericItemParam=123.456&amp;integerItemParam=789&amp;datetimeItemParam=2016-02-28T16%3A41%3A41.090Z&amp;numericItemParams=-+123.456%0A-+789.123&amp;integerItemParams=-+123%0A-+456&amp;datetimeItemParams=-+%222016-02-28T16%3A41%3A41.090Z%22%0A-+%222018-12-18T16%3A41%3A41.090Z%22&amp;booleanItemParam=false')]"/>
+									 is="#[MunitTools::equalTo('stringItemParam=value&amp;booleanItemParams=-+True%0A-+false&amp;stringItemParams=-+%22def%22%0A-+%22ault%22&amp;datetimeItemParam=2016-02-28T16%3A41%3A41.090Z&amp;datetimeItemParams=-+%222016-02-28T16%3A41%3A41.090Z%22%0A-+%222018-12-18T16%3A41%3A41.090Z%22&amp;nonStringUnionItemParams=-+123%0A-+true%0A-+4.23&amp;nonStringUnionItemParam=123&amp;numericItemParam=123.456&amp;unionItemParams=-+%22some%22%0A-+%22default%22%0A-+%22value%22&amp;integerItemParam=789&amp;numericItemParams=-+123.456%0A-+789.123&amp;integerItemParams=-+123%0A-+456&amp;booleanItemParam=false&amp;unionItemParam=something')]"/>
 		</munit:validation>
 	</munit:test>
 
@@ -95,22 +103,30 @@
 			<munit-tools:assert-that expression="#[payload[2]]"
 									 is="#[MunitTools::equalTo('- &quot;def&quot;\n- &quot;ault&quot;')]"/>
 			<munit-tools:assert-that expression="#[payload[3]]"
-									 is="#[MunitTools::equalTo('123.456')]"/>
-			<munit-tools:assert-that expression="#[payload[4]]"
-									 is="#[MunitTools::equalTo('789')]"/>
-			<munit-tools:assert-that expression="#[payload[5]]"
 									 is="#[MunitTools::equalTo('2016-02-28T16:41:41.090Z')]"/>
-			<munit-tools:assert-that expression="#[payload[6]]"
-									 is="#[MunitTools::equalTo('- 123.456\n- 789.123')]"/>
-			<munit-tools:assert-that expression="#[payload[7]]"
-									 is="#[MunitTools::equalTo('- 123\n- 456')]"/>
-			<munit-tools:assert-that expression="#[payload[8]]"
+			<munit-tools:assert-that expression="#[payload[4]]"
 									 is="#[MunitTools::equalTo('- &quot;2016-02-28T16:41:41.090Z&quot;\n- &quot;2018-12-18T16:41:41.090Z&quot;')]"/>
+			<munit-tools:assert-that expression="#[payload[5]]"
+									 is="#[MunitTools::equalTo('- 123\n- true\n- 4.23')]"/>
+			<munit-tools:assert-that expression="#[payload[6]]"
+									 is="#[MunitTools::equalTo('123')]"/>
+			<munit-tools:assert-that expression="#[payload[7]]"
+									 is="#[MunitTools::equalTo('123.456')]"/>
+			<munit-tools:assert-that expression="#[payload[8]]"
+									 is="#[MunitTools::equalTo('- &quot;some&quot;\n- &quot;default&quot;\n- &quot;value&quot;')]"/>
 			<munit-tools:assert-that expression="#[payload[9]]"
+									 is="#[MunitTools::equalTo('789')]"/>
+			<munit-tools:assert-that expression="#[payload[10]]"
+									 is="#[MunitTools::equalTo('- 123.456\n- 789.123')]"/>
+			<munit-tools:assert-that expression="#[payload[11]]"
+									 is="#[MunitTools::equalTo('- 123\n- 456')]"/>
+			<munit-tools:assert-that expression="#[payload[12]]"
 									 is="#[MunitTools::equalTo('false')]"/>
+			<munit-tools:assert-that expression="#[payload[13]]"
+									 is="#[MunitTools::equalTo('something')]"/>
 			<munit-tools:retrieve key="q-string"/>
 			<munit-tools:assert-that expression="#[payload]"
-									 is="#[MunitTools::equalTo('stringItemParam=value&amp;booleanItemParams=-+True%0A-+false&amp;stringItemParams=-+%22def%22%0A-+%22ault%22&amp;numericItemParam=123.456&amp;integerItemParam=789&amp;datetimeItemParam=2016-02-28T16%3A41%3A41.090Z&amp;numericItemParams=-+123.456%0A-+789.123&amp;integerItemParams=-+123%0A-+456&amp;datetimeItemParams=-+%222016-02-28T16%3A41%3A41.090Z%22%0A-+%222018-12-18T16%3A41%3A41.090Z%22&amp;booleanItemParam=false')]"/>
+									 is="#[MunitTools::equalTo('stringItemParam=value&amp;booleanItemParams=-+True%0A-+false&amp;stringItemParams=-+%22def%22%0A-+%22ault%22&amp;datetimeItemParam=2016-02-28T16%3A41%3A41.090Z&amp;datetimeItemParams=-+%222016-02-28T16%3A41%3A41.090Z%22%0A-+%222018-12-18T16%3A41%3A41.090Z%22&amp;nonStringUnionItemParams=-+123%0A-+true%0A-+4.23&amp;nonStringUnionItemParam=123&amp;numericItemParam=123.456&amp;unionItemParams=-+%22some%22%0A-+%22default%22%0A-+%22value%22&amp;integerItemParam=789&amp;numericItemParams=-+123.456%0A-+789.123&amp;integerItemParams=-+123%0A-+456&amp;booleanItemParam=false&amp;unionItemParam=something')]"/>
 		</munit:validation>
 	</munit:test>
 
