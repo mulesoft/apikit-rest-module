@@ -65,14 +65,18 @@ types:
   unionItems:
     type: array
     items: unionItem
-    default: ["some","default","value"]
+    default: [ "some","default","value" ]
   nonStringUnionItems:
     type: array
     items: nonStringUnionItem
-    default: [123,true,4.23]
+    default: [ 123,true,4.23 ]
   objectItems:
     type: array
     items: objectItem
+  unionOfArrays:
+    type: booleanItems | integerItems | nil
+  nonNullableUnionOfArrays:
+    type: booleanItems | integerItems
   query:
     type: object
     additionalProperties: false
@@ -109,7 +113,10 @@ types:
         type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
-
+      unionOfArraysParams?:
+        type: unionOfArrays
+      nonNullableUnionOfArraysParams?:
+        type: nonNullableUnionOfArrays
 /testQueryParams:
   get:
     queryParameters:
@@ -145,6 +152,10 @@ types:
         type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
+      unionOfArraysParams?:
+        type: unionOfArrays
+      nonNullableUnionOfArraysParams?:
+        type: nonNullableUnionOfArrays
     responses:
       200:
 /testQueryString:

@@ -8,14 +8,17 @@ package org.mule.module.apikit.validation;
 
 import org.junit.Test;
 import org.mule.module.apikit.api.exception.MuleRestException;
+import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertThrows;
 
@@ -34,6 +37,8 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   private static final String BOOLEAN_ITEM_PARAMS = "booleanItemParams";
   private static final String DATETIME_ITEM_PARAMS = "datetimeItemParams";
   private static final String OBJECT_ITEM_PARAMS = "objectItemParams";
+  private static final String UNION_ARRAYS_PARAMS = "unionOfArraysParams";
+  private static final String NON_NULLABLE_UNION_OF_ARRAYS = "nonNullableUnionOfArraysParams";
 
   @Test
   public void validateString() throws MuleRestException {
@@ -132,6 +137,30 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   }
 
   @Test
+  public void validateUnionArraysParams() throws MuleRestException {
+    if (parser.equals(ParserMode.AMF)) {// RAML Parser query string union of arrays validation is not supported
+      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, asList("123", "456"));
+      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, asList("true", "false"));
+      assertConsistencyOnFail(UNION_ARRAYS_PARAMS, asList("true", "123"));
+      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, null);
+      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, singletonList(null));
+      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, singletonList("null"));
+    }
+  }
+
+  @Test
+  public void validateNonNullableUnionArraysParams() throws MuleRestException {
+    if (parser.equals(ParserMode.AMF)) {// RAML Parser query string union of arrays validation is not supported
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_ARRAYS, asList("123", "456"));
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_ARRAYS, asList("true", "false"));
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, asList("true", "123"));
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, null);
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, singletonList(null));
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, asList("null"));
+    }
+  }
+
+  @Test
   public void validateEmpty() throws MuleRestException {
     MultiMap<String, String> queryParams = MultiMap.emptyMultiMap();
     String queryString = "";
@@ -186,11 +215,18 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
 
   private MultiMap<String, String> getQueryParams(String queryName, List<String> queryValues) {
     MultiMap<String, String> queryParams = new MultiMap<>();
+    if (queryValues == null || isNull(queryValues)) {
+      queryParams.put(queryName, (String) null);
+      return queryParams;
+    }
     queryValues.forEach(v -> queryParams.put(queryName, v));
     return queryParams;
   }
 
   private String getQueryString(String queryName, List<String> queryValues) {
+    if (queryValues == null || isNull(queryValues)) {
+      return queryName;
+    }
     String queryString = queryName + "=" + queryValues.stream().map(v -> {
       try {
         return URLEncoder.encode(v, StandardCharsets.UTF_8.name());
@@ -215,4 +251,8 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
         .validateRequest();
   }
 
+  private static boolean isNull(Collection<?> paramValues) {
+    return paramValues == null ||
+        paramValues.size() == 1 && paramValues.stream().allMatch(value -> value == null || "null".equals(value));
+  }
 }
