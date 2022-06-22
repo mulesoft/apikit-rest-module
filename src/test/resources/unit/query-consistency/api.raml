@@ -65,14 +65,32 @@ types:
   unionItems:
     type: array
     items: unionItem
-    default: ["some","default","value"]
+    default: [ "some","default","value" ]
   nonStringUnionItems:
     type: array
     items: nonStringUnionItem
-    default: [123,true,4.23]
+    default: [ 123,true,4.23 ]
   objectItems:
     type: array
     items: objectItem
+  nullableString:
+    type: string | nil
+  nullableInteger:
+    type: integer | nil
+  nullableStringItems:
+    type: array
+    items: nullableString
+  nullableIntegerItems:
+    type: array
+    items: nullableInteger
+  nullableUnionOfArrays:
+    type: booleanItems | integerItems | nil
+  nullableUnionOfNullableArrays:
+    type: nullableStringItems | nil
+  nonNullableUnionOfArrays:
+    type: booleanItems | integerItems
+  nonNullableUnionOfNullableArrays:
+    type: nullableStringItems | nullableIntegerItems
   query:
     type: object
     additionalProperties: false
@@ -109,6 +127,16 @@ types:
         type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
+      nonNullableUnionOfArraysParams?:
+        type: nonNullableUnionOfArrays
+      nullableUnionOfArraysParams?:
+        type: nullableUnionOfArrays
+      nullableUnionOfNullableArraysParams?:
+        type: nullableUnionOfNullableArrays
+      nonNullableUnionOfNullableArraysParams?:
+        type: nonNullableUnionOfNullableArrays
+      nullableScalarParams?:
+        type: nullableStringItems
 
 /testQueryParams:
   get:
@@ -145,6 +173,16 @@ types:
         type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
+      nonNullableUnionOfArraysParams?:
+        type: nonNullableUnionOfArrays
+      nullableUnionOfArraysParams?:
+        type: nullableUnionOfArrays
+      nullableUnionOfNullableArraysParams?:
+        type: nullableUnionOfNullableArrays
+      nonNullableUnionOfNullableArraysParams?:
+        type: nonNullableUnionOfNullableArrays
+      nullableScalarParams?:
+        type: nullableStringItems
     responses:
       200:
 /testQueryString:

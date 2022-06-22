@@ -130,5 +130,157 @@
 		</munit:validation>
 	</munit:test>
 
+	<!--
+    In terms of validation, when the parameter is nullable (for RAML this is a union between nil and something else), a null value will be considered as a union's value instead of inner type's value. This is because the validator considers the weight of the outer type to be greater than that of the inner types.
+    Note that a value is considered as null when it is a:
+    - null Object
+    - "null" String
+    - null Object or "null" String as part of a single element in an array
+   -->
+
+	<munit:test name="validateNullableUnionArraysParams-QueryString">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryString:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryString?nullableUnionOfArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNullableUnionArraysParams-QueryParams">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryParams:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryParams?nullableUnionOfArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNullableUnionNullableArraysParams-QueryString">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryString:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryString?nullableUnionOfNullableArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNullableUnionNullableArraysParams-QueryParams">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryParams:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryParams?nullableUnionOfNullableArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNonNullableUnionArraysParams-QueryString">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryString:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryString?nonNullableUnionOfArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNonNullableUnionArraysParams-QueryParams">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryParams:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryParams?nonNullableUnionOfArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNonNullableUnionNullableArraysParams-QueryString">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryString:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryString?nonNullableUnionOfNullableArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="validateNonNullableUnionNullableArraysParams-QueryParams">
+		<munit:enable-flow-sources>
+			<munit:enable-flow-source value="query-consistent-validation-main"/>
+			<munit:enable-flow-source value="get:\testQueryParams:query-consistent-validation-config"/>
+		</munit:enable-flow-sources>
+		<munit:execution>
+			<http:request method="GET" config-ref="http-requester-simple"
+						  path="/api/testQueryParams?nonNullableUnionOfNullableArraysParams">
+				<http:response-validator>
+					<http:success-status-code-validator values="1..500"/>
+				</http:response-validator>
+			</http:request>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+
 </mule>
 
