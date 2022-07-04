@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.union;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.MapUtils.isEmpty;
@@ -164,8 +164,10 @@ public class HeadersValidator {
   }
 
   private static void validateTypeArrayValues(String name, List<String> values, Parameter type) throws InvalidHeaderException {
-    String yamlArrayValue = values.stream().collect(Collectors.joining("\n- ", "- ", ""));
-    validateTypeValue(name, yamlArrayValue, type);
+    if (!type.validateArray(values)) {
+      throw new InvalidHeaderException(format("Invalid values '%s' for header '%s'", values.stream().collect(joining(",")),
+                                              name));
+    }
   }
 
   private static void validateTypeValue(String name, String value, Parameter type) throws InvalidHeaderException {

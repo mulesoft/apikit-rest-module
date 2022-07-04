@@ -84,7 +84,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -140,7 +140,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -168,7 +168,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -195,7 +195,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -230,7 +230,7 @@
         </munit:validation>
     </munit:test>
 
-    <munit:test name="success-including-quoted-string-array-header-default">
+    <munit:test name="success-including-commas-in-string-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-string-header:${apikit.config}"/>
@@ -243,7 +243,7 @@
                     ---
                     {
                     'array-header': '"I, should, be, the, first, value"',
-                    'array-header': '"I, should, be, the, second, value"'
+                    'array-header': 'I, should, be, the, second, value'
                     }]
                 </http:headers>
                 <http:response-validator>
@@ -403,7 +403,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -431,7 +431,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -489,7 +489,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -517,7 +517,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -545,7 +545,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -572,7 +572,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -607,7 +607,7 @@
         </munit:validation>
     </munit:test>
 
-    <munit:test name="success-including-quoted-datetime-array-header-default">
+    <munit:test name="fail-with-quoted-datetime-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
@@ -629,18 +629,13 @@
             </http:request>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
-            <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]"
-                                     is="#[MunitTools::equalTo('&quot;1985-04-12T23:20:50.52Z&quot;')]"/>
-            <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]"
-                                     is="#[MunitTools::equalTo('&quot;1996-12-19T16:39:57-08:00&quot;')]"/>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="success-with-csv-datetime-array-header-as-one-value-default">
+    <munit:test name="fail-with-csv-datetime-array-header-as-one-value-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
@@ -663,11 +658,11 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="success-with-multiple-csv-datetime-array-header-as-multiple-values-default">
+    <munit:test name="fail-with-multiple-csv-datetime-array-header-as-multiple-values-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
@@ -691,11 +686,11 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
-    <munit:test name="success-with-csv-including-quoted-datetime-as-one-value-array-header-default">
+    <munit:test name="fail-with-csv-including-quoted-datetime-as-one-value-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
@@ -718,7 +713,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -758,7 +753,7 @@
         </munit:validation>
     </munit:test>
 
-    <munit:test name="success-including-quoted-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
+    <munit:test name="fail-with-quoted-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header:${apikit.config}"/>
@@ -780,14 +775,9 @@
             </http:request>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
-            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
-            <munit-tools:retrieve key="first-header"/>
-            <munit-tools:assert-that expression="#[payload]"
-                                     is="#[MunitTools::equalTo('&quot;Sun, 28 Feb 2016 16:41:41 GMT&quot;')]"/>
-            <munit-tools:retrieve key="second-header"/>
-            <munit-tools:assert-that expression="#[payload]"
-                                     is="#[MunitTools::equalTo('&quot;Wed, 21 Oct 2015 07:28:00 GMT&quot;')]"/>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[payload.description]"
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -815,7 +805,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
@@ -843,7 +833,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid value')]"/>
+                                     is="#[MunitTools::containsString('Invalid values')]"/>
         </munit:validation>
     </munit:test>
 
