@@ -14,7 +14,7 @@ import org.mule.runtime.api.util.MultiMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -37,8 +37,29 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   private static final String BOOLEAN_ITEM_PARAMS = "booleanItemParams";
   private static final String DATETIME_ITEM_PARAMS = "datetimeItemParams";
   private static final String OBJECT_ITEM_PARAMS = "objectItemParams";
-  private static final String UNION_ARRAYS_PARAMS = "unionOfArraysParams";
+
+  private static final String NULLABLE_UNION_OF_ARRAYS = "nullableUnionOfArraysParams";
   private static final String NON_NULLABLE_UNION_OF_ARRAYS = "nonNullableUnionOfArraysParams";
+
+  private static final String NULLABLE_UNION_OF_NULLABLE_ARRAYS = "nullableUnionOfNullableArraysParams";
+
+  private static final String NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS = "nonNullableUnionOfNullableArraysParams";
+
+  private List<String> nullList;
+
+  private List<String> getNullList() {
+    nullList = new ArrayList<>();
+    nullList.add(null);
+    nullList.add(null);
+    return nullList;
+  }
+
+  private List<String> getStringNullList() {
+    nullList = new ArrayList<>();
+    nullList.add("null");
+    nullList.add("null");
+    return nullList;
+  }
 
   @Test
   public void validateString() throws MuleRestException {
@@ -136,15 +157,39 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
     assertConsistencyOnFail(OBJECT_ITEM_PARAMS, asList("{\"integerProp\":3.4}", "{\"stringProp\":\"test2\"}"));
   }
 
+  /**
+   * In terms of validation, when the parameter is nullable (for RAML this is a union between nil and something else), a null value will be considered as a union's value instead of inner type's value. This is because the validator considers the weight of the outer type to be greater than that of the inner types.
+   * Note that a value is considered as null when it is a:
+   * - null Object
+   * - "null" String
+   * - null Object or "null" String as part of a single element in an array
+   */
+
   @Test
-  public void validateUnionArraysParams() throws MuleRestException {
+  public void validateNullableUnionArraysParams() throws MuleRestException {
     if (parser.equals(ParserMode.AMF)) {// RAML Parser query string union of arrays validation is not supported
-      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, asList("123", "456"));
-      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, asList("true", "false"));
-      assertConsistencyOnFail(UNION_ARRAYS_PARAMS, asList("true", "123"));
-      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, null);
-      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, singletonList(null));
-      assertConsistencyOnSuccess(UNION_ARRAYS_PARAMS, singletonList("null"));
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_ARRAYS, asList("123", "456"));
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_ARRAYS, asList("true", "false"));
+      assertConsistencyOnFail(NULLABLE_UNION_OF_ARRAYS, asList("true", "123"));
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_ARRAYS, null);
+      assertConsistencyOnFail(NULLABLE_UNION_OF_ARRAYS, getNullList());
+      assertConsistencyOnFail(NULLABLE_UNION_OF_ARRAYS, getStringNullList());
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_ARRAYS, singletonList(null));
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_ARRAYS, singletonList("null"));
+    }
+  }
+
+  @Test
+  public void validateNullableUnionNullableArraysParams() throws MuleRestException {
+    if (parser.equals(ParserMode.AMF)) {// RAML Parser query string union of arrays validation is not supported
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_NULLABLE_ARRAYS, asList("abc", "def"));
+      assertConsistencyOnFail(NULLABLE_UNION_OF_NULLABLE_ARRAYS, asList("true", "false"));
+      assertConsistencyOnFail(NULLABLE_UNION_OF_NULLABLE_ARRAYS, asList("true", "123"));
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_NULLABLE_ARRAYS, null);
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_NULLABLE_ARRAYS, getNullList());
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_NULLABLE_ARRAYS, getStringNullList());
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_NULLABLE_ARRAYS, singletonList(null));
+      assertConsistencyOnSuccess(NULLABLE_UNION_OF_NULLABLE_ARRAYS, singletonList("null"));
     }
   }
 
@@ -155,8 +200,24 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
       assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_ARRAYS, asList("true", "false"));
       assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, asList("true", "123"));
       assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, null);
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, getNullList());
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, getStringNullList());
       assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, singletonList(null));
-      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, asList("null"));
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_ARRAYS, singletonList("null"));
+    }
+  }
+
+  @Test
+  public void validateNonNullableUnionNullableArraysParams() throws MuleRestException {
+    if (parser.equals(ParserMode.AMF)) {// RAML Parser query string union of arrays validation is not supported
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, asList("abc", "def"));
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, asList("true", "false"));
+      assertConsistencyOnFail(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, asList("true", "123"));
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, null);
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, getNullList());
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, getStringNullList());
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, singletonList(null));
+      assertConsistencyOnSuccess(NON_NULLABLE_UNION_OF_NULLABLE_ARRAYS, singletonList("null"));
     }
   }
 
@@ -215,7 +276,7 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
 
   private MultiMap<String, String> getQueryParams(String queryName, List<String> queryValues) {
     MultiMap<String, String> queryParams = new MultiMap<>();
-    if (queryValues == null || isNull(queryValues)) {
+    if (queryValues == null) {
       queryParams.put(queryName, (String) null);
       return queryParams;
     }
@@ -224,10 +285,10 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   }
 
   private String getQueryString(String queryName, List<String> queryValues) {
-    if (queryValues == null || isNull(queryValues)) {
-      return queryName;
+    if (queryValues == null) {
+      return "";
     }
-    String queryString = queryName + "=" + queryValues.stream().map(v -> {
+    String queryString = queryName + "=" + queryValues.stream().filter(v -> v != null).map(v -> {
       try {
         return URLEncoder.encode(v, StandardCharsets.UTF_8.name());
       } catch (UnsupportedEncodingException e) {
@@ -249,10 +310,5 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
         .withQueryString(queryString)
         .build()
         .validateRequest();
-  }
-
-  private static boolean isNull(Collection<?> paramValues) {
-    return paramValues == null ||
-        paramValues.size() == 1 && paramValues.stream().allMatch(value -> value == null || "null".equals(value));
   }
 }

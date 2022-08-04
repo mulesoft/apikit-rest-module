@@ -73,10 +73,24 @@ types:
   objectItems:
     type: array
     items: objectItem
-  unionOfArrays:
+  nullableString:
+    type: string | nil
+  nullableInteger:
+    type: integer | nil
+  nullableStringItems:
+    type: array
+    items: nullableString
+  nullableIntegerItems:
+    type: array
+    items: nullableInteger
+  nullableUnionOfArrays:
     type: booleanItems | integerItems | nil
+  nullableUnionOfNullableArrays:
+    type: nullableStringItems | nil
   nonNullableUnionOfArrays:
     type: booleanItems | integerItems
+  nonNullableUnionOfNullableArrays:
+    type: nullableStringItems | nullableIntegerItems
   query:
     type: object
     additionalProperties: false
@@ -113,10 +127,17 @@ types:
         type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
-      unionOfArraysParams?:
-        type: unionOfArrays
       nonNullableUnionOfArraysParams?:
         type: nonNullableUnionOfArrays
+      nullableUnionOfArraysParams?:
+        type: nullableUnionOfArrays
+      nullableUnionOfNullableArraysParams?:
+        type: nullableUnionOfNullableArrays
+      nonNullableUnionOfNullableArraysParams?:
+        type: nonNullableUnionOfNullableArrays
+      nullableScalarParams?:
+        type: nullableStringItems
+
 /testQueryParams:
   get:
     queryParameters:
@@ -152,10 +173,16 @@ types:
         type: nonStringUnionItems
       objectItemParams?:
         type: objectItems
-      unionOfArraysParams?:
-        type: unionOfArrays
       nonNullableUnionOfArraysParams?:
         type: nonNullableUnionOfArrays
+      nullableUnionOfArraysParams?:
+        type: nullableUnionOfArrays
+      nullableUnionOfNullableArraysParams?:
+        type: nullableUnionOfNullableArrays
+      nonNullableUnionOfNullableArraysParams?:
+        type: nonNullableUnionOfNullableArrays
+      nullableScalarParams?:
+        type: nullableStringItems
     responses:
       200:
 /testQueryString:
