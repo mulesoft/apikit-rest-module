@@ -109,6 +109,13 @@ public class MultipartBuilder {
         }
       }
 
+      for (Entry<String, Parameter> formParameter : formParameters.entrySet()) {
+        if (!parametersInPayload.contains(formParameter.getKey()) && formParameter.getValue().isRequired()
+            && formParameter.getValue().getDefaultValue() == null) {
+          throw new InvalidFormParameterException("Required form parameter " + formParameter.getKey() + " not specified");
+        }
+      }
+
       return multipartEntityBuilder.getOutput();
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
