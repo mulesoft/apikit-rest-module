@@ -10,7 +10,7 @@
 
                           http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
 
-	<apikit:config name="query-consistent-validation-config" api="munit/parameters/query-consistency.raml"
+	<apikit:config name="query-consistent-validation-config" api="unit/query-consistency/api.raml"
 				   outboundHeadersMapName="outboundHeaders"
 				   httpStatusVarName="httpStatus"/>
 	<flow name="query-consistent-validation-main">
