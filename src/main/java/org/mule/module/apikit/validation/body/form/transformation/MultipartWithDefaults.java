@@ -28,7 +28,9 @@ public class MultipartWithDefaults implements Multipart {
   @Override
   public InputStream content() throws InvalidFormParameterException {
     try {
-      return multipartFormEntity.getContent();
+      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+      multipartFormEntity.writeTo(byteArrayOutputStream);
+      return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
     }

@@ -6,20 +6,30 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
-import static java.util.Optional.of;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mule.runtime.api.metadata.MediaType.parse;
-
 import com.google.common.collect.ImmutableSet;
-import java.util.Optional;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.junit.Test;
 import org.mule.apikit.model.parameter.FileProperties;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.module.apikit.validation.body.form.transformation.MultipartFormDataBinaryParameter;
+import org.mule.module.apikit.validation.body.form.transformation.MultipartWithDefaults;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Optional;
+
+import static java.nio.file.Paths.get;
+import static java.util.Optional.of;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.mule.runtime.api.metadata.MediaType.parse;
 
 public class MultipartWithDefaultsBinaryParameterTestCase {
+
+  private static final Path absolutePath = get(new File("").getAbsolutePath(), "src", "test", "resources");
 
   @Test(expected = InvalidFormParameterException.class)
   public void invalidContentType() throws Exception {
@@ -130,4 +140,14 @@ public class MultipartWithDefaultsBinaryParameterTestCase {
     parameterValidator.validate(parameter);
   }
 
+  @Test
+  public void contentSizeIsNotLimited() throws Exception {
+    File mockedFile = spy(new File(get(absolutePath.toString(), "munit", "body", "form", "bbva.jpg").toUri()));
+    when(mockedFile.length()).thenReturn(2500000L);
+    MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+    multipartEntityBuilder.addBinaryBody("testFile", mockedFile);
+    HttpEntity httpEntity = multipartEntityBuilder.build();
+    MultipartWithDefaults multipartWithDefaults = new MultipartWithDefaults(httpEntity);
+    multipartWithDefaults.content();
+  }
 }
