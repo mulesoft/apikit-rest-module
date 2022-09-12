@@ -76,7 +76,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -214,7 +214,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -639,7 +639,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -672,7 +672,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -882,7 +882,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -915,7 +915,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -943,7 +943,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -1047,7 +1047,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -1075,7 +1075,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
@@ -1108,7 +1108,7 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
             <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+                                     is="#[MunitTools::containsString('Invalid value')]"/>
         </munit:validation>
     </munit:test>
 
