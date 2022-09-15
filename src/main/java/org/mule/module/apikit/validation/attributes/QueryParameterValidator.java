@@ -51,8 +51,10 @@ public class QueryParameterValidator {
       String paramKey = paramDefinitionEntry.getKey();
       List<String> values = incomingQueryParams.getAll(paramKey);
 
-      if (!values.isEmpty()) {
-        if (parameterDefinition.isRepeat() || parameterDefinition.isArray()) {
+      if (values != null && !values.isEmpty()) {
+        if (isSingleValueListOfNull(values) && parameterDefinition.isNullable()) {
+          validateQueryParam(queryParamsCopy, paramKey, parameterDefinition, values.get(0));
+        } else if (parameterDefinition.isRepeat() || parameterDefinition.isArray()) {
           validateQueryParamArray(paramKey, parameterDefinition, values);
         } else {
           if (values.size() > 1) {
@@ -107,7 +109,7 @@ public class QueryParameterValidator {
   private static void replaceNullStringValue(MultiMap<String, String> queryParams, String paramKey, Parameter parameterDefinition,
                                              String value) {
     // if query param value is "null" as String, we check if that query param is nullable(in raml nil type)
-    if ("null".equals(value) && isNullable(parameterDefinition)) {
+    if ("null".equals(value) && parameterDefinition.isNullable()) {
       queryParams.remove(paramKey);
       queryParams.put(paramKey, Arrays.asList((String) null));
     }
@@ -121,7 +123,7 @@ public class QueryParameterValidator {
     }
   }
 
-  private static boolean isNullable(Parameter parameter) {
-    return parameter.validate(null);
+  private static boolean isSingleValueListOfNull(Collection<?> paramValues) {
+    return paramValues.size() == 1 && paramValues.stream().allMatch(value -> value == null || "null".equals(value));
   }
 }
