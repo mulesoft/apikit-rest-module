@@ -8,6 +8,8 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.mule.runtime.api.streaming.CursorProvider;
 
+import java.util.OptionalLong;
+
 /**
  * Wraps input CursorProvider
  */
@@ -15,10 +17,12 @@ public class MultipartWithoutDefaults implements Multipart {
 
   private final String contentType;
   private final CursorProvider content;
+  private final long contentLength;
 
-  public MultipartWithoutDefaults(String contentType, CursorProvider content) {
+  public MultipartWithoutDefaults(String contentType, CursorProvider content, long contentLength) {
     this.contentType = contentType;
     this.content = content;
+    this.contentLength = contentLength;
   }
 
   @Override
@@ -29,5 +33,10 @@ public class MultipartWithoutDefaults implements Multipart {
   @Override
   public String contentType() {
     return contentType;
+  }
+
+  @Override
+  public OptionalLong getLength() {
+    return OptionalLong.of(contentLength);
   }
 }

@@ -44,7 +44,7 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     Integer maxValue = properties.getMaxLength();
 
     if (isNotEmpty(fileTypes) && !anyFileTypeAllowed(fileTypes) && !fileTypes.contains(mediaType.toString())) {
-      throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType.toString()));
+      throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType));
     }
     if (minValue == 0 && maxValue == 0) {
       return;

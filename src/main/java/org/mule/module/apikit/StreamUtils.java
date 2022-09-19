@@ -15,6 +15,35 @@ import java.io.OutputStream;
 
 public class StreamUtils {
 
+  /**
+   * The Carriage Return ASCII character value.
+   */
+  public static final byte CR = 0x0D;
+  /**
+   * The Line Feed ASCII character value.
+   */
+  public static final byte LF = 0x0A;
+  /**
+   * The dash (-) ASCII character value.
+   */
+  public static final byte DASH = 0x2D;
+  /**
+   * A byte sequence that follows a delimiter that will be
+   * followed by an encapsulation (<code>CRLF</code>).
+   */
+  public static final byte[] CRLF = {CR, LF};
+  /**
+   * A byte sequence that that follows a delimiter of the last
+   * encapsulation in the stream (<code>--</code>).
+   */
+  public static final byte[] STREAM_TERMINATOR = {DASH, DASH};
+  /**
+   * A byte sequence that precedes a boundary (<code>CRLF--</code>).
+   */
+  public static final byte[] BOUNDARY_PREFIX = {CR, LF, DASH, DASH};
+  /**
+   * The default length of the buffer used for processing a request.
+   */
   public static Integer BUFFER_SIZE = 4096;
 
   public static long copyLarge(InputStream input, OutputStream output) throws IOException {
