@@ -60,4 +60,7 @@
     <set-payload value="#[output text/plain  --- sizeOf(payload.parts.image.content) == sizeOf(readUrl('classpath://munit/body/form/bbva.jpg', 'application/octet-stream'))]"/>
   </flow>
 
+  <flow name="post:\mixed-multipart:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[output application/json --- {(payload.parts pluck {'$$': $.content})}]" />
+  </flow>
 </mule>

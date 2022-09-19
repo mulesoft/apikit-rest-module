@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <munit:config name="form-limit-exceeded-validation-test-suite">
+        <munit:parameterizations>
+            <munit:parameterization name="DEFAULT">
+                <munit:parameters>
+                    <munit:parameter propertyName="parser.type" value="AUTO"/>
+                    <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-10.raml"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:before-test name="create-big-file" description="Set multipart size limit up to 256KiB and create a 1MB file">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload>
+                    <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::setSystemProperty("apikit.multipart.size.limit", "262144")
+        ]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload>
+                    <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::generateFile("big_file.txt",1048576)
+        ]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload>
+                    <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::generateFile("small_file.txt",262100)
+        ]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </munit:before-test>
+
+    <munit:after-test name="delete-big-file">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload>
+                    <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::deleteFile("big_file.txt")
+        ]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload>
+                    <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::deleteFile("small_file.txt")
+        ]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </munit:after-test>
+
+    <munit:test name="individual-part-of-multipart-size-exceeds-limit">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\mixed-multipart:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-payload value="#[readUrl('classpath://big_file.txt', 'application/octet-stream')]"/>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/mixed-multipart">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    textFile: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="textFile"; filename="big_file.txt"',
+                    'Content-Type': 'application/octet-stream'
+                    },
+                    content: payload
+                    }
+                    }
+                    }]
+                </http:body>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[output application/java --- payload.description]" is="#[MunitTools::equalTo('Multipart content exceeded the maximum size supported')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="sum-of-parts-of-multipart-size-exceeds-limit">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\mixed-multipart:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-payload value="#[readUrl('classpath://small_file.txt', 'application/octet-stream')]"/>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/mixed-multipart">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    freeText: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="freeText"',
+                    'Content-Type': 'text/plain'
+                    },
+                    content: '0123456789'
+                    },
+                    textFile: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="textFile"; filename="small_file.txt"',
+                    'Content-Type': 'application/octet-stream'
+                    },
+                    content: payload
+                    }
+                    }
+                    }]
+                </http:body>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[output application/java --- payload.description]" is="#[MunitTools::equalTo('Multipart content exceeded the maximum size supported')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="big-text-parameter-exceeds-limit">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\mixed-multipart:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <set-payload value="#[readUrl('classpath://big_file.txt', 'application/octet-stream')]"/>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/mixed-multipart">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    freeText: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="freeText"',
+                    'Content-Type': 'text/plain'
+                    },
+                    content: payload
+                    }
+                    }
+                    }]
+                </http:body>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
+            <munit-tools:assert-that expression="#[output application/java --- payload.description]" is="#[MunitTools::equalTo('Multipart content exceeded the maximum size supported')]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="default-part-included-in-payload">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\mixed-multipart:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/mixed-multipart">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    freeText: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="freeText"',
+                    'Content-Type': 'text/plain'
+                    },
+                    content: '0123456789'
+                    }
+                    }
+                    }]
+                </http:body>
+                <http:response-validator>
+                    <http:success-status-code-validator values="1..500"/>
+                </http:response-validator>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(201)]"/>
+            <munit-tools:assert-that expression="#[payload.freeTextWithDefault]" is='#[MunitTools::equalTo("This a default content")]'/>
+        </munit:validation>
+    </munit:test>
+
+</mule>

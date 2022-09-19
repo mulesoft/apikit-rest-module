@@ -11,10 +11,42 @@ import org.mule.runtime.api.message.Message;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.TypedValue;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Utils {
 
   public static void setSystemProperty(String key, String value) {
     System.setProperty(key, value);
+  }
+
+  public static void generateFile(String fileName, long fileSize) throws IOException {
+    try {
+      String absolutePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+      File file = new File(absolutePath + fileName);
+      file.createNewFile();
+      FileWriter writer = new FileWriter(file);
+
+      for (int length = 0; length <= fileSize; length += 32) {
+        writer.write("abcdefghijabcdefghijabcdefghijk");
+        writer.write("\n");
+      }
+
+      writer.flush();
+      writer.close();
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+
+  public static void deleteFile(String fileName) throws IOException {
+    String absolutePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+    if (new File(absolutePath + fileName).delete()) {
+      return;
+    }
+    throw new IOException("Failed to delete file");
+
   }
 
   public static ExceptionWithMuleMessage throwErrorMessageAwareException() {

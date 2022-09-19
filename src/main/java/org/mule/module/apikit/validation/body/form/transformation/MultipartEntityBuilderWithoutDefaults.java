@@ -6,19 +6,23 @@
  */
 package org.mule.module.apikit.validation.body.form.transformation;
 
-import java.io.IOException;
 import org.apache.commons.fileupload.MultipartStream;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.CursorProvider;
 
+import java.io.IOException;
+
+import static org.mule.module.apikit.StreamUtils.CRLF;
+
 public class MultipartEntityBuilderWithoutDefaults extends MultipartEntityBuilder {
 
   private final String contentType;
   private final CursorProvider content;
 
-  public MultipartEntityBuilderWithoutDefaults(String contentType, CursorProvider content) {
+  public MultipartEntityBuilderWithoutDefaults(String contentType, CursorProvider content, String boundary, long sizeLimit) {
+    super(boundary, sizeLimit);
     this.contentType = contentType;
     this.content = content;
   }
@@ -28,30 +32,32 @@ public class MultipartEntityBuilderWithoutDefaults extends MultipartEntityBuilde
                                String contentType, String fileName, String headers)
       throws InvalidFormParameterException {
     try {
+      int partLength = multipartStream.discardBodyData();
       if (parameter != null) {
-        new MultipartFormDataBinaryParameter(multipartStream.discardBodyData(),
+        new MultipartFormDataBinaryParameter(partLength,
                                              MediaType.parse(contentType)).validate(parameter);
-      } else {
-        multipartStream.discardBodyData();
       }
-
+      increaseContentLength(partLength);
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
+    } catch (IndexOutOfBoundsException e) {
+      throw new InvalidFormParameterException(e.getMessage());
     }
   }
 
   @Override
-  public void addDefault(String key, String value) {
-
-  }
+  public void addDefault(String key, String value) {}
 
   @Override
   public Multipart getOutput() {
-    return new MultipartWithoutDefaults(contentType, content);
+    return new MultipartWithoutDefaults(contentType, content, contentLength);
   }
 
   @Override
-  protected void addPart(String name, byte[] buf, String contentType, String fileName, String headers) {
-
+  protected void addPart(String name, byte[] buf, String contentType, String fileName, String headers)
+      throws InvalidFormParameterException {
+    increaseContentLength(CRLF.length);
+    increaseContentLength(headers.length());
+    increaseContentLength(buf.length);
   }
 }

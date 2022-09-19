@@ -101,3 +101,21 @@ title: Testing multipart/form API!
             default: true
     responses:
       201: ~
+
+/mixed-multipart:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          freeText:
+            required: false
+            type: string
+          freeTextWithDefault:
+            required: false
+            type: string
+            default: This a default content
+          textFile:
+            required: false
+            type: file
+    responses:
+      201: ~

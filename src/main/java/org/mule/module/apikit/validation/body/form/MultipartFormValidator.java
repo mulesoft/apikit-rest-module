@@ -7,10 +7,6 @@
 package org.mule.module.apikit.validation.body.form;
 
 
-import static org.mule.runtime.api.metadata.DataType.INPUT_STREAM;
-
-import java.io.InputStream;
-import java.util.Map.Entry;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
@@ -19,10 +15,14 @@ import org.mule.module.apikit.validation.body.form.transformation.MultipartBuild
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
+import java.util.Map.Entry;
+
+import static org.mule.runtime.api.metadata.DataType.INPUT_STREAM;
 
 public class MultipartFormValidator implements FormValidator<TypedValue> {
 
@@ -65,7 +65,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
         .mediaType(mediaType)
         .build();
 
-    return new TypedValue<>(is, dataType);
+    return new TypedValue<>(is, dataType, multipart.getLength());
   }
 
   private String getBoundary(TypedValue originalPayload) throws InvalidFormParameterException {
