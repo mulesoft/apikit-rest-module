@@ -6,11 +6,12 @@
  */
 package org.mule.module.apikit.validation.body.form;
 
-import com.google.common.collect.ImmutableSet;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mule.apikit.model.parameter.FileProperties;
+import org.junit.rules.ExpectedException;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.StreamUtils;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
@@ -26,19 +27,27 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static java.util.Optional.of;
+import static java.util.Collections.emptyMap;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static java.util.Collections.emptyMap;
 
 public class MultipartFormValidatorTest {
 
+  private static final String MULTIPART_SIZE_LIMIT_PROP_NAME = "apikit.multipart.size.limit";
+
   public static final String BOUNDARY = "test";
+
+  public static final String PREAMBLE = "This is the preamble.  It is to be ignored, though it \r\n" +
+      "     is a handy place for mail composers to include an \r\n" +
+      "     explanatory note to non-MIME compliant readers.\r\n";
+
   public static final String MULTIPART_BODY =
       "--test\r\n" +
           "Content-Disposition: form-data; name=\"file\" filename=\"fileName\"\r\n" +
@@ -77,49 +86,90 @@ public class MultipartFormValidatorTest {
           "test\r\n" +
           "--test--\r\n";
 
+  private static final String EPILOGUE = "This is the epilogue.  It is also to be ignored.\r\n";
+
+  private static final String FULL_MULTIPART = PREAMBLE + MULTIPART_BODY + EPILOGUE;
+
+  private static final String FULL_MULTIPART_WITH_DEFAULTS = PREAMBLE + MULTIPART_BODY_WITH_DEFAULT + EPILOGUE;
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
+  @After
+  public void after() {
+    System.clearProperty(MULTIPART_SIZE_LIMIT_PROP_NAME);
+  }
 
   @Test
   public void validateCursor() throws Exception {
-    validateTypedValue(getTypedValue(getCursorStreamProvider()), emptyMap(), false);
+    validateTypedValue(getTypedValue(getCursorStreamProvider(FULL_MULTIPART)), emptyMap(), FULL_MULTIPART);
+    validateTypedValue(getTypedValue(getCursorStreamProvider(MULTIPART_BODY)), emptyMap(), MULTIPART_BODY);
   }
 
   @Test
   public void validateInputStream() throws Exception {
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(FULL_MULTIPART.getBytes()))),
+                       emptyMap(), FULL_MULTIPART);
     validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(MULTIPART_BODY.getBytes()))),
-                       emptyMap(), false);
+                       emptyMap(), MULTIPART_BODY);
+  }
+
+  @Test
+  public void validateDefaultParameters() throws Exception {
+    Map<String, List<Parameter>> formParameters = mockFormParameters(true, "test");
+    validateTypedValue(getTypedValue(getCursorStreamProvider(FULL_MULTIPART)), formParameters, FULL_MULTIPART_WITH_DEFAULTS);
+    validateTypedValue(getTypedValue(getCursorStreamProvider(MULTIPART_BODY)), formParameters, MULTIPART_BODY_WITH_DEFAULT);
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(FULL_MULTIPART.getBytes()))),
+                       formParameters, FULL_MULTIPART_WITH_DEFAULTS);
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(MULTIPART_BODY.getBytes()))),
+                       formParameters, MULTIPART_BODY_WITH_DEFAULT);
   }
 
   @Test
   public void validateRequiredParameters() throws Exception {
     Map<String, List<Parameter>> formParameters = mockFormParameters(false, null);
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(FULL_MULTIPART.getBytes()))),
+                       formParameters, FULL_MULTIPART);
     validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(MULTIPART_BODY.getBytes()))),
-                       formParameters, false);
+                       formParameters, MULTIPART_BODY);
   }
 
-  @Test(expected = InvalidFormParameterException.class)
+  @Test
   public void validateMissingRequiredParameters() throws Exception {
+    expectedException.expect(InvalidFormParameterException.class);
+    expectedException.expectMessage(Matchers.equalTo("Required form parameter part2 not specified"));
     Map<String, List<Parameter>> formParameters = mockFormParameters(true, null);
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(FULL_MULTIPART.getBytes()))),
+                       formParameters, FULL_MULTIPART);
     validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(MULTIPART_BODY.getBytes()))),
-                       formParameters, false);
+                       formParameters, MULTIPART_BODY);
   }
 
   @Test
   public void validateMissingRequiredParametersWithDefault() throws Exception {
     Map<String, List<Parameter>> formParameters = mockFormParameters(true, "test");
+    validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(FULL_MULTIPART.getBytes()))),
+                       formParameters, FULL_MULTIPART_WITH_DEFAULTS);
     validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(MULTIPART_BODY.getBytes()))),
-                       formParameters, true);
+                       formParameters, MULTIPART_BODY_WITH_DEFAULT);
   }
 
-  public void validateTypedValue(TypedValue typedValue, Map<String, List<Parameter>> formParameters, boolean withDefaults)
+  @Test
+  public void sizeLimitExceededTest() throws Exception {
+    expectedException.expect(InvalidFormParameterException.class);
+    expectedException.expectMessage(Matchers.equalTo("Multipart content exceeded the maximum size supported"));
+    System.setProperty(MULTIPART_SIZE_LIMIT_PROP_NAME, "250");
+    validateTypedValue(getTypedValue(getCursorStreamProvider(FULL_MULTIPART)), emptyMap(), FULL_MULTIPART);
+  }
+
+  public void validateTypedValue(TypedValue typedValue, Map<String, List<Parameter>> formParameters, String expectedPayload)
       throws Exception {
     MultipartFormValidator multipartFormValidator = new MultipartFormValidator(formParameters);
     TypedValue validatedTypedValue = multipartFormValidator.validate(typedValue);
+    long length = validatedTypedValue.getByteLength().orElse(0);
     InputStream validatedInputStream = StreamUtils.unwrapCursorStream(TypedValue.unwrap(validatedTypedValue));
-    if (withDefaults) {
-      Assert.assertEquals(MULTIPART_BODY_WITH_DEFAULT, IOUtils.toString(validatedInputStream));
-    } else {
-      Assert.assertEquals(MULTIPART_BODY, IOUtils.toString(validatedInputStream));
-    }
+    assertEquals(expectedPayload, IOUtils.toString(validatedInputStream));
+    assertEquals(expectedPayload.getBytes().length, length);
   }
 
   private TypedValue getTypedValue(Object value) {
@@ -128,14 +178,14 @@ public class MultipartFormValidatorTest {
     return new TypedValue(value, dataType);
   }
 
-  private CursorStreamProvider getCursorStreamProvider() {
+  private CursorStreamProvider getCursorStreamProvider(String multipartContent) {
     return new CursorStreamProvider() {
 
       @Override
       public CursorStream openCursor() {
         return new CursorStream() {
 
-          private final InputStream content = new ByteArrayInputStream(MULTIPART_BODY.getBytes());
+          private final InputStream content = new ByteArrayInputStream(multipartContent.getBytes());
 
           @Override
           public int read() throws IOException {
@@ -191,17 +241,16 @@ public class MultipartFormValidatorTest {
     Parameter part1 = mock(Parameter.class);
     Parameter part2 = mock(Parameter.class);
 
-    when(part1.getFileProperties()).thenReturn(
-                                               of(new FileProperties(0, 0,
-                                                                     ImmutableSet.of("*/*"))));
-    when(part2.getFileProperties()).thenReturn(
-                                               of(new FileProperties(0, 0,
-                                                                     ImmutableSet.of("*/*"))));
+    when(part1.getFileProperties()).thenReturn(Optional.empty());
+    when(part2.getFileProperties()).thenReturn(Optional.empty());
 
     when(part1.isRequired()).thenReturn(true);
     when(part2.isRequired()).thenReturn(allRequired);
 
     when(part2.getDefaultValue()).thenReturn(defaultValue);
+
+    when(part1.validate(anyString())).thenReturn(true);
+    when(part2.validate(anyString())).thenReturn(true);
 
     Map<String, List<Parameter>> formParameters = new HashMap<>();
     formParameters.put("part1", Collections.singletonList(part1));

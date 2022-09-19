@@ -270,6 +270,41 @@
             "required": true
           }
         }
+      },
+      "/mixed-multipart": {
+        "post": {
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "operationId": "POST_mixed-multipart",
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "properties": {
+                    "freeText": {
+                      "type": "string"
+                    },
+                    "freeTextWithDefault": {
+                      "default": "This a default content",
+                      "type": "string"
+                    },
+                    "textFile": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "textFile"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "required": true
+          }
+        }
       }
     }
   }

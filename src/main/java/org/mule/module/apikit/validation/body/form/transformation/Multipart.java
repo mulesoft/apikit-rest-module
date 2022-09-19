@@ -9,6 +9,8 @@ package org.mule.module.apikit.validation.body.form.transformation;
 
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 
+import java.util.OptionalLong;
+
 /**
  * Content to be pushed to the flow
  */
@@ -23,5 +25,11 @@ public interface Multipart {
    * @return content-type
    */
   String contentType();
+
+  /**
+   * @return content length
+   * @since 1.7.0
+   */
+  OptionalLong getLength();
 
 }

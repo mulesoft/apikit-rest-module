@@ -13,22 +13,39 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.OptionalLong;
+
+import static java.nio.ByteBuffer.allocate;
+import static org.mule.module.apikit.StreamUtils.CRLF;
 
 /**
  * New Multipart generated from input multipart, adding default values
  */
 public class MultipartWithDefaults implements Multipart {
 
+  private final byte[] preamble;
+  private final byte[] epilogue;
   private final HttpEntity multipartFormEntity;
+  private final long contentLength;
 
-  public MultipartWithDefaults(HttpEntity multipartFormEntity) {
+  public MultipartWithDefaults(HttpEntity multipartFormEntity, byte[] preamble, byte[] epilogue, long contentLength) {
+    this.preamble = preamble;
+    this.epilogue = epilogue;
     this.multipartFormEntity = multipartFormEntity;
+    this.contentLength = contentLength;
   }
 
   @Override
   public InputStream content() throws InvalidFormParameterException {
     try {
-      return multipartFormEntity.getContent();
+      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream((int) contentLength);
+      multipartFormEntity.writeTo(byteArrayOutputStream);
+      byte[] rawContent = byteArrayOutputStream.toByteArray();
+      return new ByteArrayInputStream(allocate((int) contentLength)
+          .put(preamble)
+          .put(rawContent, 0, rawContent.length - CRLF.length)
+          .put(epilogue)
+          .array());
     } catch (IOException e) {
       throw new InvalidFormParameterException(e);
     }
@@ -38,4 +55,10 @@ public class MultipartWithDefaults implements Multipart {
   public String contentType() {
     return multipartFormEntity.getContentType().getValue();
   }
+
+  @Override
+  public OptionalLong getLength() {
+    return OptionalLong.of(contentLength);
+  }
+
 }
