@@ -49,7 +49,7 @@
         <munit.extensions.maven.plugin.version>1.1.2</munit.extensions.maven.plugin.version>
         <munit.version>2.3.0</munit.version>
         <munit.tools.version>2.3.0</munit.tools.version>
-        <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
+        <mavenResourcesVersion>3.3.0</mavenResourcesVersion>
         <mockServerVersion>5.8.0</mockServerVersion>
         <jacoco.version>0.8.6</jacoco.version>
         <allureJunitVersion>2.13.5</allureJunitVersion>
