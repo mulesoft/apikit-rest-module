@@ -6,6 +6,18 @@
  */
 package org.mule.module.apikit;
 
+import static org.mule.metadata.api.model.MetadataFormat.JAVA;
+import static org.mule.parser.service.ParserMode.AUTO;
+import static org.mule.runtime.api.meta.Category.COMMUNITY;
+import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
+import static org.mule.runtime.api.meta.model.parameter.ParameterRole.BEHAVIOUR;
+import static org.mule.runtime.api.meta.model.stereotype.StereotypeModelBuilder.newStereotype;
+import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
+import static org.mule.runtime.extension.api.stereotype.MuleStereotypes.CONFIG;
+
+import static java.lang.Class.forName;
+import static java.util.Collections.singletonList;
+
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
@@ -14,7 +26,9 @@ import org.mule.metadata.api.model.ObjectType;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.exception.MuleRuntimeException;
 import org.mule.runtime.api.meta.model.ImportedTypeModel;
+import org.mule.runtime.api.meta.model.ModelProperty;
 import org.mule.runtime.api.meta.model.ParameterDslConfiguration;
 import org.mule.runtime.api.meta.model.XmlDslModel;
 import org.mule.runtime.api.meta.model.declaration.fluent.ConfigurationDeclarer;
@@ -27,17 +41,10 @@ import org.mule.runtime.api.meta.model.stereotype.StereotypeModel;
 import org.mule.runtime.extension.api.declaration.type.ExtensionsTypeLoaderFactory;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingContext;
 import org.mule.runtime.extension.api.loader.ExtensionLoadingDelegate;
+import org.mule.runtime.extension.api.runtime.config.ConfigurationFactory;
 import org.mule.runtime.extension.api.runtime.config.ConfigurationProvider;
 
-import static java.util.Collections.singletonList;
-import static org.mule.metadata.api.model.MetadataFormat.JAVA;
-import static org.mule.parser.service.ParserMode.AUTO;
-import static org.mule.runtime.api.meta.Category.COMMUNITY;
-import static org.mule.runtime.api.meta.ExpressionSupport.NOT_SUPPORTED;
-import static org.mule.runtime.api.meta.model.parameter.ParameterRole.BEHAVIOUR;
-import static org.mule.runtime.api.meta.model.stereotype.StereotypeModelBuilder.newStereotype;
-import static org.mule.runtime.core.api.exception.Errors.CORE_NAMESPACE_NAME;
-import static org.mule.runtime.extension.api.stereotype.MuleStereotypes.CONFIG;
+import java.lang.reflect.InvocationTargetException;
 
 public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate {
 
@@ -100,6 +107,8 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
     ConfigurationDeclarer apikitConfig = extensionDeclarer.withConfig("config")
         .describedAs(PREFIX_NAME)
         .withStereotype(apikitConfigStereotype);
+    apikitConfig = withConfigurationFactory(apikitConfig, new ApiKitConfigFactory());
+
     ParameterGroupDeclarer parameterGroupDeclarer = apikitConfig.onDefaultParameterGroup();
     parameterGroupDeclarer.withOptionalParameter("raml").ofType(typeLoader.load(String.class));
     parameterGroupDeclarer.withOptionalParameter("api").ofType(typeLoader.load(String.class));
@@ -141,6 +150,26 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
     addConfigRefParameter(consoleDeclarer, apikitConfigStereotype);
   }
 
+  /**
+   * Sets the configuration factory, which is required and expected to be present by the Java SDK.
+   */
+  private ConfigurationDeclarer withConfigurationFactory(ConfigurationDeclarer apikitConfig,
+                                                         ApiKitConfigFactory apiKitConfigFactory) {
+    try {
+      // Since this class is internal to the container classlaoder, we cannot execute it directly because this code runs with the
+      // plugin classloader
+      Class<?> configurationFactoryModelPropertyCls =
+          forName("org.mule.runtime.module.extension.internal.loader.java.property.ConfigurationFactoryModelProperty", true,
+                  ExtensionLoadingDelegate.class.getClassLoader());
+      ModelProperty configurationFactoryMP = (ModelProperty) configurationFactoryModelPropertyCls
+          .getConstructor(ConfigurationFactory.class).newInstance(apiKitConfigFactory);
+      return apikitConfig.withModelProperty(configurationFactoryMP);
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+      throw new MuleRuntimeException(e);
+    }
+  }
+
   // This code below is taken from ConfigRefDeclarationEnricher in mule-extensions-api
   private void addConfigRefParameter(OperationDeclarer declarer, final StereotypeModel apikitConfigStereotype) {
     // For older versions, the generated schema would have the parameter duplicated
@@ -157,5 +186,19 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
 
   private static MetadataType buildConfigRefType() {
     return BaseTypeBuilder.create(JAVA).objectType().id(ConfigurationProvider.class.getName()).build();
+  }
+
+  private static final class ApiKitConfigFactory implements ConfigurationFactory {
+
+    @Override
+    public Object newInstance() {
+      return new Configuration();
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+      return Configuration.class;
+    }
+
   }
 }
