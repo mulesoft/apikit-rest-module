@@ -35,7 +35,9 @@ public class ArrayHeaderAttributeDeserializerTest {
       "}";
   private static final String TWO_LEVEL_OBJECT =
       "{\"color\": \"RED\", \"manufacturer\": {\"brand\": \"Ferrari\"}, \"reseller\": {\"name\": \"YourCar\"}}";
-  private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + TWO_LEVEL_OBJECT + "\"";
+  private static final String ESCAPED_TWO_LEVEL_OBJECT =
+      "{\\\"color\\\": \\\"RED\\\", \\\"manufacturer\\\": {\\\"brand\\\": \\\"Ferrari\\\"}, \\\"reseller\\\": {\\\"name\\\": \\\"YourCar\\\"}}";
+  private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + ESCAPED_TWO_LEVEL_OBJECT + "\"";
 
   private ArrayHeaderAttributeDeserializer deserializer;
   private List<String> listOfArrayHeaderValues;
@@ -68,13 +70,17 @@ public class ArrayHeaderAttributeDeserializerTest {
   }
 
   @Test
-  public void ignoreBlankValuesInArrayHeaders() {
+  public void blankValuesAsEmptyStringInArrayHeaders() {
     listOfArrayHeaderValues.add("   ");
-    listOfArrayHeaderValues.add("" + delimiter + " ");
+    listOfArrayHeaderValues.add(delimiter + " ");
     listOfArrayHeaderValues.add("\"\"" + delimiter + "\"  \"");
     List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertNotNull(result);
-    assertEquals(0, result.size());
+    assertEquals("", result.get(0));
+    assertEquals("", result.get(1));
+    assertEquals("", result.get(2));
+    assertEquals("", result.get(3));
+    assertEquals("", result.get(4));
   }
 
   @Test
@@ -93,15 +99,23 @@ public class ArrayHeaderAttributeDeserializerTest {
   }
 
   @Test
-  public void allowDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
-    List<String> result = deserializer.deserializeValue("\"\"\"\"\"\"\"");
+  public void allowEscapedDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
+    List<String> result = deserializer.deserializeValue("\"This is a \\\"string\\\" with \\\"quotes\\\" inside it\"");
     assertEquals(1, result.size());
-    assertEquals("\"\"\"", result.get(0));
+    assertEquals("This is a \"string\" with \"quotes\" inside it", result.get(0));
   }
 
   @Test
   public void deserializeObjectBetweenQuotes() {
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
+    assertEquals(1, result.size());
+    assertEquals(TWO_LEVEL_OBJECT, result.get(0));
+  }
+
+  @Test
+  public void deserializeUnquotedObject() {
+    listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT);
     List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(1, result.size());
     assertEquals(TWO_LEVEL_OBJECT, result.get(0));
@@ -178,7 +192,7 @@ public class ArrayHeaderAttributeDeserializerTest {
     listOfArrayHeaderValues.add("{\"type\": \"fullname\", \"value\": \"Jhon Doe\"}");
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT + delimiter + TWO_LEVEL_OBJECT);
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS + delimiter + TWO_LEVEL_OBJECT_WITH_LINE_FEEDS);
-    listOfArrayHeaderValues.add("\"" + TWO_LEVEL_OBJECT + delimiter + TWO_LEVEL_OBJECT + "\"");
+    listOfArrayHeaderValues.add("\"" + ESCAPED_TWO_LEVEL_OBJECT + delimiter + ESCAPED_TWO_LEVEL_OBJECT + "\"");
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES + delimiter + TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
     List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(10, result.size());

@@ -607,7 +607,7 @@
         </munit:validation>
     </munit:test>
 
-    <munit:test name="fail-with-quoted-datetime-array-header-default">
+    <munit:test name="success-including-quoted-datetime-array-header-default">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime-header:${apikit.config}"/>
@@ -629,9 +629,14 @@
             </http:request>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-            <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('1985-04-12T23:20:50.52Z')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('1996-12-19T16:39:57-08:00')]"/>
         </munit:validation>
     </munit:test>
 
@@ -753,7 +758,7 @@
         </munit:validation>
     </munit:test>
 
-    <munit:test name="fail-with-quoted-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
+    <munit:test name="success-including-quoted-datetime2616-array-header" ignore="#['${api.version}' == 'OAS30']">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="headers-default-deserializing-config-validation-main"/>
             <munit:enable-flow-source value="get:\test-array-datetime2616-header:${apikit.config}"/>
@@ -775,9 +780,14 @@
             </http:request>
         </munit:execution>
         <munit:validation>
-            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
-            <munit-tools:assert-that expression="#[payload.description]"
-                                     is="#[MunitTools::containsString('Invalid values')]"/>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+            <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('2')]"/>
+            <munit-tools:retrieve key="first-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Sun, 28 Feb 2016 16:41:41 GMT')]"/>
+            <munit-tools:retrieve key="second-header"/>
+            <munit-tools:assert-that expression="#[payload]"
+                                     is="#[MunitTools::equalTo('Wed, 21 Oct 2015 07:28:00 GMT')]"/>
         </munit:validation>
     </munit:test>
 

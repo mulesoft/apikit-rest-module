@@ -11,18 +11,10 @@ import org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 /**
  * Deserializer for array header attributes.
  */
 public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer {
-
-  private static final char DOUBLE_QUOTES = '"';
-  private static final char OPENING_CURLY_BRACE = '{';
-  private static final char CLOSING_CURLY_BRACE = '}';
 
   private ArrayHeaderDelimiter arrayHeaderDelimiter;
 
@@ -32,33 +24,38 @@ public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer 
 
   @Override
   public List<String> deserializeValue(String attributeValue) {
-    if (isBlank(attributeValue)) {
-      return emptyList();
-    }
     final char delimiter = arrayHeaderDelimiter.getDelimiterValue().charAt(0);
     char[] chars = attributeValue.toCharArray();
     StringBuffer curVal = new StringBuffer();
     boolean inQuotes = false;
     int curlyBracesStackCount = 0;
     boolean startCollectChar = false;
+    boolean escapedChar = false;
 
-    List<String> headerValues = new ArrayList<>();
+    List<String> values = new ArrayList<>();
     for (char ch : chars) {
       if (inQuotes) {
         startCollectChar = true;
-        if (ch == DOUBLE_QUOTES) {
-          inQuotes = curlyBracesStackCount > 0 ? true : false;
-          if (inQuotes) {
+        if (ch == '\\') {
+          escapedChar = true;
+        } else if (ch == DOUBLE_QUOTES) {
+          if (escapedChar) {
             curVal.append(ch);
+          } else {
+            inQuotes = false;
           }
+          escapedChar = false;
         } else if (ch == OPENING_CURLY_BRACE) {
           curlyBracesStackCount++;
           curVal.append(ch);
+          escapedChar = false;
         } else if (ch == CLOSING_CURLY_BRACE) {
           curlyBracesStackCount--;
           curVal.append(ch);
+          escapedChar = false;
         } else {
           curVal.append(ch);
+          escapedChar = false;
         }
       } else if (curlyBracesStackCount > 0) {
         if (ch == CLOSING_CURLY_BRACE) {
@@ -66,9 +63,7 @@ public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer 
         } else if (ch == OPENING_CURLY_BRACE) {
           curlyBracesStackCount++;
         }
-        if (curlyBracesStackCount >= 0) {
-          curVal.append(ch);
-        }
+        curVal.append(ch);
       } else {
         if (ch == DOUBLE_QUOTES) {
           inQuotes = curlyBracesStackCount > 0 ? false : true;
@@ -79,27 +74,17 @@ public class ArrayHeaderAttributeDeserializer extends BaseAttributeDeserializer 
           curlyBracesStackCount++;
           curVal.append(ch);
         } else if (ch == delimiter) {
-          addValueToList(headerValues, curVal);
+          addValueToList(values, curVal);
           curVal = new StringBuffer();
           startCollectChar = false;
         } else if (ch == '\r') {
-          continue;
         } else if (ch == '\n') {
-          continue;
         } else {
           curVal.append(ch);
         }
       }
     }
-    addValueToList(headerValues, curVal);
-    return headerValues;
+    addValueToList(values, curVal);
+    return values;
   }
-
-  private void addValueToList(List<String> headerValues, StringBuffer curVal) {
-    String value = curVal.toString();
-    if (isNotBlank(value)) {
-      headerValues.add(value);
-    }
-  }
-
 }

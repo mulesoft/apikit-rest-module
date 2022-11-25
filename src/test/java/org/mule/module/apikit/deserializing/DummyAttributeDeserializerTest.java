@@ -30,7 +30,9 @@ public class DummyAttributeDeserializerTest {
       "}";
   private static final String TWO_LEVEL_OBJECT =
       "{\"color\": \"RED\", \"manufacturer\": {\"brand\": \"Ferrari\"}, \"reseller\": {\"name\": \"YourCar\"}}";
-  private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + TWO_LEVEL_OBJECT + "\"";
+  private static final String ESCAPED_TWO_LEVEL_OBJECT =
+      "{\\\"color\\\": \\\"RED\\\", \\\"manufacturer\\\": {\\\"brand\\\": \\\"Ferrari\\\"}, \\\"reseller\\\": {\\\"name\\\": \\\"YourCar\\\"}}";
+  private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + ESCAPED_TWO_LEVEL_OBJECT + "\"";
 
   private DummyAttributeDeserializer deserializer;
   private List<String> listOfArrayHeaderValues;
@@ -50,16 +52,24 @@ public class DummyAttributeDeserializerTest {
   }
 
   @Test
-  public void keepBlanksInArrayHeaders() {
+  public void blankValuesAsEmptyStringInArrayHeaders() {
     listOfArrayHeaderValues.add("   ");
-    listOfArrayHeaderValues.add("" + DUMMY_DELIMITER + " ");
-    listOfArrayHeaderValues.add("\"\"" + DUMMY_DELIMITER + "\"  \"");
+    listOfArrayHeaderValues.add("");
     List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertNotNull(result);
-    assertEquals(3, result.size());
-    assertEquals("   ", result.get(0));
-    assertEquals("" + DUMMY_DELIMITER + " ", result.get(1));
-    assertEquals("\"\"" + DUMMY_DELIMITER + "\"  \"", result.get(2));
+    assertEquals(2, result.size());
+    assertEquals("", result.get(0));
+    assertEquals("", result.get(1));
+  }
+
+  @Test
+  public void unbalancedQuotesResultInSameString() {
+    listOfArrayHeaderValues.add(DUMMY_DELIMITER + " ");
+    listOfArrayHeaderValues.add("\"\"" + DUMMY_DELIMITER + "\"  \"");
+    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
+    assertEquals(2, result.size());
+    assertEquals(DUMMY_DELIMITER + " ", result.get(0));
+    assertEquals("\"\"" + DUMMY_DELIMITER + "\"  \"", result.get(1));
   }
 
   @Test
@@ -67,7 +77,7 @@ public class DummyAttributeDeserializerTest {
     List<String> result = deserializer.deserializeValue("\"This is a unique value\"");
     assertNotNull(result);
     assertEquals(1, result.size());
-    assertEquals("\"This is a unique value\"", result.get(0));
+    assertEquals("This is a unique value", result.get(0));
   }
 
   @Test
@@ -75,14 +85,14 @@ public class DummyAttributeDeserializerTest {
     List<String> result =
         deserializer.deserializeValue("\"This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value\"");
     assertEquals(1, result.size());
-    assertEquals("\"This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value\"", result.get(0));
+    assertEquals("This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value", result.get(0));
   }
 
   @Test
-  public void allowDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
-    List<String> result = deserializer.deserializeValue("\"\"\"\"\"\"\"");
+  public void allowEscapedDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
+    List<String> result = deserializer.deserializeValue("\"This is a \\\"string\\\" with \\\"quotes\\\" inside it\"");
     assertEquals(1, result.size());
-    assertEquals("\"\"\"\"\"\"\"", result.get(0));
+    assertEquals("This is a \"string\" with \"quotes\" inside it", result.get(0));
   }
 
   @Test
@@ -90,7 +100,7 @@ public class DummyAttributeDeserializerTest {
     listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
     List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
     assertEquals(1, result.size());
-    assertEquals(TWO_LEVEL_OBJECT_BETWEEN_QUOTES, result.get(0));
+    assertEquals(TWO_LEVEL_OBJECT, result.get(0));
   }
 
   @Test

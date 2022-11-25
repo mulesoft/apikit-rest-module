@@ -84,7 +84,10 @@ public class HeadersValidator {
         if (!values.isEmpty() && ramlType.isArray()) {
           values = deserializeValues(values, attributesDeserializingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
-          copyIncomingHeaders.remove(ramlHeader);
+          // HTTP listener passes header names in lower case
+          copyIncomingHeaders.removeAll(ramlHeader.toLowerCase());
+          copyIncomingHeaders.removeAll(ramlHeader);
+          // Putting back header name with same case as there is in spec (headers are case-insensitive)
           copyIncomingHeaders.put(ramlHeader, values);
         }
         validateHeader(values, ramlHeader, ramlType);

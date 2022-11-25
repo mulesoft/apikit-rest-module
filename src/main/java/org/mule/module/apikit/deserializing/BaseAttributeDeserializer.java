@@ -9,18 +9,32 @@ package org.mule.module.apikit.deserializing;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 /**
  * Base class for Attribute Deserializer Implementations.
  */
 public abstract class BaseAttributeDeserializer implements AttributeDeserializer {
 
+  protected static final char DOUBLE_QUOTES = '"';
+  protected static final char OPENING_CURLY_BRACE = '{';
+  protected static final char CLOSING_CURLY_BRACE = '}';
+
   @Override
   public List<String> deserializeListOfValues(List<String> attributeValues) {
     List<String> deserializedValues = new ArrayList<>();
     for (String arrayValue : attributeValues) {
-      deserializedValues.addAll(deserializeValue(arrayValue));
+      if (isBlank(arrayValue)) {
+        deserializedValues.add("");
+      } else {
+        deserializedValues.addAll(deserializeValue(arrayValue));
+      }
     }
     return deserializedValues;
   }
 
+  protected void addValueToList(List<String> headerValues, StringBuffer curVal) {
+    String value = curVal.toString();
+    headerValues.add(isBlank(value) ? "" : value);
+  }
 }
