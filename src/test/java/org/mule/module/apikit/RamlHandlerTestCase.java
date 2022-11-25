@@ -121,7 +121,7 @@ public class RamlHandlerTestCase {
     assertTrue(ramlV2.contains("baseUri: " + apiServer));
 
     String ramlAmf = handler.getAMFModel();
-    assertThat(ramlAmf, containsString("\"" + apiServer + "\""));
+    assertTrue(ramlAmf.contains("baseUri: " + apiServer));
   }
 
   @Test
