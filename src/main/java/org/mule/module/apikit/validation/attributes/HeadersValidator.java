@@ -66,31 +66,31 @@ public class HeadersValidator {
     MultiMap<String, String> copyIncomingHeaders = emptyMultiMap();
 
     for (Map.Entry<String, Parameter> entry : headers.entrySet()) {
-      final String ramlHeader = entry.getKey();
-      final Parameter ramlType = entry.getValue();
+      final String headerName = entry.getKey();
+      final Parameter headerType = entry.getValue();
 
-      if (ramlHeader.contains(PLACEHOLDER_TOKEN)) {
-        validateHeadersWithPlaceholderToken(incomingHeaders, ramlHeader,
-                                            ramlType);
+      if (headerName.contains(PLACEHOLDER_TOKEN)) {
+        validateHeadersWithPlaceholderToken(incomingHeaders, headerName,
+                                            headerType);
       } else {
-        List<String> values = getParamValues(incomingHeaders, ramlHeader);
-        if (values.isEmpty() && ramlType.isRequired()) {
-          throw new InvalidHeaderException("Required header '" + ramlHeader + "' not specified");
+        List<String> values = getParamValues(incomingHeaders, headerName);
+        if (values.isEmpty() && headerType.isRequired()) {
+          throw new InvalidHeaderException("Required header '" + headerName + "' not specified");
         }
-        if (values.isEmpty() && ramlType.getDefaultValue() != null) {
+        if (values.isEmpty() && headerType.getDefaultValue() != null) {
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
-          copyIncomingHeaders.put(ramlHeader, ramlType.getDefaultValue());
+          copyIncomingHeaders.put(headerName, headerType.getDefaultValue());
         }
-        if (!values.isEmpty() && ramlType.isArray()) {
+        if (!values.isEmpty() && headerType.isArray()) {
           values = deserializeValues(values, attributesDeserializingStrategy);
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
           // HTTP listener passes header names in lower case
-          copyIncomingHeaders.removeAll(ramlHeader.toLowerCase());
-          copyIncomingHeaders.removeAll(ramlHeader);
+          copyIncomingHeaders.removeAll(headerName.toLowerCase());
+          copyIncomingHeaders.removeAll(headerName);
           // Putting back header name with same case as there is in spec (headers are case-insensitive)
-          copyIncomingHeaders.put(ramlHeader, values);
+          copyIncomingHeaders.put(headerName, values);
         }
-        validateHeader(values, ramlHeader, ramlType);
+        validateHeader(values, headerName, headerType);
       }
     }
     return copyIncomingHeaders.isEmpty() ? incomingHeaders : copyIncomingHeaders;
@@ -105,25 +105,25 @@ public class HeadersValidator {
     return copyIncomingHeaders;
   }
 
-  private static void validateHeadersWithPlaceholderToken(MultiMap<String, String> copyIncomingHeaders, String ramlHeader,
-                                                          Parameter ramlType)
+  private static void validateHeadersWithPlaceholderToken(MultiMap<String, String> copyIncomingHeaders, String headerName,
+                                                          Parameter headerType)
       throws InvalidHeaderException {
-    final String regex = ramlHeader.replace(PLACEHOLDER_TOKEN, ".*");
+    final String regex = headerName.replace(PLACEHOLDER_TOKEN, ".*");
     for (String incomingHeader : copyIncomingHeaders.keySet()) {
       if (incomingHeader.matches(regex)) {
-        validateHeader(copyIncomingHeaders.getAll(incomingHeader), ramlHeader, ramlType);
+        validateHeader(copyIncomingHeaders.getAll(incomingHeader), headerName, headerType);
       }
     }
   }
 
   private static void validateHeadersStrictly(Map<String, Parameter> headers, Map<String, String> incomingHeaders)
       throws InvalidHeaderException {
-    //checks that headers are defined in the RAML
-    final Set<String> ramlHeaders = headers.keySet().stream()
+    //checks that headers are defined in the spec
+    final Set<String> specHeaders = headers.keySet().stream()
         .map(String::toLowerCase)
         .collect(toSet());
 
-    final Set<String> templateHeaders = ramlHeaders.stream()
+    final Set<String> templateHeaders = specHeaders.stream()
         .filter(header -> header.contains(PLACEHOLDER_TOKEN))
         .map(header -> header.replace(PLACEHOLDER_TOKEN, ".*"))
         .collect(toSet());
@@ -136,7 +136,7 @@ public class HeadersValidator {
         .map(header -> header.getName().toLowerCase())
         .collect(toSet());
 
-    final Set<String> undefinedHeaders = difference(unmatchedHeaders, union(ramlHeaders, standardHeaders));
+    final Set<String> undefinedHeaders = difference(unmatchedHeaders, union(specHeaders, standardHeaders));
 
     if (!undefinedHeaders.isEmpty()) {
       throw new InvalidHeaderException(format("[%s] %s", on(", ").join(undefinedHeaders),

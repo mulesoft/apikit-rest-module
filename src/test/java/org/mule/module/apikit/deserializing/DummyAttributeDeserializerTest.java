@@ -15,32 +15,12 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class DummyAttributeDeserializerTest {
-
-  private final static String DUMMY_DELIMITER = ",";
-
-  private static final String TWO_LEVEL_OBJECT_WITH_RETURNS = "{\n" +
-      "  \"color\": \"RED\",\n" +
-      "  \"manufacturer\": {\n" +
-      "    \"brand\": \"Ferrari\"\n" +
-      "  }\n" +
-      "  \"reseller\": {\n" +
-      "    \"name\": \"YourCar\"\n" +
-      "  }\n" +
-      "}";
-  private static final String TWO_LEVEL_OBJECT =
-      "{\"color\": \"RED\", \"manufacturer\": {\"brand\": \"Ferrari\"}, \"reseller\": {\"name\": \"YourCar\"}}";
-  private static final String ESCAPED_TWO_LEVEL_OBJECT =
-      "{\\\"color\\\": \\\"RED\\\", \\\"manufacturer\\\": {\\\"brand\\\": \\\"Ferrari\\\"}, \\\"reseller\\\": {\\\"name\\\": \\\"YourCar\\\"}}";
-  private static final String TWO_LEVEL_OBJECT_BETWEEN_QUOTES = "\"" + ESCAPED_TWO_LEVEL_OBJECT + "\"";
-
-  private DummyAttributeDeserializer deserializer;
-  private List<String> listOfArrayHeaderValues;
-
+public class DummyAttributeDeserializerTest extends AbstractDeserializerTest {
 
   @Before
   public void init() {
     deserializer = new DummyAttributeDeserializer();
+    delimiter = arrayHeaderDelimiter.getDelimiterValue();
     listOfArrayHeaderValues = new ArrayList<>();
   }
 
@@ -53,28 +33,25 @@ public class DummyAttributeDeserializerTest {
 
   @Test
   public void blankValuesAsEmptyStringInArrayHeaders() {
-    listOfArrayHeaderValues.add("   ");
-    listOfArrayHeaderValues.add("");
-    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
-    assertNotNull(result);
-    assertEquals(2, result.size());
+    List<String> result = getDeserializedValuesFor("   ");
     assertEquals("", result.get(0));
-    assertEquals("", result.get(1));
+
+    result = getDeserializedValuesFor("");
+    assertEquals("", result.get(0));
   }
 
   @Test
   public void unbalancedQuotesResultInSameString() {
-    listOfArrayHeaderValues.add(DUMMY_DELIMITER + " ");
-    listOfArrayHeaderValues.add("\"\"" + DUMMY_DELIMITER + "\"  \"");
-    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
-    assertEquals(2, result.size());
-    assertEquals(DUMMY_DELIMITER + " ", result.get(0));
-    assertEquals("\"\"" + DUMMY_DELIMITER + "\"  \"", result.get(1));
+    List<String> result = getDeserializedValuesFor(delimiter + " ");
+    assertEquals(delimiter + " ", result.get(0));
+
+    result = getDeserializedValuesFor("\"\"" + delimiter + "\"  \"");
+    assertEquals("\"\"" + delimiter + "\"  \"", result.get(0));
   }
 
   @Test
   public void testSingleValueBetweenEnclosingQuotes() {
-    List<String> result = deserializer.deserializeValue("\"This is a unique value\"");
+    List<String> result = getDeserializedValuesFor("\"This is a unique value\"");
     assertNotNull(result);
     assertEquals(1, result.size());
     assertEquals("This is a unique value", result.get(0));
@@ -83,60 +60,78 @@ public class DummyAttributeDeserializerTest {
   @Test
   public void testValueWithDelimitersBetweenEnclosingQuotes() {
     List<String> result =
-        deserializer.deserializeValue("\"This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value\"");
+        getDeserializedValuesFor("\"This " + delimiter + " is a unique" + delimiter + " value\"");
     assertEquals(1, result.size());
-    assertEquals("This " + DUMMY_DELIMITER + " is a unique" + DUMMY_DELIMITER + " value", result.get(0));
+    assertEquals("This " + delimiter + " is a unique" + delimiter + " value", result.get(0));
   }
 
   @Test
   public void allowEscapedDoubleQuotesInsideDoubleQuotesInArrayHeaders() {
-    List<String> result = deserializer.deserializeValue("\"This is a \\\"string\\\" with \\\"quotes\\\" inside it\"");
+    List<String> result = getDeserializedValuesFor("\"This is a \\\"string\\\" with \\\"quotes\\\" inside it\"");
     assertEquals(1, result.size());
     assertEquals("This is a \"string\" with \"quotes\" inside it", result.get(0));
+
+    result = getDeserializedValuesFor("\"commas, between, quotes\\\"" + delimiter + "\\\"semicolon; between; quotes\"");
+    assertEquals("commas, between, quotes\"" + delimiter + "\"semicolon; between; quotes", result.get(0));
   }
 
   @Test
   public void deserializeObjectBetweenQuotes() {
-    listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
-    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
+    List<String> result = getDeserializedValuesFor(TWO_LEVEL_OBJECT_BETWEEN_QUOTES);
     assertEquals(1, result.size());
     assertEquals(TWO_LEVEL_OBJECT, result.get(0));
   }
 
   @Test
   public void deserializeValidObjectArrayHeaders() {
-    listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT + DUMMY_DELIMITER + TWO_LEVEL_OBJECT);
-    listOfArrayHeaderValues.add(TWO_LEVEL_OBJECT_WITH_RETURNS + DUMMY_DELIMITER + TWO_LEVEL_OBJECT_WITH_RETURNS);
-    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
-    assertEquals(2, result.size());
-    assertEquals(TWO_LEVEL_OBJECT + DUMMY_DELIMITER + TWO_LEVEL_OBJECT, result.get(0));
-    assertEquals(TWO_LEVEL_OBJECT_WITH_RETURNS + DUMMY_DELIMITER + TWO_LEVEL_OBJECT_WITH_RETURNS, result.get(1));
+    List<String> result = getDeserializedValuesFor(TWO_LEVEL_OBJECT + delimiter + TWO_LEVEL_OBJECT);
+    assertEquals(TWO_LEVEL_OBJECT + delimiter + TWO_LEVEL_OBJECT, result.get(0));
+
+    result = getDeserializedValuesFor(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS + delimiter + TWO_LEVEL_OBJECT_WITH_LINE_FEEDS);
+    assertEquals(TWO_LEVEL_OBJECT_WITH_LINE_FEEDS + delimiter + TWO_LEVEL_OBJECT_WITH_LINE_FEEDS, result.get(0));
   }
 
   @Test
   public void deserializeValidArrayHeaders() {
-    listOfArrayHeaderValues.add("123" + DUMMY_DELIMITER + "456" + DUMMY_DELIMITER + "789");
-    listOfArrayHeaderValues.add("1.213" + DUMMY_DELIMITER + "456" + DUMMY_DELIMITER + "\"7,123.213\"");
-    listOfArrayHeaderValues.add("first" + DUMMY_DELIMITER + "second" + DUMMY_DELIMITER + "third");
-    listOfArrayHeaderValues.add("\"commas, between, quotes\"" + DUMMY_DELIMITER + "\"semicolon; between; quotes\"");
-    listOfArrayHeaderValues.add("1985-04-12T23:20:50.52Z" + DUMMY_DELIMITER + "\"1996-12-19T16:39:57-08:00\"" + DUMMY_DELIMITER
+    List<String> result = getDeserializedValuesFor("123" + delimiter + "456" + delimiter + "789");
+    assertEquals("123" + delimiter + "456" + delimiter + "789", result.get(0));
+
+    result = getDeserializedValuesFor("1.213" + delimiter + "456" + delimiter + "\"7,123.213\"");
+    assertEquals("1.213" + delimiter + "456" + delimiter + "\"7,123.213\"", result.get(0));
+
+    result = getDeserializedValuesFor("first" + delimiter + "second" + delimiter + "third");
+    assertEquals("first" + delimiter + "second" + delimiter + "third", result.get(0));
+
+    result = getDeserializedValuesFor("\"commas, between, quotes\"" + delimiter + "\"semicolon; between; quotes\"");
+    assertEquals("\"commas, between, quotes\"" + delimiter + "\"semicolon; between; quotes\"", result.get(0));
+
+    result = getDeserializedValuesFor("1985-04-12T23:20:50.52Z" + delimiter + "\"1996-12-19T16:39:57-08:00\"" + delimiter
         + "1937-01-01T12:00:27.87+00:20");
-    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
-    assertEquals("123" + DUMMY_DELIMITER + "456" + DUMMY_DELIMITER + "789", result.get(0));
-    assertEquals("\"commas, between, quotes\"" + DUMMY_DELIMITER + "\"semicolon; between; quotes\"", result.get(3));
-    assertEquals("1985-04-12T23:20:50.52Z" + DUMMY_DELIMITER + "\"1996-12-19T16:39:57-08:00\"" + DUMMY_DELIMITER
-        + "1937-01-01T12:00:27.87+00:20", result.get(4));
+    assertEquals("1985-04-12T23:20:50.52Z" + delimiter + "\"1996-12-19T16:39:57-08:00\"" + delimiter
+        + "1937-01-01T12:00:27.87+00:20", result.get(0));
   }
 
   @Test
   public void deserializeMalformedObjectArrayHeaders() {
-    listOfArrayHeaderValues.add("{\"type\": \"username\"{" + DUMMY_DELIMITER + "\"testvalue: second\"}");
-    listOfArrayHeaderValues.add("{{ }}}}");
-    listOfArrayHeaderValues.add("{{{{ " + DUMMY_DELIMITER + "}}");
-    List<String> result = deserializer.deserializeListOfValues(listOfArrayHeaderValues);
-    assertEquals(3, result.size());
-    assertEquals("{\"type\": \"username\"{" + DUMMY_DELIMITER + "\"testvalue: second\"}", result.get(0));
-    assertEquals("{{ }}}}", result.get(1));
-    assertEquals("{{{{ " + DUMMY_DELIMITER + "}}", result.get(2));
+    List<String> result = getDeserializedValuesFor("{\"type\": \"username\"{" + delimiter + "\"testvalue: second\"}");
+    assertEquals("{\"type\": \"username\"{" + delimiter + "\"testvalue: second\"}", result.get(0));
+
+    result = getDeserializedValuesFor("{{ }}}}");
+    assertEquals("{{ }}}}", result.get(0));
+
+    result = getDeserializedValuesFor("{{{{ " + delimiter + "}}");
+    assertEquals("{{{{ " + delimiter + "}}", result.get(0));
+
+    result = getDeserializedValuesFor("asd\"{{{\"asd}}}");
+    assertEquals("asd\"{{{\"asd}}}", result.get(0));
+
+    result = getDeserializedValuesFor("\"\\{\\{\"");
+    assertEquals("\\{\\{", result.get(0));
+
+    result = getDeserializedValuesFor("texto,t\"ext\"o,t{ext}o,{}texto,texto{},\"texto\"{},{}\"texto\"");
+    assertEquals("texto,t\"ext\"o,t{ext}o,{}texto,texto{},\"texto\"{},{}\"texto\"", result.get(0));
+
+    result = getDeserializedValuesFor("\"texto,t\\\"ext\\\"o,t{ext}o,{}texto,texto{},\\\"texto\\\"{},{}\\\"texto\\\"\"");
+    assertEquals("texto,t\"ext\"o,t{ext}o,{}texto,texto{},\"texto\"{},{}\"texto\"", result.get(0));
   }
 }

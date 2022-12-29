@@ -31,28 +31,52 @@ public class DummyAttributeDeserializer extends BaseAttributeDeserializer {
   }
 
   private List<String> parseQuotedAttribute(String attributeValue) {
-    char[] chars = attributeValue.substring(1, attributeValue.length() - 1).toCharArray();
+    char[] chars = attributeValue.toCharArray();
     StringBuffer curVal = new StringBuffer();
-    boolean escapedChar = false;
+    boolean insideQuotes = false; // Whether the cursor is reading a value that started with an open quote
+    boolean quotesClosed = false; // Whether the value had quotes that were closed
+    char lastCharacter = '\n'; // Stores the last character read
 
     List<String> values = new ArrayList<>();
-    for (int index = 0; index < chars.length; index++) {
-      if (chars[index] == '\\') {
-        escapedChar = true;
-      } else if (chars[index] == DOUBLE_QUOTES) {
-        if (escapedChar) {
-          curVal.append(chars[index]);
-        } else if (index < chars.length - 1) {
-          // Unbalanced quotes, found unescaped quote in the middle of the quoted string.
-          // Returning the string as it is.
-          return asList(attributeValue);
+    for (int i = 0; i < chars.length; i++) {
+      switch (chars[i]) {
+        case '\r':
+        case '\n':
+        case ' ': {
+          if (insideQuotes) {
+            curVal.append(chars[i]);
+          }
+          break;
         }
-        escapedChar = false;
-      } else {
-        curVal.append(chars[index]);
-        escapedChar = false;
+        case DOUBLE_QUOTES: {
+          if (curVal.length() == 0) {
+            insideQuotes = true;
+          } else if (insideQuotes && chars[i - 1] != '\\') {
+            // Unescaped quotes found, closing value between quotes
+            quotesClosed = true;
+            insideQuotes = false;
+            if (i < chars.length - 1) {
+              // Unbalanced quotes, found unescaped quote in the middle of the quoted string.
+              // Returning the string as it is.
+              return asList(attributeValue);
+            }
+          }
+          curVal.append(chars[i]);
+          lastCharacter = chars[i];
+          break;
+        }
+        default: {
+          curVal.append(chars[i]);
+          lastCharacter = chars[i];
+        }
       }
     }
+    // Value scan completed, update value if it was enclosed with quotes
+    if (lastCharacter == DOUBLE_QUOTES && quotesClosed) {
+      // Quotes were balanced, remove surrounding quotes and remove escaping characters inside value
+      curVal = new StringBuffer(curVal.substring(1, curVal.lastIndexOf("\"")).replace("\\\"", "\""));
+    }
+    // Add the value to result list
     addValueToList(values, curVal);
     return values;
   }

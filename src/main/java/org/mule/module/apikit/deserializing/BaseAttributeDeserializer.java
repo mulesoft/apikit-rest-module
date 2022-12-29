@@ -34,7 +34,6 @@ public abstract class BaseAttributeDeserializer implements AttributeDeserializer
   }
 
   protected void addValueToList(List<String> headerValues, StringBuffer curVal) {
-    String value = curVal.toString();
-    headerValues.add(isBlank(value) ? "" : value);
+    headerValues.add(curVal.toString());
   }
 }
