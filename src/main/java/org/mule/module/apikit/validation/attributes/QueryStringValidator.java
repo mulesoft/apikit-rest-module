@@ -13,6 +13,7 @@ import org.mule.module.apikit.api.exception.InvalidQueryStringException;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -48,11 +49,13 @@ public class QueryStringValidator {
    */
   private static String addDefaultValues(Map<String, Parameter> facetsWithDefault, MultiMap<String, String> queryParamsCopy,
                                          String rawQueryString) {
-    String defaultValue;
+    List<String> defaultValues;
     for (Entry<String, Parameter> entry : facetsWithDefault.entrySet()) {
-      defaultValue = entry.getValue().getDefaultValue();
-      rawQueryString = addQueryString(rawQueryString, entry.getKey(), defaultValue);
-      queryParamsCopy.put(entry.getKey(), entry.getValue().getDefaultValue());
+      defaultValues = entry.getValue().getDefaultValues();
+      for (String defaultValue : defaultValues) {
+        rawQueryString = addQueryString(rawQueryString, entry.getKey(), defaultValue);
+        queryParamsCopy.put(entry.getKey(), defaultValue);
+      }
     }
 
     return rawQueryString;
@@ -79,7 +82,7 @@ public class QueryStringValidator {
   private static Map<String, Parameter> getFacetsWithDefaultValue(Map<String, Parameter> facets) {
     HashMap<String, Parameter> result = Maps.newHashMap();
     for (Entry<String, Parameter> entry : facets.entrySet()) {
-      if (entry.getValue().getDefaultValue() != null) {
+      if (!entry.getValue().getDefaultValues().isEmpty()) {
         result.put(entry.getKey(), entry.getValue());
       }
     }
