@@ -53,9 +53,9 @@ public class UrlencodedFormV2Validator implements FormValidator<TypedValue> {
       final Parameter parameter = formParameters.get(expectedKey).get(0);
       final List<String> values = requestMap.getAll(expectedKey);
       if (values.isEmpty()) {
-        final String defaultValue = parameter.getDefaultValue();
-        if (defaultValue != null) {
-          requestMap.put(expectedKey, defaultValue);
+        final List<String> defaultValues = parameter.getDefaultValues();
+        if (!defaultValues.isEmpty()) {
+          defaultValues.forEach(value -> requestMap.put(expectedKey, value));
         } else if (parameter.isRequired()) {
           throw new InvalidFormParameterException("Required parameter " + expectedKey + " not specified");
         }

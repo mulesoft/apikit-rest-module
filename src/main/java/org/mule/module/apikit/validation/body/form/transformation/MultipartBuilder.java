@@ -89,7 +89,7 @@ public class MultipartBuilder {
 
       Set<String> parametersInPayload = new HashSet<>();
       MultipartEntityBuilder multipartEntityBuilder =
-          defaultValues.size() == 0 && cursorProvider != null
+          defaultValues.isEmpty() && cursorProvider != null
               ? new MultipartEntityBuilderWithoutDefaults(contentType, cursorProvider, boundary, sizeLimit)
               : new MultipartEntityBuilderWithDefaults(boundary, sizeLimit);
 
@@ -122,7 +122,7 @@ public class MultipartBuilder {
 
       for (Entry<String, Parameter> formParameter : formParameters.entrySet()) {
         if (!parametersInPayload.contains(formParameter.getKey()) && formParameter.getValue().isRequired()
-            && formParameter.getValue().getDefaultValue() == null) {
+            && formParameter.getValue().getDefaultValues().isEmpty()) {
           throw new InvalidFormParameterException("Required form parameter " + formParameter.getKey() + " not specified");
         }
       }

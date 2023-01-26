@@ -49,10 +49,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
       Parameter parameter = formParameter.getValue().get(0);
       multipartBuilder.withExpectedParameter(formParameter.getKey(), parameter);
 
-      if (parameter.getDefaultValue() != null) {
-        multipartBuilder.withDefaultValue(formParameter.getKey(), parameter.getDefaultValue());
-      }
-
+      parameter.getDefaultValues().forEach(def -> multipartBuilder.withDefaultValue(formParameter.getKey(), def));
     }
     return getTypedValue(multipartBuilder.build());
   }

@@ -77,9 +77,12 @@ public class HeadersValidator {
         if (values.isEmpty() && headerType.isRequired()) {
           throw new InvalidHeaderException("Required header '" + headerName + "' not specified");
         }
-        if (values.isEmpty() && headerType.getDefaultValue() != null) {
+        List<String> defaultValues = headerType.getDefaultValues();
+        if (values.isEmpty() && !defaultValues.isEmpty()) {
           copyIncomingHeaders = getMutableCopy(incomingHeaders, copyIncomingHeaders);
-          copyIncomingHeaders.put(headerName, headerType.getDefaultValue());
+          for (String defaultValue : defaultValues) {
+            copyIncomingHeaders.put(headerName, defaultValue);
+          }
         }
         if (!values.isEmpty() && headerType.isArray()) {
           values = deserializeValues(values, attributesDeserializingStrategy);

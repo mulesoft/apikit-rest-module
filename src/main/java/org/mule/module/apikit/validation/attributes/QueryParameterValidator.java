@@ -66,10 +66,10 @@ public class QueryParameterValidator {
         if (parameterDefinition.isRequired()) {
           throw new InvalidQueryParameterException("Required query parameter " + paramKey + " not specified");
         }
-        if (paramDefinitionEntry.getValue().getDefaultValue() != null) {
-          String queryParamDefaultValue = paramDefinitionEntry.getValue().getDefaultValue();
-          queryStringWithDefaults = addQueryString(queryStringWithDefaults, paramKey, queryParamDefaultValue);
-          queryParamsCopy.put(paramKey, queryParamDefaultValue);
+        List<String> queryParamDefaultValues = paramDefinitionEntry.getValue().getDefaultValues();
+        for (String defaultValue : queryParamDefaultValues) {
+          queryStringWithDefaults = addQueryString(queryStringWithDefaults, paramKey, defaultValue);
+          queryParamsCopy.put(paramKey, defaultValue);
         }
       }
     }

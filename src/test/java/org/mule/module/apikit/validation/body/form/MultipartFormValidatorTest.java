@@ -26,13 +26,14 @@ import org.mule.runtime.api.streaming.bytes.CursorStreamProvider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -247,14 +248,14 @@ public class MultipartFormValidatorTest {
     when(part1.isRequired()).thenReturn(true);
     when(part2.isRequired()).thenReturn(allRequired);
 
-    when(part2.getDefaultValue()).thenReturn(defaultValue);
+    when(part2.getDefaultValues()).thenReturn(defaultValue != null ? singletonList(defaultValue) : emptyList());
 
     when(part1.validate(anyString())).thenReturn(true);
     when(part2.validate(anyString())).thenReturn(true);
 
     Map<String, List<Parameter>> formParameters = new HashMap<>();
-    formParameters.put("part1", Collections.singletonList(part1));
-    formParameters.put("part2", Collections.singletonList(part2));
+    formParameters.put("part1", singletonList(part1));
+    formParameters.put("part2", singletonList(part2));
 
     return formParameters;
   }
