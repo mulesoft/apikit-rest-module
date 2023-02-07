@@ -3,7 +3,7 @@
 
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-apikit-module</artifactId>
-    <version>1.8.2-SNAPSHOT</version>
+    <version>1.8.2</version>
     <modelVersion>4.0.0</modelVersion>
     <packaging>mule-plugin</packaging>
 
@@ -33,7 +33,7 @@
         <commons.codec.version>1.15</commons.codec.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.5.4-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.5.4</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.39</apiconsole.version>
