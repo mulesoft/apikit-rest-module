@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.System.getProperty;
+import static org.mule.runtime.core.api.util.StringUtils.isBlank;
 
 public class UrlUtils {
 
@@ -141,7 +142,7 @@ public class UrlUtils {
    */
   public static String getRedirectLocation(String scheme, String remoteAddress, String requestPath,
                                            String queryString) {
-    String redirectLocation = scheme + "://" + remoteAddress + requestPath + "/";
+    String redirectLocation = scheme + "://" + replaceHostWithFullDomain(remoteAddress) + requestPath + "/";
 
     if (StringUtils.isNotEmpty(queryString)) {
       redirectLocation += "?" + queryString;
@@ -168,7 +169,7 @@ public class UrlUtils {
       return routerURL;
     }
 
-    String hostToReplace = getProperty(FULL_DOMAIN) != null ? getProperty(FULL_DOMAIN) : consoleRequestHost;
+    String hostToReplace = replaceHostWithFullDomain(consoleRequestHost);
     if (hostToReplace == null) {
       return routerURL.replace(BIND_TO_ALL_INTERFACES, "localhost");
     }
@@ -184,6 +185,11 @@ public class UrlUtils {
       return routerURL;
     }
 
+  }
+
+  private static String replaceHostWithFullDomain(String host) {
+    String cloudHubFullDomain = getProperty(FULL_DOMAIN);
+    return !isBlank(cloudHubFullDomain) ? cloudHubFullDomain : host;
   }
 
 }

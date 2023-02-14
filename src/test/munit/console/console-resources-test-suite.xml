@@ -2,16 +2,33 @@
 
 <mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
       xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
       xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
       xmlns="http://www.mulesoft.org/schema/mule/core"
       xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
-		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+        http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
         http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-  <munit:config name="console-resources-test-suite"></munit:config>
+  <munit:config name="console-resources-test-suite"/>
 
+  <munit:before-test name="full-domain-empty">
+    <ee:transform>
+      <ee:message>
+        <ee:set-payload>
+          <![CDATA[
+          %dw 2.0
+          import java!mtf::Utils
+          output text/plain
+           ---
+          Utils::setSystemProperty("fullDomain", "")
+        ]]>
+        </ee:set-payload>
+      </ee:message>
+    </ee:transform>
+  </munit:before-test>
 
   <munit:test name="off-by-slash-path-transversal-fetch">
     <munit:enable-flow-sources>
