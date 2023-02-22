@@ -26,7 +26,7 @@
         <mule.service.scheduler.version>1.1.7</mule.service.scheduler.version>
         <project.reactor.version>3.2.0.M1</project.reactor.version>
         <rest.assured.version>3.3.0</rest.assured.version>
-        <commons-fileupload.version>1.4</commons-fileupload.version>
+        <commons-fileupload.version>1.5</commons-fileupload.version>
         <httpmime.version>4.5.13</httpmime.version>
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
         <jar.plugin.version>3.0.2</jar.plugin.version>
