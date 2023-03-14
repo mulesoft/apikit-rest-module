@@ -61,13 +61,11 @@ public class RamlHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RamlHandler.class);
   private static final String RAML_QUERY_STRING = "raml";
-  private final ParserService parserService;
   private String apiResourcesRelativePath = "";
 
   private boolean keepApiBaseUri;
   private String apiServer;
   private ApiSpecification api;
-  private ParseResult result;
   private ErrorTypeRepository errorTypeRepository;
   private List<String> acceptedClasspathResources;
 
@@ -100,7 +98,7 @@ public class RamlHandler {
                      ErrorTypeRepository errorTypeRepository,
                      ParserMode parserMode, boolean filterUnsupportedLogging)
       throws IOException {
-    this.parserService = new ParserService(executor);
+    ParserService parserService = new ParserService(executor);
     this.keepApiBaseUri = keepApiBaseUri;
     String rootRamlLocation = findRootRaml(ramlLocation);
 
@@ -108,7 +106,7 @@ public class RamlHandler {
       throw new IOException("Raml not found at: " + ramlLocation);
     }
     ApiReference apiReference = ApiReference.create(rootRamlLocation);
-    result = parserService.parse(apiReference, parserMode == null ? AUTO : parserMode);
+    ParseResult result = parserService.parse(apiReference, parserMode == null ? AUTO : parserMode);
     if (result.success()) {
       logWarnings(result.getWarnings(), filterUnsupportedLogging);
       this.api = result.get();
@@ -255,11 +253,10 @@ public class RamlHandler {
   }
 
   private AMFImpl replaceUriInAMFModel(String url) throws IllegalStateException {
-    ApiSpecification specification = result.get();
-    if (!AMF.equals(specification.getType())) {
+    if (!AMF.equals(api.getType())) {
       throw new IllegalStateException("Trying to return AMF Model when RAML-Parser is being used");
     }
-    AMFImpl amfApiSpec = ((AMFImpl) specification);
+    AMFImpl amfApiSpec = ((AMFImpl) api);
     if (!keepApiBaseUri) {
       String baseUriReplacement = getBaseUriReplacement(url);
       amfApiSpec.updateBaseUri(baseUriReplacement);
