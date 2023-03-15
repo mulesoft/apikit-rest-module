@@ -45,7 +45,7 @@ public class FlowFinder {
 
   protected RoutingTable routingTable;
 
-  private RamlHandler ramlHandler;
+  private String apiVersion;
   private String configName;
   private List<FlowMapping> flowMappings;
   private ConfigurationComponentLocator locator;
@@ -53,16 +53,16 @@ public class FlowFinder {
 
   public FlowFinder(RamlHandler ramlHandler, String configName, ConfigurationComponentLocator locator,
                     List<FlowMapping> flowMappings, ErrorTypeRepository errorTypeRepository) {
-    this.ramlHandler = ramlHandler;
     this.configName = configName;
     this.flowMappings = flowMappings;
     this.locator = locator;
     this.errorTypeRepository = errorTypeRepository;
-    initializeRestFlowMap();
-    loadRoutingTable();
+    this.apiVersion = ramlHandler.getApi().getVersion();
+    initializeRestFlowMap(ramlHandler);
+    loadRoutingTable(ramlHandler);
   }
 
-  protected void initializeRestFlowMap() {
+  protected void initializeRestFlowMap(RamlHandler ramlHandler) {
     final ApiSpecification api = ramlHandler.getApi();
     flattenResourceTree(api.getResources(), api.getVersion());
 
@@ -212,14 +212,14 @@ public class FlowFinder {
     return null;
   }
 
-  private void loadRoutingTable() {
+  private void loadRoutingTable(RamlHandler ramlHandler) {
     if (routingTable == null) {
       routingTable = new RoutingTable(ramlHandler.getApi());
     }
   }
 
   public Flow getFlow(Resource resource, String method, String contentType) throws UnsupportedMediaTypeException {
-    String baseKey = method + ":" + resource.getResolvedUri(ramlHandler.getApi().getVersion());
+    String baseKey = method + ":" + resource.getResolvedUri(apiVersion);
     Map<String, Flow> rawRestFlowMap = getRawRestFlowMap();
     Flow flow = rawRestFlowMap.get(baseKey + ":" + contentType);
     if (flow == null) {
