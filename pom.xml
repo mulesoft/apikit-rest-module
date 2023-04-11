@@ -37,7 +37,7 @@
         <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
-        <apiconsole.version>6.6.39</apiconsole.version>
+        <apiconsole.version>6.6.42</apiconsole.version>
 
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
