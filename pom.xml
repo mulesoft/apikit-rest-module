@@ -34,7 +34,7 @@
         <commons.io.version>2.8.0</commons.io.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.5.5</parser.service.version>
+        <parser.service.version>2.5.6</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.42</apiconsole.version>
