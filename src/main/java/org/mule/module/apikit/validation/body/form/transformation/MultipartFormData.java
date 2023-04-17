@@ -22,7 +22,7 @@ public class MultipartFormData {
     this.multipartFormEntity = multipartFormEntity;
   }
 
-  //TODO: Enhance performance using piped streams
+  // TODO: Enhance performance using piped streams
   public InputStream getInputStream() throws InvalidFormParameterException {
     try {
       ByteArrayOutputStream outStream = new ByteArrayOutputStream();

@@ -8,12 +8,10 @@
 package org.mule.module.apikit.uri;
 
 /**
- * Thrown to indicate that a URI Template or URI Template fragment does not follow the appropriate
- * syntax.
+ * Thrown to indicate that a URI Template or URI Template fragment does not follow the appropriate syntax.
  * <p/>
  * <p/>
- * This exception would typically be used for errors when parsing an expression supposed to follow
- * the URI template syntax.
+ * This exception would typically be used for errors when parsing an expression supposed to follow the URI template syntax.
  *
  * @author Christophe Lauret
  * @version 31 December 2008
@@ -38,7 +36,7 @@ public class URITemplateSyntaxException extends IllegalArgumentException {
   /**
    * Constructs an instance from the given input string, reason.
    *
-   * @param input  The input string.
+   * @param input The input string.
    * @param reason A string explaining why the input could not be parsed.
    */
   public URITemplateSyntaxException(String input, String reason) {

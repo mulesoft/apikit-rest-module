@@ -6,18 +6,22 @@
  */
 package org.mule.module.apikit.validation;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toSet;
-
-import java.util.Set;
 import org.mule.apikit.model.ActionType;
 import org.mule.module.apikit.api.exception.MethodNotAllowedException;
+
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toSet;
 
 public class HttpMethodValidator {
 
   /**
-   * RAML : methods defined in the HTTP version 1.1 specification RFC2616 and its extension, RFC5789
-   * OAS : https://tools.ietf.org/html/rfc7231#section-4.3.1
+   * <dl>
+   * <dt>RAML
+   * <dd>methods defined in the HTTP version 1.1 specification RFC2616 and its extension, RFC5789
+   * <dt>OAS
+   * <dd>https://tools.ietf.org/html/rfc7231#section-4.3.1
    */
   private static final Set<String> httpValidMethods = asList(ActionType.values())
       .stream()
