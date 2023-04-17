@@ -47,7 +47,7 @@ public class AttributesHelper {
         newParam += "=" + URLEncoder.encode(value, "UTF-8");
       }
     } catch (UnsupportedEncodingException e) {
-      //UTF-8 will never be unsupported
+      // UTF-8 will never be unsupported
     }
     return oldQueryString + newParam;
   }
@@ -66,7 +66,7 @@ public class AttributesHelper {
   /**
    * Returns the list of values for the parameter that matches the name.
    *
-   * @param parameters    Map of parameter's name-value
+   * @param parameters Map of parameter's name-value
    * @param parameterName Parameter name
    * @return List of parameter values or an empty list if parameter is not found
    */
@@ -114,8 +114,7 @@ public class AttributesHelper {
   }
 
   /**
-   * Returns "Accept" header param values as a comma separated list.
-   * If no values found, defaults to {@literal *}/{@literal *}.
+   * Returns "Accept" header param values as a comma separated list. If no values found, defaults to {@literal *}/{@literal *}.
    *
    * @param headers Map of parameter's name-value
    * @return Comma separated list of accepted Media Types
