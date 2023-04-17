@@ -16,16 +16,13 @@ import java.util.regex.Pattern;
 /**
  * A URI Template for constructing URIs following the same structure.
  * <p/>
- * Instances of this class implement the URI templates as defined by the URI Template (Draft 3) by
- * Joe Gregorio.
+ * Instances of this class implement the URI templates as defined by the URI Template (Draft 3) by Joe Gregorio.
  * <p/>
  * A URI Template follows the URI syntax and can be expanded given a set of variable values.
  *
  * @author Christophe Lauret
  * @version 5 November 2009
- * @see <a
- *      href="http://bitworking.org/projects/URI-Templates/spec/draft-gregorio-uritemplate-03.html">URI
- *      Template (draft 3)</a>
+ * @see <a href="http://bitworking.org/projects/URI-Templates/spec/draft-gregorio-uritemplate-03.html">URI Template (draft 3)</a>
  */
 public class URITemplate {
 
@@ -48,7 +45,7 @@ public class URITemplate {
    * Creates a new URI Template instance.
    *
    * @param template A String following the URI template syntax.
-   * @throws NullPointerException       If the specified template is <code>null</code>.
+   * @throws NullPointerException If the specified template is <code>null</code>.
    * @throws URITemplateSyntaxException If the string provided does not follow the proper syntax.
    */
   public URITemplate(String template) throws IllegalArgumentException {

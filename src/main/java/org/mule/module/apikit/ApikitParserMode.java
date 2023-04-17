@@ -9,6 +9,7 @@ package org.mule.module.apikit;
 import org.mule.parser.service.ParserMode;
 
 public enum ApikitParserMode {
+
   AUTO(ParserMode.AUTO), AMF(ParserMode.AMF), RAML(ParserMode.RAML);
 
   private final ParserMode mode;

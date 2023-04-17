@@ -32,7 +32,8 @@ class APIKitMultipartStream extends MultipartStream {
   }
 
   /**
-   * Wraps {@link MultipartStream#skipPreamble()} in order to keep the preamble and handle it back to the {@link MultipartEntityBuilder}.
+   * Wraps {@link MultipartStream#skipPreamble()} in order to keep the preamble and handle it back to the
+   * {@link MultipartEntityBuilder}.
    *
    * @param multipartEntityBuilder
    * @return true if an encapsulation was found in the stream
@@ -54,7 +55,8 @@ class APIKitMultipartStream extends MultipartStream {
   }
 
   /**
-   * Overrides {@link MultipartStream#discardBodyData()} in order to keep the payload when invoked by {@link MultipartStream#skipPreamble()}
+   * Overrides {@link MultipartStream#discardBodyData()} in order to keep the payload when invoked by
+   * {@link MultipartStream#skipPreamble()}
    *
    * @return The amount of data discarded
    * @throws IOException
@@ -72,7 +74,8 @@ class APIKitMultipartStream extends MultipartStream {
   }
 
   /**
-   * Reads the remaining bytes of the stream in order to keep the epilogue and handle it back to the {@link MultipartEntityBuilder}.
+   * Reads the remaining bytes of the stream in order to keep the epilogue and handle it back to the
+   * {@link MultipartEntityBuilder}.
    *
    * @param multipartEntityBuilder
    * @throws InvalidFormParameterException
