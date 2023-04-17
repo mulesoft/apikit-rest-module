@@ -158,11 +158,15 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
   }
 
   /**
-   * In terms of validation, when the parameter is nullable (for RAML this is a union between nil and something else), a null value will be considered as a union's value instead of inner type's value. This is because the validator considers the weight of the outer type to be greater than that of the inner types.
+   * In terms of validation, when the parameter is nullable (for RAML this is a union between nil and something else), a null
+   * value will be considered as a union's value instead of inner type's value. This is because the validator considers the weight
+   * of the outer type to be greater than that of the inner types.
+   * <p>
    * Note that a value is considered as null when it is a:
-   * - null Object
-   * - "null" String
-   * - null Object or "null" String as part of a single element in an array
+   * <ul>
+   * <li>null Object
+   * <li>"null" String
+   * <li>null Object or "null" String as part of a single element in an array
    */
 
   @Test

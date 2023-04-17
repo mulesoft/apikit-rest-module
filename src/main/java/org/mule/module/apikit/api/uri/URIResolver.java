@@ -27,15 +27,17 @@ import org.mule.module.apikit.uri.Variable;
  * A URI pattern resolver identifies the URI pattern and variables values given a specific URI.
  * <p/>
  * This class is typically used as follows:
+ * 
  * <pre>
- *   // Create a resolver instance
- *   URIResolver resolver = new URIResolver("http://www.acme.com/test/home");
+ * 
+ * // Create a resolver instance
+ * URIResolver resolver = new URIResolver("http://www.acme.com/test/home");
  *
- *   // Find the matching pattern amongst a list of precompiled URI patterns
- *   URIPattern pattern = resolver.find(patterns);
+ * // Find the matching pattern amongst a list of precompiled URI patterns
+ * URIPattern pattern = resolver.find(patterns);
  *
- *   // Resolve the URI for the specified pattern, the result holds all the matching info
- *   URIResolveResult result = resolver.resolve(p);
+ * // Resolve the URI for the specified pattern, the result holds all the matching info
+ * URIResolveResult result = resolver.resolve(p);
  * </pre>
  *
  * @author Christophe Lauret
@@ -52,14 +54,14 @@ public class URIResolver {
   public enum MatchRule {
 
     /**
-     * Indicates that the first matching pattern should be returned when finding a match in a list
-     * of patterns. The ordering of patterns in the list determines the matching pattern.
+     * Indicates that the first matching pattern should be returned when finding a match in a list of patterns. The ordering of
+     * patterns in the list determines the matching pattern.
      */
     FIRST_MATCH,
 
     /**
-     * Indicates that the best matching pattern should be returned when finding a match in a list
-     * of patterns. The best matching patterns is determined by the longest common string.
+     * Indicates that the best matching pattern should be returned when finding a match in a list of patterns. The best matching
+     * patterns is determined by the longest common string.
      */
     BEST_MATCH
   }
@@ -101,7 +103,7 @@ public class URIResolver {
    * Returns the first URI pattern in the list which matches the underlying URI.
    *
    * @param patterns The URI patterns available.
-   * @param rule     The rule used to select the matching patterns in case of multiple matches.
+   * @param rule The rule used to select the matching patterns in case of multiple matches.
    * @return The first URI pattern that matches or <code>null</code>.
    */
   public URIPattern find(Set<URIPattern> patterns, MatchRule rule) {
@@ -167,13 +169,12 @@ public class URIResolver {
   // private helpers ----------------------------------------------------------
 
   /**
-   * Lookup the variable values using the variable resolvers specified in the bindings from the
-   * values mapped to the variables.
+   * Lookup the variable values using the variable resolvers specified in the bindings from the values mapped to the variables.
    * <p/>
    * Set the status of the result accordingly.
    *
    * @param result Where the results go.
-   * @param map    Values mapped to the variables.
+   * @param map Values mapped to the variables.
    */
   private void lookup(URIResolveResult result, Map<Variable, Object> map) {
     // lookup variable values
