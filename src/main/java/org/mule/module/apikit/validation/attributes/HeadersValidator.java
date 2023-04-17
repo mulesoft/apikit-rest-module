@@ -121,7 +121,7 @@ public class HeadersValidator {
 
   private static void validateHeadersStrictly(Map<String, Parameter> headers, Map<String, String> incomingHeaders)
       throws InvalidHeaderException {
-    //checks that headers are defined in the spec
+    // checks that headers are defined in the spec
     final Set<String> specHeaders = headers.keySet().stream()
         .map(String::toLowerCase)
         .collect(toSet());

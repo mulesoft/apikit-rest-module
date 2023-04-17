@@ -13,8 +13,7 @@ public class RewindableInputStream extends InputStream implements Rewindable {
 
   private Block head;
   /**
-   * If curBlockAvail > 0, then there are curBlockAvail bytes available to be
-   * returned starting at curBlockPos in curBlock.buf.
+   * If curBlockAvail > 0, then there are curBlockAvail bytes available to be returned starting at curBlockPos in curBlock.buf.
    */
   private int curBlockAvail;
   private Block curBlock;

@@ -53,7 +53,7 @@ public class PayloadHelperTestCase {
     final RewindableInputStream rewindable = new RewindableInputStream(payloadStream);
 
     assertEquals(payloadString, getPayloadAsString(rewindable, "UTF-8"));
-    //re-reading payload to check if it was consumed
+    // re-reading payload to check if it was consumed
     assertEquals(payloadString, getPayloadAsString(rewindable, "UTF-8"));
   }
 

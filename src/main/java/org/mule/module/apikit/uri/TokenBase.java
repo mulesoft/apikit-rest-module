@@ -14,7 +14,8 @@ import java.util.List;
 /**
  * An abstract token for use as a base for other tokens.
  * <p/>
- * <p>This class is a base implementation of the {@link Token} interface.
+ * <p>
+ * This class is a base implementation of the {@link Token} interface.
  *
  * @author Christophe Lauret
  * @version 30 December 2008

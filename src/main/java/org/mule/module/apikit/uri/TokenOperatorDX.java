@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 /**
  * A token based on the operators defined in the latest draft.
  * <p/>
+ * 
  * <pre>
  *  instruction   = &quot;{&quot; [ operator ] variable-list &quot;}&quot;
  *  operator      = &quot;/&quot; / &quot;+&quot; / &quot;;&quot; / &quot;?&quot; / op-reserve
@@ -30,8 +31,8 @@ import java.util.regex.Pattern;
  *
  * @author Christophe Lauret
  * @version 5 November 2009
- * @see <a href="http://code.google.com/p/uri-templates/source/browse/trunk/spec/draft-gregorio-uritemplate.xml">URI
- *      Template Library draft specifications at Google Code</a>
+ * @see <a href="http://code.google.com/p/uri-templates/source/browse/trunk/spec/draft-gregorio-uritemplate.xml">URI Template
+ *      Library draft specifications at Google Code</a>
  */
 public class TokenOperatorDX extends TokenBase implements Matchable {
 
@@ -45,6 +46,7 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
      * <p/>
      * Example:
      * <p/>
+     * 
      * <pre>
      *  undef = null;
      *  empty = &quot;&quot;;
@@ -94,6 +96,7 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
      * <p/>
      * Example:
      * <p/>
+     * 
      * <pre>
      *  undef = null;
      *  empty = &quot;&quot;;
@@ -143,6 +146,7 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
      * <p/>
      * Example:
      * <p/>
+     * 
      * <pre>
      *  list  = [ &quot;val1&quot;, &quot;val2&quot;, &quot;val3&quot; ];
      *  x     = &quot;1024&quot;;
@@ -177,6 +181,7 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
      * <p/>
      * Example:
      * <p/>
+     * 
      * <pre>
      * empty = &quot;&quot;
      * path  = &quot;/foo/bar&quot;
@@ -271,12 +276,12 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
     /**
      * Returns the pattern for this operator given the specified list of variables.
      *
-     * @param vars   The variables for the operator.
+     * @param vars The variables for the operator.
      */
     abstract Pattern pattern(List<Variable> vars);
 
     /**
-     * Returns the map of the string to values given  the specified data.
+     * Returns the map of the string to values given the specified data.
      */
     abstract boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values);
 
@@ -301,7 +306,7 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
   /**
    * Creates a new operator token.
    *
-   * @param op   The operator to use.
+   * @param op The operator to use.
    * @param vars The variables for this operator.
    * @throws NullPointerException If any of the argument is <code>null</code>.
    */
@@ -397,8 +402,8 @@ public class TokenOperatorDX extends TokenBase implements Matchable {
   /**
    * Generate the expression corresponding to the specified operator, argument and variables.
    *
-   * @param op   The operator.
-   * @param arg  the argument.
+   * @param op The operator.
+   * @param arg the argument.
    * @param vars The variables.
    */
   private static String toExpression(Operator op, List<Variable> vars) {

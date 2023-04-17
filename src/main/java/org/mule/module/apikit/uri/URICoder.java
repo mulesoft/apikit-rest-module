@@ -22,22 +22,20 @@ import java.util.Set;
  * <p/>
  * Only unreserved characters according to RFC 3986 do not need to be encoded within a variable:
  * <p/>
+ * 
  * <pre>
  * unreserved = ALPHA / DIGIT / '-' / '.' / '_' / '&tilde;';
  * </pre>
  * <p/>
  * <p/>
- * This encoder/decoder should be designed so that URI which contain only unreserved characters are
- * processed faster.
+ * This encoder/decoder should be designed so that URI which contain only unreserved characters are processed faster.
  *
  * @author Christophe Lauret
  * @version 11 June 2009
- * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986 - Uniform Resource Identifier (URI):
- * Generic Syntax<a/>
- * @see <a href="http://tools.ietf.org/html/rfc3986#appendix-A">RFC 3986 - Uniform Resource
- * Identifier (URI): Generic Syntax - Appendix A. Collected ABNF for URI</a>
- * @see <a href="http://www.unicode.org/unicode/reports/tr15/tr15-23.html#Specification">UAX #15:
- * Unicode Normalization</a>
+ * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax<a/>
+ * @see <a href="http://tools.ietf.org/html/rfc3986#appendix-A">RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax -
+ *      Appendix A. Collected ABNF for URI</a>
+ * @see <a href="http://www.unicode.org/unicode/reports/tr15/tr15-23.html#Specification">UAX #15: Unicode Normalization</a>
  */
 public class URICoder {
 
@@ -63,7 +61,7 @@ public class URICoder {
   private final static Set<Character> skipChars = new HashSet<>(Arrays.asList('/', '{', '}', '%', ':'));
 
   /**
-   *  Reserved chars, not considered when encoding request path
+   * Reserved chars, not considered when encoding request path
    */
   private static final Set<Character> escapeChars = new HashSet<>(Arrays.asList('/', '{', '}'));
 
@@ -73,7 +71,7 @@ public class URICoder {
   // ==========================================================================
 
   /**
-   * @param rawRequestPath  request path with original encoding /api/myEndpoint
+   * @param rawRequestPath request path with original encoding /api/myEndpoint
    * @return @rawRequestPath with encoded special characters if found
    * @throws ApikitRuntimeException when bad encoding detected
    */
@@ -91,7 +89,7 @@ public class URICoder {
    * <p/>
    * This encoder will percent-encode all but <em>unreserved</em> characters.
    *
-   * @param s     The string to encode.
+   * @param s The string to encode.
    * @param chars An ASCII set of characters that should not be encoded if found in the string.
    * @return The corresponding encoded string.
    */
@@ -105,7 +103,7 @@ public class URICoder {
   }
 
   /**
-   * @param path  The path to check if contains special characters
+   * @param path The path to check if contains special characters
    * @param skipChars An ASCII set of characters that should not be considered if found in the string.
    * @return If the path contains special characters not encoded
    */
@@ -125,7 +123,7 @@ public class URICoder {
   /**
    * Encodes a string containing only ASCII characters.
    *
-   * @param s     The string the encode (assuming ASCII characters only)
+   * @param s The string the encode (assuming ASCII characters only)
    * @param chars A set of characters that does not require encoding if found in the string.
    */
   private static String encode_ASCII(String s, Set<Character> chars) {
@@ -144,7 +142,7 @@ public class URICoder {
   /**
    * Encodes a string containing non ASCII characters using an UTF-8 encoder.
    *
-   * @param s     The string the encode (assuming ASCII characters only)
+   * @param s The string the encode (assuming ASCII characters only)
    * @param chars A set of characters that does not require encoding if found in the string.
    */
   private static String encode_UTF8(String s, Set<Character> chars) {
@@ -232,7 +230,7 @@ public class URICoder {
    * Appends the escape sequence for the given byte to the specified string buffer.
    *
    * @param sb The string buffer.
-   * @param b  The byte to escape.
+   * @param b The byte to escape.
    */
   private static void appendEscape(StringBuffer sb, byte b) {
     sb.append('%');
@@ -244,7 +242,7 @@ public class URICoder {
    * Appends the escape sequence for the given byte to the specified string buffer.
    *
    * @param sb The string buffer.
-   * @param c  The byte to escape.
+   * @param c The byte to escape.
    */
   private static void appendEscape(StringBuilder sb, char c) {
     sb.append('%');
