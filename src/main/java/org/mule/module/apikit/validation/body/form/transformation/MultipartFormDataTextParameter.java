@@ -10,8 +10,7 @@ import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 
 /**
- * This class is intended to validate multipart form-data
- * text parameters against the expected specification
+ * This class is intended to validate multipart form-data text parameters against the expected specification
  *
  */
 public class MultipartFormDataTextParameter implements MultipartFormDataParameter {

@@ -22,9 +22,8 @@ import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMM
 /**
  * MIME-Type Parser
  * <p/>
- * This class provides basic functions for handling mime-types. It can handle
- * matching mime-types against a list of media-ranges. See section 14.1 of the
- * HTTP specification [RFC 2616] for a complete explanation.
+ * This class provides basic functions for handling mime-types. It can handle matching mime-types against a list of media-ranges.
+ * See section 14.1 of the HTTP specification [RFC 2616] for a complete explanation.
  * <p/>
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
  * <p/>
@@ -51,8 +50,7 @@ public class MimeTypeParser {
   /**
    * Carves up a mime-type and returns a ParseResults object
    * <p/>
-   * For example, the media range 'application/xhtml;q=0.5' would get parsed
-   * into:
+   * For example, the media range 'application/xhtml;q=0.5' would get parsed into:
    * <p/>
    * ('application', 'xhtml', {'q', '0.5'})
    */
@@ -92,9 +90,8 @@ public class MimeTypeParser {
    * <p/>
    * ('application', '*', {'q', '0.5'})
    * <p/>
-   * In addition this function also guarantees that there is a value for 'q'
-   * in the params dictionary, filling it in with a proper default if
-   * necessary.
+   * In addition this function also guarantees that there is a value for 'q' in the params dictionary, filling it in with a proper
+   * default if necessary.
    *
    * @param range
    */
@@ -141,11 +138,9 @@ public class MimeTypeParser {
   }
 
   /**
-   * Find the best match for a given mimeType against a list of media_ranges
-   * that have already been parsed by MimeParse.parseMediaRange(). Returns a
-   * tuple of the fitness value and the value of the 'q' quality parameter of
-   * the best match, or (-1, 0) if no match was found. Just as for
-   * quality_parsed(), 'parsed_ranges' must be a list of parsed media ranges.
+   * Find the best match for a given mimeType against a list of media_ranges that have already been parsed by
+   * MimeParse.parseMediaRange(). Returns a tuple of the fitness value and the value of the 'q' quality parameter of the best
+   * match, or (-1, 0) if no match was found. Just as for quality_parsed(), 'parsed_ranges' must be a list of parsed media ranges.
    *
    * @param mimeType
    * @param parsedRanges
@@ -193,13 +188,11 @@ public class MimeTypeParser {
   }
 
   /**
-   * Takes a list of supportedRepresentations mime-types and finds the best match for all the
-   * media-ranges listed in header. The value of header must be a string that
-   * conforms to the format of the HTTP Accept: header. The value of
+   * Takes a list of supportedRepresentations mime-types and finds the best match for all the media-ranges listed in header. The
+   * value of header must be a string that conforms to the format of the HTTP Accept: header. The value of
    * 'supportedRepresentations' is a list of mime-types.
    * <p/>
-   * MimeParse.bestMatch(Arrays.asList(new String[]{"application/xbel+xml",
-   * "text/xml"}), "text/*;q=0.5,*; q=0.1") 'text/xml'
+   * MimeParse.bestMatch(Arrays.asList(new String[]{"application/xbel+xml", "text/xml"}), "text/*;q=0.5,*; q=0.1") 'text/xml'
    *
    * @param supportedRepresentations
    * @param header
@@ -212,12 +205,12 @@ public class MimeTypeParser {
     }
 
     List<FitnessAndQuality> weightedMatches = new LinkedList<>();
-    String quality = "1"; //first representation defined
+    String quality = "1"; // first representation defined
     for (String representation : supportedRepresentations) {
       FitnessAndQuality fitnessAndQuality = fitnessAndQualityParsed(representation + ";q=" + quality, parseResults);
       fitnessAndQuality.mimeType = representation;
       weightedMatches.add(fitnessAndQuality);
-      quality = "0.5"; //subsequent representations
+      quality = "0.5"; // subsequent representations
     }
     Collections.sort(weightedMatches);
 

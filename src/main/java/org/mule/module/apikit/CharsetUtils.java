@@ -52,12 +52,12 @@ public class CharsetUtils {
 
   /**
    * Tries to figure out the encoding of the request in the following order
-   *  - Determine what type is payload
-   *  - detects the payload encoding using BOM, or tries to auto-detect it
-   *  - return the mule message encoding
+   * <ul>
+   * <li>Determine what type is payload
+   * <li>Detects the payload encoding using BOM, or tries to auto-detect it
+   * <li>Return the mule message encoding
    *
    * @param typedValue mule typed value
-  
    * @return payload encoding
    */
   private static <T> String getEncoding(TypedValue<T> typedValue) {

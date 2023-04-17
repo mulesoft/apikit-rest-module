@@ -115,7 +115,7 @@ public class HeadersValidator {
 
   private static void validateHeadersStrictly(Map<String, Parameter> headers, Map<String, String> incomingHeaders)
       throws InvalidHeaderException {
-    //checks that headers are defined in the RAML
+    // checks that headers are defined in the RAML
     final Set<String> ramlHeaders = headers.keySet().stream()
         .map(String::toLowerCase)
         .collect(toSet());

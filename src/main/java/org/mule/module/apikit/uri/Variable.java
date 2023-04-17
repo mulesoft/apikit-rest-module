@@ -12,13 +12,14 @@ import java.util.regex.Pattern;
 /**
  * A variable in a URL pattern or template.
  * <p/>
- * The variables can be typed by prefixing the variable name. Types are not required, if no type is
- * specified, the variable is considered untyped.
+ * The variables can be typed by prefixing the variable name. Types are not required, if no type is specified, the variable is
+ * considered untyped.
  * <p/>
- * Note: there is no predefined list of types as the handling of types is out of scope. The syntax
- * simply allows variables to be associated with a type.
+ * Note: there is no predefined list of types as the handling of types is out of scope. The syntax simply allows variables to be
+ * associated with a type.
  * <p/>
  * Examples of variables:
+ * 
  * <pre>
  *   foo         - An untyped variable named 'foo'
  *   bar         - An untyped variable named 'bar'
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
  * <p/>
  * Expansion rule (4.4.1):
  * <p/>
+ * 
  * <pre>
  * &quot;In a variable ('var') expansion, if the variable is defined then substitute the value of
  * the variable, otherwise substitute the default value.
@@ -38,6 +40,7 @@ import java.util.regex.Pattern;
  * </pre>
  * <p/>
  * Syntax for variables:
+ * 
  * <pre>
  * var         = [ vartype &quot;:&quot; ]  varname [ &quot;=&quot; vardefault ]
  * vars        = var [ *(&quot;,&quot; var) ]
@@ -48,11 +51,9 @@ import java.util.regex.Pattern;
  *
  * @author Christophe Lauret
  * @version 11 June 2009
- * @see <a
- *      href="http://bitworking.org/projects/URI-Templates/spec/draft-gregorio-uritemplate-03.html">URI
- *      Template (Internet Draft 3)</a>
- * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986 - Uniform Resource Identifier (URI):
- *      Generic Syntax<a/>
+ * @see <a href="http://bitworking.org/projects/URI-Templates/spec/draft-gregorio-uritemplate-03.html">URI Template (Internet
+ *      Draft 3)</a>
+ * @see <a href="http://tools.ietf.org/html/rfc3986">RFC 3986 - Uniform Resource Identifier (URI): Generic Syntax<a/>
  */
 public class Variable {
 
@@ -91,8 +92,7 @@ public class Variable {
   /**
    * Indicate that the variable's value should be processed as a list ("@") or an associative array ("%").
    * <p/>
-   * This variable type is an instruction for the template processor.
-   * It is not an indication of language or implementation type.
+   * This variable type is an instruction for the template processor. It is not an indication of language or implementation type.
    */
   public enum Form {
 
@@ -142,9 +142,8 @@ public class Variable {
   private static final Pattern VALID_NAME = Pattern.compile("[a-zA-Z0-9][\\w.-]*");
 
   /**
-   * The pattern for a valid normalised variable value: any unreserved character or an escape
-   * sequence. This pattern contains non-capturing parentheses to make it easier to get variable
-   * values as a group.
+   * The pattern for a valid normalised variable value: any unreserved character or an escape sequence. This pattern contains
+   * non-capturing parentheses to make it easier to get variable values as a group.
    */
   protected static final Pattern VALID_VALUE = Pattern.compile("[\\w.~%:-]+");
 
@@ -180,7 +179,7 @@ public class Variable {
    * Creates a new untyped reserved variable.
    *
    * @param reserved The name of the variable.
-   * @throws NullPointerException     If the specified name is <code>null</code>.
+   * @throws NullPointerException If the specified name is <code>null</code>.
    * @throws IllegalArgumentException If the specified name is an empty string.
    */
   public Variable(Reserved reserved) throws NullPointerException, IllegalArgumentException {
@@ -194,8 +193,8 @@ public class Variable {
    * Creates a new untyped variable.
    *
    * @param name The name of the variable.
-   * @param def  The default value for the variable.
-   * @throws NullPointerException     If the specified name is <code>null</code>.
+   * @param def The default value for the variable.
+   * @throws NullPointerException If the specified name is <code>null</code>.
    * @throws IllegalArgumentException If the specified name is an empty string.
    */
   public Variable(String name, String def) throws NullPointerException, IllegalArgumentException {
@@ -206,9 +205,9 @@ public class Variable {
    * Creates a new variable.
    *
    * @param name The name of the variable.
-   * @param def  The default value for the variable.
+   * @param def The default value for the variable.
    * @param type The type of the variable.
-   * @throws NullPointerException     If the specified name is <code>null</code>.
+   * @throws NullPointerException If the specified name is <code>null</code>.
    * @throws IllegalArgumentException If the specified name is an empty string.
    */
   public Variable(String name, String def, VariableType type) throws NullPointerException,
@@ -393,12 +392,11 @@ public class Variable {
   // helpers -------------------------------------------------------------------
 
   /**
-   * Returns the name of this variable as a regular expression pattern string for use in a regular
-   * expression.
+   * Returns the name of this variable as a regular expression pattern string for use in a regular expression.
    * <p/>
    * <p/>
-   * Implementation note: this method replaces any character that could be interpreted as a regex
-   * meta-character, it is more efficient than using quotation (\Q...\E) for the whole string.
+   * Implementation note: this method replaces any character that could be interpreted as a regex meta-character, it is more
+   * efficient than using quotation (\Q...\E) for the whole string.
    *
    * @return The regex pattern corresponding to this name.
    */

@@ -13,7 +13,9 @@ import java.util.regex.Pattern;
 /**
  * A URI token wrapping a variable.
  * <p/>
- * <p>Variables follow the following expression:
+ * <p>
+ * Variables follow the following expression:
+ * 
  * <pre>
  * var         = varname [ &quot;=&quot; vardefault ]
  * varname     = (ALPHA / DIGIT)*(ALPHA / DIGIT / &quot;.&quot; / &quot;_&quot; / &quot;-&quot; )

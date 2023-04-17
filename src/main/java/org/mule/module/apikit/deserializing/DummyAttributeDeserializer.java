@@ -11,8 +11,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
- * Dummy attribute deserializer that returns the same values that receives without modifying it.
- * Used for keeping backward compatibility with the default behaviour.
+ * Dummy attribute deserializer that returns the same values that receives without modifying it. Used for keeping backward
+ * compatibility with the default behaviour.
  */
 public class DummyAttributeDeserializer extends BaseAttributeDeserializer {
 
