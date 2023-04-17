@@ -10,8 +10,8 @@ import org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
 
 /**
- * Attributes Deserializer Factory. Builds the deserializer according to the requested strategy.
- * Defaults to {@link DummyAttributeDeserializer} if no deserializing strategy match found.
+ * Attributes Deserializer Factory. Builds the deserializer according to the requested strategy. Defaults to
+ * {@link DummyAttributeDeserializer} if no deserializing strategy match found.
  */
 public class AttributesDeserializerFactory {
 
