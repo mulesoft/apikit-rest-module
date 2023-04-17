@@ -16,8 +16,8 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.reactivestreams.Publisher;
 
 /**
- * Implementation of {@link FlowRoutingStrategy} that uses the Mule privileged API to perform the flow routing job,
- * this should not be used since MULE 4.2.0 and forward versions, use {@link DefaultFlowRoutingStrategy} instead.
+ * Implementation of {@link FlowRoutingStrategy} that uses the Mule privileged API to perform the flow routing job, this should
+ * not be used since MULE 4.2.0 and forward versions, use {@link DefaultFlowRoutingStrategy} instead.
  */
 public class PrivilegedFlowRoutingStrategy implements FlowRoutingStrategy {
 

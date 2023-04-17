@@ -15,9 +15,11 @@ import java.util.regex.Pattern;
 /**
  * A token based on the operators used in PageSeeder.
  * <p/>
- * <p>This syntax borrows heavily from a suggestion made by Roy T. Fielding on the W3C URI list and
- * regarding the URI Template draft specification.
+ * <p>
+ * This syntax borrows heavily from a suggestion made by Roy T. Fielding on the W3C URI list and regarding the URI Template draft
+ * specification.
  * <p/>
+ * 
  * <pre>
  *  instruction   = &quot;{&quot; [ operator ] variable-list &quot;}&quot;
  *  operator      = &quot;/&quot; / &quot;+&quot; / &quot;;&quot; / &quot;?&quot; / op-reserve
@@ -33,8 +35,8 @@ import java.util.regex.Pattern;
  *
  * @author Christophe Lauret
  * @version 6 November 2009
- * @see <a href="http://lists.w3.org/Archives/Public/uri/2008Sep/0007.html">Re: URI Templates? from
- *      Roy T. Fielding on 2008-09-16 (uri@w3.org)</a>
+ * @see <a href="http://lists.w3.org/Archives/Public/uri/2008Sep/0007.html">Re: URI Templates? from Roy T. Fielding on 2008-09-16
+ *      (uri@w3.org)</a>
  */
 public class TokenOperatorPS extends TokenBase implements Matchable {
 
@@ -42,11 +44,13 @@ public class TokenOperatorPS extends TokenBase implements Matchable {
    * The list of operators currently supported.
    */
   public enum Operator {
+
     /**
      * The '+' operator for URI inserts.
      * <p/>
      * Example:
      * <p/>
+     * 
      * <pre>
      * empty = &quot;&quot;
      * path  = &quot;/foo/bar&quot;
@@ -114,12 +118,12 @@ public class TokenOperatorPS extends TokenBase implements Matchable {
     /**
      * Returns the pattern for this operator given the specified list of variables.
      *
-     * @param vars   The variables for the operator.
+     * @param vars The variables for the operator.
      */
     abstract Pattern pattern(List<Variable> vars);
 
     /**
-     * Returns the map of the string to values given  the specified data.
+     * Returns the map of the string to values given the specified data.
      */
     abstract boolean resolve(List<Variable> vars, String value, Map<Variable, Object> values);
 
@@ -143,7 +147,7 @@ public class TokenOperatorPS extends TokenBase implements Matchable {
   /**
    * Creates a new operator token for one variable only.
    *
-   * @param op  The operator to use.
+   * @param op The operator to use.
    * @param var The variable for this operator.
    * @throws NullPointerException If any of the argument is <code>null</code>.
    */
@@ -204,7 +208,7 @@ public class TokenOperatorPS extends TokenBase implements Matchable {
   /**
    * Generate the expression corresponding to the specified operator and variable.
    *
-   * @param op  The operator.
+   * @param op The operator.
    * @param var The variable.
    */
   private static String toExpression(Operator op, Variable var) {

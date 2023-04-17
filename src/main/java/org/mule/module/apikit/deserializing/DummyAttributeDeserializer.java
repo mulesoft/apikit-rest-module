@@ -14,8 +14,8 @@ import static java.util.Arrays.asList;
 /**
  * Dummy attribute deserializer that returns the same values that receives.
  * <p>
- * If value is between quotes, it gets rid of enclosing quotes and unescapes inner quotes if any.
- * If unbalanced quotes are find, the value is returned as it is.
+ * If value is between quotes, it gets rid of enclosing quotes and unescapes inner quotes if any. If unbalanced quotes are find,
+ * the value is returned as it is.
  * <p>
  * Default deserializer when no delimiter strategy is set up.
  */

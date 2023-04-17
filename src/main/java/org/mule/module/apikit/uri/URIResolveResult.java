@@ -67,7 +67,7 @@ public class URIResolveResult implements ResolvedVariables {
    * Puts the object corresponding to the specified variable name in the results.
    *
    * @param name The name of the variable.
-   * @param o    The corresponding object.
+   * @param o The corresponding object.
    */
   public void put(String name, Object o) {
     this.values.put(name, o);

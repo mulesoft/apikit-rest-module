@@ -18,9 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.util.Collections;
 
 /**
- * This test class is mainly intend to show the difference between the validations of union RAML types from the AMF and
- * JAVA RAML parsers. The recommendation is not to use the RAML JAVA parser since it contains some bugs and it is
- * deprecated.
+ * This test class is mainly intend to show the difference between the validations of union RAML types from the AMF and JAVA RAML
+ * parsers. The recommendation is not to use the RAML JAVA parser since it contains some bugs and it is deprecated.
  */
 public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
 
@@ -38,6 +37,7 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
 
   /**
    * When the type is defined at the types facet, the root element takes the name for the respective type.
+   * <p>
    * NOTE: The RAML parser will only allow the first element of the union
    */
   @Test
@@ -62,7 +62,8 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
   }
 
   /**
-   * When the union is defined inline RAML Java parser will set root as the root tag name and AMF will use model
+   * When the union is defined inline RAML Java parser will set root as the root tag name and AMF will use model.
+   * <p>
    * NOTE: The RAML parser will only allow the first element of the union
    */
   @Test
@@ -87,7 +88,8 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
   }
 
   /**
-   * When using serialization properties RAML Java parser will ignore them while AMF set them properly
+   * When using serialization properties RAML Java parser will ignore them while AMF set them properly.
+   * <p>
    * NOTE: The RAML parser will only allow the first element of the union
    */
   @Test
