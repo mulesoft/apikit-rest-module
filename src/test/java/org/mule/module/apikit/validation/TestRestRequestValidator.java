@@ -95,8 +95,8 @@ public class TestRestRequestValidator {
   }
 
   /**
-   * Assert if exception {@param expectedThrowable} is thrown with a message containing {@param containsMessage} when
-   * validating a given request.
+   * Assert if exception {@param expectedThrowable} is thrown with a message containing {@param containsMessage} when validating a
+   * given request.
    *
    * @param expectedThrowable expected throwable exception of class {@param T}
    * @param containsMessage if not null it will validate that it is contained at the exception error message

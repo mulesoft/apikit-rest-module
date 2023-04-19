@@ -15,9 +15,9 @@ import org.mule.runtime.api.util.MultiMap;
 import java.util.Collections;
 
 /**
- * This test class is mainly intended to show how we handle an OAS 2.0 specification bug where it lets you define
- * a payload with an schema and without a mime type, in order to help the user and keeps consistency with mocking
- * service APIkit will validate according the incoming Content-Type header
+ * This test class is mainly intended to show how we handle an OAS 2.0 specification bug where it lets you define a payload with
+ * an schema and without a mime type, in order to help the user and keeps consistency with mocking service APIkit will validate
+ * according the incoming Content-Type header
  */
 public class PayloadWithoutMimeTypeValidationTestCase extends AbstractRequestValidatorTestCase {
 

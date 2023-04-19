@@ -29,7 +29,7 @@ public class UrlUtils {
 
   /**
    * @param baseAndApiPath http listener base path, example /api/*
-   * @param requestPath    example /api/endpoint
+   * @param requestPath example /api/endpoint
    * @return index of character in requestPath corresponding to the last slash found in base path
    */
   private static int getEndOfBasePathIndex(String baseAndApiPath, String requestPath) {
@@ -56,8 +56,7 @@ public class UrlUtils {
   /**
    * @param baseAndApiPath http listener base path, example /api/*
    * @param requestPath example /api/endpoint
-   * @return a String that represent the relative path between @baseAndApiPath and @requestPath,
-   * example : /endpoint
+   * @return a String that represent the relative path between @baseAndApiPath and @requestPath, example : /endpoint
    */
   public static String getRelativePath(String baseAndApiPath, String requestPath) {
     int slashLastPosition = getEndOfBasePathIndex(baseAndApiPath, requestPath);
@@ -156,8 +155,8 @@ public class UrlUtils {
 
   /**
    * @param routerURL url where router is listening for requests
-   * @param consoleRequestHost example : <IP>:<PORT> or <protocol>://<IP>:<PORT>,
-   * this parameter is used if 'fullDomain' System property is not present
+   * @param consoleRequestHost example : <IP>:<PORT> or <protocol>://<IP>:<PORT>, this parameter is used if 'fullDomain' System
+   *        property is not present
    * @return routerURL with host replaced
    */
   public static String replaceHostInURL(String routerURL, String consoleRequestHost) {

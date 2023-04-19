@@ -53,6 +53,7 @@ public class BodyValidator {
 
   /**
    * search the correct mimeType in action for the given request content type
+   * 
    * @param action api spec action
    * @param requestContentType
    * @return mimeType defined in api spec
