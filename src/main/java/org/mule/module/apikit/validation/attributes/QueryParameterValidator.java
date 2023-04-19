@@ -78,7 +78,7 @@ public class QueryParameterValidator {
   private static void validateQueryParametersStrictly(Map<String, Parameter> queryParameters,
                                                       MultiMap<String, String> incomingQueryParams)
       throws InvalidQueryParameterException {
-    //check that query parameters are defined in the RAML
+    // check that query parameters are defined in the RAML
     Set notDefinedQueryParameters = difference(incomingQueryParams.keySet(), queryParameters.keySet());
     if (!notDefinedQueryParameters.isEmpty()) {
       throw new InvalidQueryParameterException(format("[%s] %s", on(", ").join(notDefinedQueryParameters),
@@ -86,7 +86,7 @@ public class QueryParameterValidator {
     }
   }
 
-  //only for raml 1.0
+  // only for raml 1.0
   private static void validateQueryParamArray(String paramKey, Parameter expected, Collection<?> paramValues)
       throws InvalidQueryParameterException {
     if (!expected.validateArray(paramValues)) {

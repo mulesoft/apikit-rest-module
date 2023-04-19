@@ -186,6 +186,7 @@ public class Console extends AbstractComponent implements Processor, Initialisab
 
   /**
    * Triggers AMF model writing in another Thread, in a PipedOutputStream
+   * 
    * @param url
    * @return Resource with a PipedInputStream for reading the model as a Stream
    */
