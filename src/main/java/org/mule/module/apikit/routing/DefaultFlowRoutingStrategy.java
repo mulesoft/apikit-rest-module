@@ -23,8 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import org.reactivestreams.Publisher;
 
 /**
- * Default implementation of {@link FlowRoutingStrategy}, uses the Mule {@link ExecutableComponent} API to perform
- * flow routing.
+ * Default implementation of {@link FlowRoutingStrategy}, uses the Mule {@link ExecutableComponent} API to perform flow routing.
  */
 public class DefaultFlowRoutingStrategy implements FlowRoutingStrategy {
 

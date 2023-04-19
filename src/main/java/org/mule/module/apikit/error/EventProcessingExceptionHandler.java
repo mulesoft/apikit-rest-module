@@ -14,11 +14,10 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import org.mule.runtime.core.privileged.exception.MessagingExceptionUtils;
 
 /**
- * {@link RouterExceptionHandler} that propagates the resulting event in a {@link
- * EventProcessingException}.
+ * {@link RouterExceptionHandler} that propagates the resulting event in a {@link EventProcessingException}.
  * <p>
- * This class will try to find createMessagingException method from MessagingExceptionUtils class
- * reflectively because is present since mule runtime 4.2.2.
+ * This class will try to find createMessagingException method from MessagingExceptionUtils class reflectively because is present
+ * since mule runtime 4.2.2.
  *
  * createMessagingException method was created to propagate a whole custom event when an error occurs.
  *
