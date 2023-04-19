@@ -13,7 +13,8 @@ import java.util.Map;
 /**
  * A factory for URI tokens.
  * <p/>
- * <p>Tokens can be instantiated from an expression which is specific to each token.
+ * <p>
+ * Tokens can be instantiated from an expression which is specific to each token.
  *
  * @author Christophe Lauret
  * @version 6 November 2009
@@ -121,7 +122,8 @@ public class TokenFactory {
   /**
    * Creates a new 'wildcard' token for legacy purposes.
    * <p/>
-   * <p>This is used for conventional URI patterns which have been implemented using "*".
+   * <p>
+   * This is used for conventional URI patterns which have been implemented using "*".
    *
    * @return A new 'wildcard' token.
    */

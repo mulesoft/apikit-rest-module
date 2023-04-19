@@ -22,12 +22,10 @@ import org.mule.module.apikit.uri.URITemplateSyntaxException;
  * A URI Pattern for matching URI following the same regular structure.
  * <p/>
  * <p/>
- * Instances of this class implement the PageSeeder URL pattern as defined by the "PageSeeder URI
- * Templates" document.
+ * Instances of this class implement the PageSeeder URL pattern as defined by the "PageSeeder URI Templates" document.
  * <p/>
  * <p/>
- * A PageSeeder URI Pattern follows the URI syntax defined for URI templates but must only contain
- * matchable tokens.
+ * A PageSeeder URI Pattern follows the URI syntax defined for URI templates but must only contain matchable tokens.
  *
  * @author Christophe Lauret
  * @version 27 October 2009
@@ -85,8 +83,8 @@ public class URIPattern extends URITemplate implements Matchable {
    * Indicates whether the given URI template can be used to construct a new URI Pattern instance.
    * <p/>
    * <p/>
-   * A template is matchable only if all its components are matchable tokens, that is the token
-   * implements the {@link Matchable} interface.
+   * A template is matchable only if all its components are matchable tokens, that is the token implements the {@link Matchable}
+   * interface.
    *
    * @param template The template to test.
    * @return <code>true</code> if the template is matchable; <code>false</code> otherwise.
@@ -151,8 +149,8 @@ public class URIPattern extends URITemplate implements Matchable {
   /**
    * Compute the Regular Expression pattern for this URI Pattern.
    * <p/>
-   * Important note: the regular expression contain the same number of capturing groups as the
-   * number of token to facilitate the resolve process.
+   * Important note: the regular expression contain the same number of capturing groups as the number of token to facilitate the
+   * resolve process.
    *
    * @return The regex Pattern instance corresponding to this URI pattern.
    */

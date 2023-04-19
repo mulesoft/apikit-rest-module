@@ -42,7 +42,7 @@ public class SchemaCacheUtils {
 
     String schema = mimeType.getSchema();
 
-    //check global schemas
+    // check global schemas
     if (api.getConsolidatedSchemas().containsKey(schema)) {
       compiledSchema = api.getCompiledSchemas().get(schema);
       if (compiledSchema instanceof Schema) {
@@ -59,8 +59,7 @@ public class SchemaCacheUtils {
   }
 
   /**
-   * may return either a string representing the path to the schema
-   * or a JsonNode for inline schema definitions
+   * may return either a string representing the path to the schema or a JsonNode for inline schema definitions
    */
   @Nullable
   public static Object resolveJsonSchema(String schemaCacheKey, ApiSpecification api) {
@@ -69,7 +68,7 @@ public class SchemaCacheUtils {
     String schemaOrGlobalReference = mimeType.getSchema();
 
     try {
-      //check global schemas
+      // check global schemas
       if (api.getConsolidatedSchemas().containsKey(schemaOrGlobalReference)) {
         path = (String) api.getCompiledSchemas().get(schemaOrGlobalReference);
         if (path != null) {
