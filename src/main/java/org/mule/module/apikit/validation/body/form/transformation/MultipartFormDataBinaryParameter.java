@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 /**
  * This class is intended to validate multipart form-data
