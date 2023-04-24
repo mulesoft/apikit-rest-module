@@ -57,7 +57,7 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
   }
 
   private void validateMediaType(Set<String> acceptedMediaTypes) throws InvalidFormParameterException {
-    if (acceptedMediaTypes == null) {
+    if (acceptedMediaTypes == null || acceptedMediaTypes.isEmpty()) {
       return;
     }
 
