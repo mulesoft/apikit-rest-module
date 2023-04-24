@@ -11,6 +11,7 @@ import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,13 +40,11 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
       return;
     }
     FileProperties properties = fileProperties.get();
-    Set<String> fileTypes = properties.getFileTypes();
+    Set<String> acceptedFileTypes = properties.getFileTypes();
     Integer minValue = properties.getMinLength();
     Integer maxValue = properties.getMaxLength();
 
-    if (isNotEmpty(fileTypes) && !anyFileTypeAllowed(fileTypes) && !fileTypes.contains(mediaType.toString())) {
-      throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType));
-    }
+    validateMediaType(acceptedFileTypes);
     if (minValue == 0 && maxValue == 0) {
       return;
     }
@@ -57,7 +56,49 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     }
   }
 
-  private boolean anyFileTypeAllowed(Set<String> fileTypes) {
-    return fileTypes.size() == 1 && fileTypes.contains("*/*");
+  private void validateMediaType(Set<String> acceptedMediaTypes) throws InvalidFormParameterException {
+    if (acceptedMediaTypes == null) {
+      return;
+    }
+
+    // If we support anything
+    if (acceptedMediaTypes.contains("*/*")) {
+      return;
+    }
+
+    // If we have an exact match
+    if (acceptedMediaTypes.contains(mediaType.toString())) {
+      return;
+    }
+
+    // If any media type is compatible
+    if (acceptedMediaTypes.stream().map(MediaType::parse).anyMatch(accepted -> isCompatible(accepted, mediaType))) {
+      return;
+    }
+
+    throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType));
+  }
+
+  private boolean isCompatible(MediaType expected, MediaType given) {
+    String expectedPrimary = expected.getPrimaryType();
+    String expectedSub = expected.getSubType();
+    String givenPrimary = given.getPrimaryType();
+    String givenSub = given.getSubType();
+
+    // It would be nice to validate respect the parameters from `expected` but mule-api doesn't expose them (it only
+    // provides a getParameter(String) method).
+
+    // If we have the ANY media type then it's compatible
+    if (Objects.equals("*", expectedPrimary) && Objects.equals("*", expectedSub)) {
+      return true;
+    }
+
+    // If we have something like `image/*` then any image it's compatible (`image/png` for example)
+    if (Objects.equals(expectedPrimary, givenPrimary) && Objects.equals("*", expectedSub)) {
+      return true;
+    }
+
+    // Otherwise, we want the full primary and secondary types to be equal (`*/test only validates against `*/test`)
+    return Objects.equals(expectedPrimary, givenPrimary) && Objects.equals(expectedSub, givenSub);
   }
 }
