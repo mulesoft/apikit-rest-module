@@ -11,6 +11,10 @@ import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 import org.mule.runtime.api.metadata.MediaType;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParameterList;
+import javax.activation.MimeTypeParseException;
+import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -71,21 +75,37 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     }
 
     // If any media type is compatible
-    if (acceptedMediaTypes.stream().map(MediaType::parse).anyMatch(accepted -> isCompatible(accepted, mediaType))) {
+    if (acceptedMediaTypes.stream().anyMatch(accepted -> {
+      try {
+        MimeType acceptedMimeType = new MimeType(accepted);
+        return isCompatible(acceptedMimeType, mediaType);
+      } catch (MimeTypeParseException e) {
+        return false;
+      }
+    })) {
       return;
     }
 
     throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType));
   }
 
-  private boolean isCompatible(MediaType expected, MediaType given) {
+  private boolean isCompatible(MimeType expected, MediaType given) {
     String expectedPrimary = expected.getPrimaryType();
     String expectedSub = expected.getSubType();
     String givenPrimary = given.getPrimaryType();
     String givenSub = given.getSubType();
 
-    // It would be nice to validate respect the parameters from `expected` but mule-api doesn't expose them (it only
-    // provides a getParameter(String) method).
+    // We treat all parameters in `expected` as required to be equal. Extra parameters on `give` are be ignored.
+    MimeTypeParameterList parameters = expected.getParameters();
+    Enumeration<String> parameterNames = (Enumeration<String>) parameters.getNames();
+    while (parameterNames.hasMoreElements()) {
+      String name = parameterNames.nextElement();
+      String expectedValue = parameters.get(name);
+      String givenValue = given.getParameter(name);
+      if (!Objects.equals(expectedValue, givenValue)) {
+        return false;
+      }
+    }
 
     // If we have the ANY media type then it's compatible
     if (Objects.equals("*", expectedPrimary) && Objects.equals("*", expectedSub)) {
