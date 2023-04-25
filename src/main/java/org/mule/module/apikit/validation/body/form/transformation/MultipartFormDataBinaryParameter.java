@@ -75,21 +75,23 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     }
 
     // If any media type is compatible
-    if (acceptedMediaTypes.stream().anyMatch(accepted -> {
-      try {
-        MimeType acceptedMimeType = new MimeType(accepted);
-        return isCompatible(acceptedMimeType, mediaType);
-      } catch (MimeTypeParseException e) {
-        return false;
-      }
-    })) {
+    if (acceptedMediaTypes.stream().anyMatch(accepted -> isCompatible(accepted, mediaType))) {
       return;
     }
 
     throw new InvalidFormParameterException(format("Invalid content type: %s", mediaType));
   }
 
-  private boolean isCompatible(MimeType expected, MediaType given) {
+  private static boolean isCompatible(String expected, MediaType given) {
+    try {
+      MimeType acceptedMimeType = new MimeType(expected);
+      return isCompatible(acceptedMimeType, given);
+    } catch (MimeTypeParseException e) {
+      return false;
+    }
+  }
+
+  private static boolean isCompatible(MimeType expected, MediaType given) {
     String expectedPrimary = expected.getPrimaryType();
     String expectedSub = expected.getSubType();
     String givenPrimary = given.getPrimaryType();
