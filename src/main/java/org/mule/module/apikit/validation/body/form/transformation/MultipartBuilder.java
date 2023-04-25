@@ -42,9 +42,9 @@ public class MultipartBuilder {
   private final Map<String, String> defaultValues = new HashMap<>();
   private final Map<String, Parameter> formParameters = new HashMap<>();
 
-  private static Pattern NAME_PATTERN = compile("Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
-  private static Pattern FILE_NAME_PATTERN = compile("filename=\"([^\"]+)\"");
-  private static Pattern CONTENT_TYPE_PATTERN = compile("Content-Type:\\s*([^\\n]+)");
+  private static Pattern NAME_PATTERN = compile("(?i)Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
+  private static Pattern FILE_NAME_PATTERN = compile("(?i)filename=\"([^\"]+)\"");
+  private static Pattern CONTENT_TYPE_PATTERN = compile("(?i)Content-Type:\\s*([^\\n]+)");
   private CursorStreamProvider cursorProvider;
   private InputStream inputStream;
   private final long sizeLimit;
