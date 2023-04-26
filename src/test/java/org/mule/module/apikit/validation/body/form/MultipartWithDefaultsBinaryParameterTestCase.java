@@ -85,7 +85,19 @@ public class MultipartWithDefaultsBinaryParameterTestCase {
   }
 
   @Test
-  public void expectedParametersAreValidated() throws Exception {
+  public void parameterQuotingIsIgnored() throws Exception {
+    Parameter parameter = getParameter(0, 0, "text/plain; my-param=\"my-value\"; another-param=another-value");
+    validate(parameter, "text/plain; my-param=my-value; another-param=\"another-value\"");
+  }
+
+  @Test
+  public void parameterOrderIsNotImportant() throws Exception {
+    Parameter parameter = getParameter(0, 0, "text/plain; a=b; b=c");
+    validate(parameter, "text/plain; b=c; a=b");
+  }
+
+  @Test
+  public void parametersAreValidatedAsRequired() throws Exception {
     Parameter parameter = getParameter(0, 0, "text/plain; myParam=test");
     // Parameter missing
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "text/plain"));
@@ -96,7 +108,7 @@ public class MultipartWithDefaultsBinaryParameterTestCase {
   }
 
   @Test
-  public void expectedParametersAreValidated__CharsetSpecialCase() throws Exception {
+  public void charsetParametersAreValidatedRespectingAliases() throws Exception {
     Parameter parameter = getParameter(0, 0, "text/plain; charset=utf8");
     // Parameter missing
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "text/plain"));
@@ -104,39 +116,41 @@ public class MultipartWithDefaultsBinaryParameterTestCase {
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "text/plain; charset=ascii"));
     // Parameter is ok
     validate(parameter, "text/plain; CharSet=\"utf8\"");
-  }
-
-  @Test(expected = InvalidFormParameterException.class)
-  public void validateOnIllegalCharsets() throws Exception {
-    Parameter parameter = getParameter(0, 0, "text/plain; charset=invalid-charset!");
-    validate(parameter, "text/plain; charset=ascii");
-  }
-
-  @Test(expected = InvalidFormParameterException.class)
-  public void validateOnIllegalMime() throws Exception {
-    Parameter parameter = getParameter(0, 0, "this is not a valid mime!");
-    validate(parameter, "text/plain; charset=ascii");
+    validate(parameter, "text/plain; CharSet=\"utf-8\"");
+    validate(parameter, "text/plain; CharSet=\"UTF-8\"");
   }
 
   @Test
-  public void validateParametersOnWildcard() throws Exception {
+  public void wildcardTypesValidateParameters() throws Exception {
     Parameter parameter = getParameter(0, 0, "*/*; loves-mule=yes");
 
     validate(parameter, "text/plain; loves-mule=yes");
-    validate(parameter, "image/png; loves-mule=yes");
+    validate(parameter, "image/png; loves-mule=yes; extra-param=ignored");
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "text/plain; loves-mule=no"));
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "image/png"));
   }
 
   @Test
-  public void validateParametersOnSubtypeWildcard() throws Exception {
+  public void wildcardSubtypesValidateParameters() throws Exception {
     Parameter parameter = getParameter(0, 0, "image/*; loves-mule=yes");
 
     validate(parameter, "image/webp; loves-mule=yes");
-    validate(parameter, "image/png; loves-mule=yes");
+    validate(parameter, "image/png; loves-mule=yes; extra-param=ignored");
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "image/webp; loves-mule=no"));
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "image/png"));
     assertThrows(InvalidFormParameterException.class, () -> validate(parameter, "text/plain; loves-mule=yes"));
+  }
+
+  @Test(expected = InvalidFormParameterException.class)
+  public void illegalCharsetsFailValidation() throws Exception {
+    Parameter parameter = getParameter(0, 0, "text/plain; charset=invalid-charset!");
+    validate(parameter, "text/plain; charset=ascii");
+  }
+
+  @Test(expected = InvalidFormParameterException.class)
+  public void illegalMimeFailValidation() throws Exception {
+    Parameter parameter = getParameter(0, 0, "this is not a valid mime!");
+    validate(parameter, "text/plain; charset=ascii");
   }
 
   private Parameter getParameter(int minLength, int maxLength, String ...mediaTypes) {
