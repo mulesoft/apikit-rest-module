@@ -25,8 +25,7 @@ import java.util.Set;
 import static java.lang.String.format;
 
 /**
- * This class is intended to validate multipart form-data
- * binary parameters against the expected specification
+ * This class is intended to validate multipart form-data binary parameters against the expected specification
  *
  */
 public class MultipartFormDataBinaryParameter implements MultipartFormDataParameter {

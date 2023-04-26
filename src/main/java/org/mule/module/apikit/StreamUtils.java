@@ -28,13 +28,11 @@ public class StreamUtils {
    */
   public static final byte DASH = 0x2D;
   /**
-   * A byte sequence that follows a delimiter that will be
-   * followed by an encapsulation (<code>CRLF</code>).
+   * A byte sequence that follows a delimiter that will be followed by an encapsulation (<code>CRLF</code>).
    */
   public static final byte[] CRLF = {CR, LF};
   /**
-   * A byte sequence that that follows a delimiter of the last
-   * encapsulation in the stream (<code>--</code>).
+   * A byte sequence that that follows a delimiter of the last encapsulation in the stream (<code>--</code>).
    */
   public static final byte[] STREAM_TERMINATOR = {DASH, DASH};
   /**

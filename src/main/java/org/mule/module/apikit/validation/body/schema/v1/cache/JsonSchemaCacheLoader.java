@@ -55,8 +55,7 @@ public class JsonSchemaCacheLoader extends CacheLoader<String, JsonSchema> {
   }
 
   /*
-   * make the location json schema validator friendly appending
-   *  resource:/ if necessary
+   * make the location json schema validator friendly appending resource:/ if necessary
    */
   private String formatUri(String location) {
     String encodedLocation = getEncodedPath(location);
@@ -74,8 +73,7 @@ public class JsonSchemaCacheLoader extends CacheLoader<String, JsonSchema> {
   }
 
   /*
-   * in order to find the resource in the application classpath
-   *  the resource:/ url is translated to a file:/ url
+   * in order to find the resource in the application classpath the resource:/ url is translated to a file:/ url
    */
   private String resolveLocationIfNecessary(String path) {
     String encodedUri = getEncodedPath(path);
