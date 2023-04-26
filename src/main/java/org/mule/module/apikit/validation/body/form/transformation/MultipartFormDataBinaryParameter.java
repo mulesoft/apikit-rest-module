@@ -99,7 +99,7 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     String givenPrimary = given.getPrimaryType();
     String givenSub = given.getSubType();
 
-    // We treat all parameters in `expected` as required to be equal. Extra parameters on `give` are be ignored.
+    // We treat all parameters in `expected` as required to be equal. Extra parameters on `give` are ignored.
     MimeTypeParameterList parameters = expected.getParameters();
     Enumeration<String> parameterNames = (Enumeration<String>) parameters.getNames();
     while (parameterNames.hasMoreElements()) {
