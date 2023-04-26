@@ -51,32 +51,32 @@ public class MultipartFormValidatorTest {
 
   public static final String MULTIPART_BODY =
       "--test\r\n" +
+          "Content-Transfer-encoding: 8bit\r\n" +
+          "Content-type: text/plain; charset=ISO-8859-1\r\n" +
           "Content-Disposition: form-data; name=\"file\" filename=\"fileName\"\r\n" +
-          "Content-Transfer-Encoding: 8bit\r\n" +
-          "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
           "\r\n" +
           "hello world\r\n" +
           "--test\r\n" +
+          "content-Disposition: form-data; name=\"part1\"\r\n" +
           "Custom-Header: customValue; customAttribute=customAttrValue\r\n" +
-          "Content-Disposition: form-data; name=\"part1\"\r\n" +
           "Content-Transfer-Encoding: 8bit\r\n" +
-          "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+          "content-Type: text/plain; charset=ISO-8859-1\r\n" +
           "\r\n" +
           "hello world\r\n" +
           "--test--\r\n";
 
   public static final String MULTIPART_BODY_WITH_DEFAULT =
       "--test\r\n" +
+          "Content-Transfer-encoding: 8bit\r\n" +
+          "Content-type: text/plain; charset=ISO-8859-1\r\n" +
           "Content-Disposition: form-data; name=\"file\" filename=\"fileName\"\r\n" +
-          "Content-Transfer-Encoding: 8bit\r\n" +
-          "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
           "\r\n" +
           "hello world\r\n" +
           "--test\r\n" +
+          "content-Disposition: form-data; name=\"part1\"\r\n" +
           "Custom-Header: customValue; customAttribute=customAttrValue\r\n" +
-          "Content-Disposition: form-data; name=\"part1\"\r\n" +
           "Content-Transfer-Encoding: 8bit\r\n" +
-          "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+          "content-Type: text/plain; charset=ISO-8859-1\r\n" +
           "\r\n" +
           "hello world\r\n" +
           "--test\r\n" +
