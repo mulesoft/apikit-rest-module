@@ -14,6 +14,9 @@ import org.mule.runtime.api.metadata.MediaType;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParameterList;
 import javax.activation.MimeTypeParseException;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Optional;
@@ -103,9 +106,16 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
     while (parameterNames.hasMoreElements()) {
       String name = parameterNames.nextElement();
       String expectedValue = parameters.get(name);
-      String givenValue = given.getParameter(name);
-      if (!Objects.equals(expectedValue, givenValue)) {
-        return false;
+
+      // mule-api has a special case for when a parameter is called "charset"
+      if ("charset".equalsIgnoreCase(name)) {
+        if (!isSameCharsetOrAlias(expectedValue, given.getCharset().orElse(null))) {
+          return false;
+        }
+      } else {
+        if (!Objects.equals(expectedValue, given.getParameter(name))) {
+          return false;
+        }
       }
     }
 
@@ -121,5 +131,17 @@ public class MultipartFormDataBinaryParameter implements MultipartFormDataParame
 
     // Otherwise, we want the full primary and secondary types to be equal (`*/test only validates against `*/test`)
     return Objects.equals(expectedPrimary, givenPrimary) && Objects.equals(expectedSub, givenSub);
+  }
+
+  private static boolean isSameCharsetOrAlias(String expectedValue, Charset givenCharset) {
+    Charset expectedCharset;
+    try {
+      expectedCharset = Charset.forName(expectedValue);
+    } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+      // Whatever the given charset was it was representable on the current VM, so this error condition signals that
+      // those values should be considered different.
+      return false;
+    }
+    return Objects.equals(expectedCharset, givenCharset);
   }
 }
