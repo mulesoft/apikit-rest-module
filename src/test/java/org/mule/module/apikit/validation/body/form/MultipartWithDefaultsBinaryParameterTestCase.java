@@ -153,7 +153,7 @@ public class MultipartWithDefaultsBinaryParameterTestCase {
     validate(parameter, "text/plain; charset=ascii");
   }
 
-  private Parameter getParameter(int minLength, int maxLength, String ...mediaTypes) {
+  private Parameter getParameter(int minLength, int maxLength, String... mediaTypes) {
     Parameter parameter = mock(Parameter.class);
     FileProperties properties = new FileProperties(minLength, maxLength, ImmutableSet.copyOf(mediaTypes));
     when(parameter.getFileProperties()).thenReturn(of(properties));
@@ -162,7 +162,7 @@ public class MultipartWithDefaultsBinaryParameterTestCase {
 
   private void validate(Parameter parameter, String mediaType) throws InvalidFormParameterException {
     MultipartFormDataBinaryParameter parameterValidator =
-            new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse(mediaType));
+        new MultipartFormDataBinaryParameter("testing payload".getBytes().length, parse(mediaType));
     parameterValidator.validate(parameter);
   }
 }
