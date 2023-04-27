@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+      xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
+    <munit:config name="form-body-array-parameter-validation-test-suite">
+        <munit:parameterizations>
+            <munit:parameterization name="DEFAULT">
+                <munit:parameters>
+                    <munit:parameter propertyName="parser.type" value="AUTO"/>
+                    <munit:parameter propertyName="raml.api" value="munit/body/form/form-body-api-oas30.json"/>
+                </munit:parameters>
+            </munit:parameterization>
+        </munit:parameterizations>
+    </munit:config>
+
+    <munit:test name="form-body-array-parameter">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\shipments\agentDocument:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/shipments/agentDocument">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    partnerIdPart1: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="partnerId"',
+                    },
+                    content: '000123'
+                    },
+                    partnerIdPart2: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="partnerId";',
+                    },
+                    content: '000456'
+                    }
+
+                    }
+                    }]
+                </http:body>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <munit:test name="form-body-array-parameter-all-values-at-once">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\shipments\agentDocument:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/shipments/agentDocument">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    partnerIdPart: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="partnerId"',
+                    },
+                    content: '000123,000456'
+                    }
+                    }
+                    }]
+                </http:body>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+</mule>
