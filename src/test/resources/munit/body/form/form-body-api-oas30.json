@@ -306,7 +306,7 @@
           }
         }
       },
-      "/shipments/agentDocument": {
+      "/multipart/string": {
         "post": {
           "summary": "Test",
           "description": "Test",
@@ -338,6 +338,39 @@
             }
           }
         }
+      },
+      "/multipart/integer": {
+      "post": {
+        "summary": "Test",
+        "description": "Test",
+        "operationId": "addTestInteger",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "partnerId"
+                ],
+                "properties": {
+                  "partnerId": {
+                    "type": "array",
+                    "description": "partner code",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
       }
+    }
     }
 }

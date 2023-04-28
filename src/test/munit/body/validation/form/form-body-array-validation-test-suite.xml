@@ -23,13 +23,13 @@
         </munit:parameterizations>
     </munit:config>
 
-    <munit:test name="form-body-array-parameter">
+    <munit:test name="form-body-array-string-parameter">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="form-body-validation-main"/>
-            <munit:enable-flow-source value="post:\shipments\agentDocument:multipart\form-data:form-body-validation-config"/>
+            <munit:enable-flow-source value="post:\multipart\string:multipart\form-data:form-body-validation-config"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/shipments/agentDocument">
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multipart/string">
                 <http:body>#[
                     %dw 2.0
                     output multipart/form-data boundary="test"
@@ -59,13 +59,13 @@
         </munit:validation>
     </munit:test>
 
-    <munit:test name="form-body-array-parameter-all-values-at-once">
+    <munit:test name="form-body-array-string-parameter-all-values-at-once">
         <munit:enable-flow-sources>
             <munit:enable-flow-source value="form-body-validation-main"/>
-            <munit:enable-flow-source value="post:\shipments\agentDocument:multipart\form-data:form-body-validation-config"/>
+            <munit:enable-flow-source value="post:\multipart\string:multipart\form-data:form-body-validation-config"/>
         </munit:enable-flow-sources>
         <munit:execution>
-            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/shipments/agentDocument">
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multipart/string">
                 <http:body>#[
                     %dw 2.0
                     output multipart/form-data boundary="test"
@@ -86,6 +86,69 @@
         <munit:validation>
             <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
         </munit:validation>
+    </munit:test>
+
+    <munit:test name="form-body-array-integer-parameter">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\multipart\integer:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multipart/integer">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    partnerIdPart1: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="partnerId"',
+                    },
+                    content: '000123'
+                    },
+                    partnerIdPart2: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="partnerId";',
+                    },
+                    content: '000456'
+                    }
+
+                    }
+                    }]
+                </http:body>
+            </http:request>
+        </munit:execution>
+        <munit:validation>
+            <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+        </munit:validation>
+    </munit:test>
+
+    <!-- Comma separated values for an array of integers as a parameter are not supported -->
+    <munit:test name="form-body-array-integer-parameter-all-values-at-once" expectedErrorType="HTTP:BAD_REQUEST">
+        <munit:enable-flow-sources>
+            <munit:enable-flow-source value="form-body-validation-main"/>
+            <munit:enable-flow-source value="post:\multipart\integer:multipart\form-data:form-body-validation-config"/>
+        </munit:enable-flow-sources>
+        <munit:execution>
+            <http:request method="POST" config-ref="http-requester-simple" path="/form-data/multipart/integer">
+                <http:body>#[
+                    %dw 2.0
+                    output multipart/form-data boundary="test"
+                    ---
+                    {
+                    parts: {
+                    partnerIdPart: {
+                    headers: {
+                    'Content-Disposition': 'form-data; name="partnerId"',
+                    },
+                    content: '000123,000456'
+                    }
+                    }
+                    }]
+                </http:body>
+            </http:request>
+        </munit:execution>
     </munit:test>
 
 </mule>

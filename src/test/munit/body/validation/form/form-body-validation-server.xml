@@ -64,7 +64,11 @@
     <set-payload value="#[output application/json --- {(payload.parts pluck {'$$': $.content})}]" />
   </flow>
 
-  <flow name="post:\shipments\agentDocument:multipart\form-data:form-body-validation-config">
+  <flow name="post:\multipart\string:multipart\form-data:form-body-validation-config">
+    <set-payload value="#[payload]"/>
+  </flow>
+
+  <flow name="post:\multipart\integer:multipart\form-data:form-body-validation-config">
     <set-payload value="#[payload]"/>
   </flow>
 </mule>
