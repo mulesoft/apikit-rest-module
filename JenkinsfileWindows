@@ -1,2 +1,0 @@
-Map pipelineParams = [ "projectConfigYamlFile" : "build-windows.yaml" ]
-runtimeBuild(pipelineParams)
