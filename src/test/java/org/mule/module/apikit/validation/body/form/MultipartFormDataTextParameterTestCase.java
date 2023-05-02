@@ -7,6 +7,7 @@
 package org.mule.module.apikit.validation.body.form;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,4 +51,16 @@ public class MultipartFormDataTextParameterTestCase {
     textParameter.validate(parameter);
 
   }
+
+  @Test
+  public void validateValidArrayParameter() throws InvalidFormParameterException {
+    MultipartFormDataTextParameter formDataTextParameter = new MultipartFormDataTextParameter("[123,123]");
+
+    Parameter parameter = mock(Parameter.class);
+    when(parameter.isArray()).thenReturn(true);
+    when(parameter.validateArray(anyCollection())).thenReturn(true);
+
+    formDataTextParameter.validate(parameter);
+  }
+
 }
