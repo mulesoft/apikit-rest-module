@@ -9,6 +9,8 @@ package org.mule.module.apikit.validation.body.form.transformation;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.api.exception.InvalidFormParameterException;
 
+import java.util.Collections;
+
 /**
  * This class is intended to validate multipart form-data text parameters against the expected specification
  *
@@ -23,8 +25,13 @@ public class MultipartFormDataTextParameter implements MultipartFormDataParamete
 
   @Override
   public void validate(Parameter expected) throws InvalidFormParameterException {
-    if (!expected.validate(body)) {
+    if (expected.isArray()) {
+      if (!expected.validateArray(Collections.singletonList(body))) {
+        throw new InvalidFormParameterException(expected.message(body));
+      }
+    } else if (!expected.validate(body)) {
       throw new InvalidFormParameterException(expected.message(body));
     }
   }
+
 }
