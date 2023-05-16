@@ -39,7 +39,6 @@ public class RoutingTableTestCase {
     RoutingTable routingTable = new RoutingTable(ramlHandler.getApi());
 
     Assert.assertThat(routingTable.keySet(), hasItems(new URIPattern("/single-resource"),
-                                                      new URIPattern("/api"),
                                                       new URIPattern("/api/sub-resource"),
                                                       new URIPattern("/api/sub-resource-types")));
   }

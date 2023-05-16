@@ -29,7 +29,9 @@ public class RoutingTable {
 
       String uri = resource.getResolvedUri(version);
 
-      routingTable.put(new URIPattern(uri), resource);
+      if (!resource.getActions().isEmpty()) {
+        routingTable.put(new URIPattern(uri), resource);
+      }
 
       if (resource.getResources() != null) {
         buildRoutingTable(resource.getResources(), version);
