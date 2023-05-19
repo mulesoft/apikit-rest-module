@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.uri.URIPattern;
+import org.mule.module.apikit.api.uri.URIResolver;
+import org.mule.module.apikit.uri.URIResolveResult;
 import org.mule.runtime.core.api.MuleContext;
 
 public class RoutingTableTestCase {
@@ -42,6 +44,14 @@ public class RoutingTableTestCase {
                                                       new URIPattern("/api"),
                                                       new URIPattern("/api/sub-resource"),
                                                       new URIPattern("/api/sub-resource-types")));
+  }
+
+  @Test
+  public void emptyParametersAreMatchedButNotResolved() {
+    URIPattern pattern = new URIPattern("/api/{parameter}/list");
+    Assert.assertTrue(pattern.match("/api//list"));
+    URIResolver resolver = new URIResolver("/api//list");
+    Assert.assertEquals(URIResolveResult.Status.ERROR, resolver.resolve(pattern).getStatus());
   }
 
   @Test
