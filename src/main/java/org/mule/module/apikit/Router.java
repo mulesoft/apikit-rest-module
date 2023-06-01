@@ -28,6 +28,7 @@ import org.mule.module.apikit.routing.DefaultFlowRoutingStrategy;
 import org.mule.module.apikit.routing.FlowRoutingStrategy;
 import org.mule.module.apikit.routing.PrivilegedFlowRoutingStrategy;
 import org.mule.module.apikit.uri.URICoder;
+import org.mule.module.apikit.uri.URIResolveResult;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.runtime.api.component.AbstractComponent;
 import org.mule.runtime.api.component.location.ConfigurationComponentLocator;
@@ -157,7 +158,12 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     // Get uriPattern, uriResolver, and the resolvedVariables
     URIPattern uriPattern = findInCache(path, config.getUriPatternCache());
     URIResolver uriResolver = findInCache(path, config.getUriResolverCache());
-    ResolvedVariables resolvedVariables = uriResolver.resolve(uriPattern);
+    URIResolveResult resolvedVariables = uriResolver.resolve(uriPattern);
+
+    if (URIResolveResult.Status.ERROR.equals(resolvedVariables.getStatus())) {
+      throw new InvalidUriParameterException("Unable to resolve valid URI parameter values for the requested URL");
+    }
+
     Resource resource = config.getFlowFinder().getResource(uriPattern);
 
     TypedValue<Object> payload = mainEvent.getMessage().getPayload();

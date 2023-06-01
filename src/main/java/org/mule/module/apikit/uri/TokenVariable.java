@@ -70,6 +70,9 @@ public class TokenVariable extends TokenBase implements Token, Matchable {
    * {@inheritDoc}
    */
   public boolean resolve(String expanded, Map<Variable, Object> values) {
+    if (expanded.isEmpty()) {
+      return false;
+    }
     values.put(this._var, URICoder.decode(expanded));
     return true;
   }
