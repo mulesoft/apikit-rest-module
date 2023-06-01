@@ -145,7 +145,7 @@ public class Variable {
    * The pattern for a valid normalised variable value: any unreserved character or an escape sequence. This pattern contains
    * non-capturing parentheses to make it easier to get variable values as a group.
    */
-  protected static final Pattern VALID_VALUE = Pattern.compile("[\\w.~%:-]+");
+  protected static final Pattern VALID_VALUE = Pattern.compile("[\\w.~%:-]*");
 
   /**
    * The default value is an empty string.
