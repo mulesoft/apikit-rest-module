@@ -159,7 +159,11 @@ public class URIResolver {
     for (int i = 0; i < mx.groupCount(); i++) {
       Token mt = tokens.get(i);
       String s = mx.group(i + 1);
-      mt.resolve(s, map);
+      boolean wasSuccessful = mt.resolve(s, map);
+      if (!wasSuccessful) {
+        result.setStatus(ERROR);
+        return result;
+      }
     }
     // lookup variable values
     lookup(result, map);
