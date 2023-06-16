@@ -18,7 +18,7 @@
         <testExtensionModelLoaderId>crafted</testExtensionModelLoaderId>
 
         <mule.api.version>1.1.5</mule.api.version>
-        <mule.http.connector.version>1.5.6</mule.http.connector.version>
+        <mule.http.connector.version>1.7.3</mule.http.connector.version>
         <mule.metadata.model.version>1.1.6</mule.metadata.model.version>
 
         <mule.service.weave.version>2.1.8</mule.service.weave.version>
