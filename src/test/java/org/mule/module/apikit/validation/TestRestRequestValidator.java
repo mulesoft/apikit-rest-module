@@ -23,6 +23,7 @@ import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
 import org.mule.runtime.core.api.el.ExpressionManager;
+import org.springframework.expression.TypedValue;
 
 import javax.xml.validation.Schema;
 import java.io.InputStream;
@@ -36,12 +37,12 @@ public class TestRestRequestValidator {
   private ParserMode parser;
   private ApiReference apiReference;
   private String charset;
-  private InputStream body;
+  private Object body;
   private HttpRequestAttributes httpRequestAttributes;
   private ValidationConfig validationConfig;
 
   public TestRestRequestValidator(String relativePath, ParserMode parser, ApiReference apiReference, String charset,
-                                  InputStream body, HttpRequestAttributes httpRequestAttributes,
+                                  Object body, HttpRequestAttributes httpRequestAttributes,
                                   ValidationConfig validationConfig) {
     this.relativePath = relativePath;
     this.parser = parser;

@@ -1,0 +1,15 @@
+#%RAML 1.0
+title: digital-lending-kyc-enc-proxy
+version: v1
+protocols: [ HTTPS ]
+
+/test:
+  post:
+    description: zip file.
+    body:
+      multipart/form-data:
+        properties:
+          zipFile:
+            required: true
+            type: file
+            fileTypes: ['text/plain']

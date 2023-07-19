@@ -15,17 +15,24 @@ import org.junit.runners.Parameterized.Parameter;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.api.config.ValidationConfig;
+import org.mule.module.apikit.api.exception.InvalidFormParameterException;
+import org.mule.module.apikit.validation.body.form.transformation.Multipart;
 import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.metadata.DataType;
+import org.mule.runtime.api.metadata.MediaType;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.OptionalLong;
 
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.mule.apikit.model.api.ApiReference.create;
+import static org.mule.runtime.api.metadata.DataType.INPUT_STREAM;
 
 
 /**
@@ -65,6 +72,7 @@ public abstract class AbstractRequestValidatorTestCase {
     private String charset;
     private InputStream body;
     private ValidationConfig validationConfig;
+    private TypedValue typedValue;
 
     public TestRestRequestValidatorBuilder() {
       httpRequestAttributesBuilder =
@@ -157,7 +165,9 @@ public abstract class AbstractRequestValidatorTestCase {
           .requestPath(requestPath)
           .rawRequestPath(isNoneBlank(rawRequestPath) ? rawRequestPath : relativePath)
           .build();
-      return new TestRestRequestValidator(relativePath, parser, create(apiLocation), charset, body, httpRequestAttributes,
+
+      return new TestRestRequestValidator(relativePath, parser, create(apiLocation), charset,
+                                          typedValue != null ? typedValue : body, httpRequestAttributes,
                                           validationConfig);
     }
 
@@ -167,6 +177,20 @@ public abstract class AbstractRequestValidatorTestCase {
       assertNotNull("Relative path is mandatory for the test to run", relativePath);
       assertNotNull("Method is mandatory for the test to run", method);
     }
+
+    public TestRestRequestValidatorBuilder withBodyAsTypedValue(String body, String contentType) {
+      byte[] bytes = body.getBytes();
+      ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+      MediaType mediaType = MediaType.parse(contentType);
+      DataType dataType = DataType
+          .builder(INPUT_STREAM)
+          .mediaType(mediaType)
+          .build();
+
+      this.typedValue = new TypedValue<>(is, dataType, OptionalLong.of(bytes.length));
+      return this;
+    }
+
   }
 
 }
