@@ -32,7 +32,6 @@ public class PayloadWithoutMimeTypeValidationTestCase extends AbstractRequestVal
   public void setUp() {
     withSchemaRequestBuilder =
         testRestRequestValidatorBuilder.withApiLocation("unit/validation/oas20-payload-without-mimetype.yaml")
-            .withRequestPath("/api/withSchema")
             .withRelativePath("/withSchema")
             .withMethod("POST");
   }
@@ -97,7 +96,6 @@ public class PayloadWithoutMimeTypeValidationTestCase extends AbstractRequestVal
     }
     TestRestRequestValidatorBuilder withoutSchemaRequestBuilder =
         testRestRequestValidatorBuilder.withApiLocation("unit/validation/oas20-payload-without-mimetype.yaml")
-            .withRequestPath("/api/withoutSchema")
             .withRelativePath("/withoutSchema")
             .withMethod("POST");
 

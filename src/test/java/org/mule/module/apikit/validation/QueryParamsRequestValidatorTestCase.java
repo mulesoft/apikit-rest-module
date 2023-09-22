@@ -19,7 +19,6 @@ public class QueryParamsRequestValidatorTestCase extends AbstractRequestValidato
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-parameters/query-parameters.raml")
         .withMethod("GET")
-        .withRequestPath("/api/any-value")
         .withRelativePath("/any-value")
         .withQueryParams(queryParams)
         .build()
