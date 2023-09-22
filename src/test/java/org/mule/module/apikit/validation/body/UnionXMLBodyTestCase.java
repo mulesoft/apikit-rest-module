@@ -43,7 +43,6 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
   @Test
   public void xmlUnionTest() throws MuleRestException {
     testBuilder
-        .withRequestPath("/api/xmlUnion")
         .withRelativePath("/xmlUnion");
 
     if (parser.name().equals("RAML")) {
@@ -69,7 +68,6 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
   @Test
   public void xmlUnionInlineTest() throws MuleRestException {
     testBuilder
-        .withRequestPath("/api/xmlUnionInline")
         .withRelativePath("/xmlUnionInline");
 
     if (parser.name().equals("RAML")) {
@@ -95,7 +93,6 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
   @Test
   public void xmlUnionInlineWithSerializationPropertiesTest() throws MuleRestException {
     testBuilder
-        .withRequestPath("/api/xmlUnionInlineWithSerializationProperties")
         .withRelativePath("/xmlUnionInlineWithSerializationProperties");
 
     if (parser.name().equals("RAML")) {
@@ -119,7 +116,6 @@ public class UnionXMLBodyTestCase extends AbstractRequestValidatorTestCase {
   @Test
   public void invalidXmlUnionTest() {
     testBuilder
-        .withRequestPath("/api/xmlUnion")
         .withRelativePath("/xmlUnion");
 
     if (parser.name().equals("RAML")) {

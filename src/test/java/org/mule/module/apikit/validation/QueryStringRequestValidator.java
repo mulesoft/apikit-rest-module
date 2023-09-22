@@ -24,7 +24,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/locations")
         .withRelativePath("/locations")
         .withQueryParams(queryParams)
         .withQueryString("start=2&lat=12&long=13")
@@ -39,7 +38,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/locations")
         .withRelativePath("/locations")
         .withQueryParams(queryParams)
         .withQueryString("start=5")
@@ -54,7 +52,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/locations")
         .withRelativePath("/locations")
         .withQueryParams(queryParams)
         .withQueryString("start")
@@ -69,7 +66,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/unionQueryString")
         .withRelativePath("/unionQueryString")
         .withQueryParams(queryParams)
         .withQueryString("nullableString")
@@ -86,7 +82,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/special-chars-api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/query-string-validation")
         .withRelativePath("/query-string-validation")
         .withQueryParams(queryParams)
         .withQueryString("code=*validC*de*&codes=validCode&codes=*validC*de*")
@@ -102,7 +97,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/special-chars-api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/query-string-validation")
         .withRelativePath("/query-string-validation")
         .withQueryParams(queryParams)
         .withQueryString("code=*validC*de*&unioncode=*validC*de*")
@@ -117,7 +111,6 @@ public class QueryStringRequestValidator extends AbstractRequestValidatorTestCas
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-string/special-chars-api.raml")
         .withMethod("GET")
-        .withRequestPath("/api/query-string-validation")
         .withRelativePath("/query-string-validation")
         .withQueryParams(queryParams)
         .withQueryString("code=*invalidC*deLength*")
