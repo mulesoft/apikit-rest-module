@@ -12,18 +12,35 @@ import org.mule.module.apikit.api.exception.MuleRestException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class MethodNotAllowedAPIWithVersionTestCase extends AbstractRequestValidatorTestCase {
+public class MethodNotAllowedTestCase extends AbstractRequestValidatorTestCase {
 
   @Test
-  public void throwMethodNotAllowedException() throws MuleRestException {
+  public void throwMethodNotAllowedExceptionTest() throws MuleRestException {
     expectedException.expect(MethodNotAllowedException.class);
     expectedException.expectMessage(equalTo("HTTP Method post not allowed for : /path/{version}/job/{jobId}"));
     testRestRequestValidatorBuilder
         .withApiLocation("unit/validation/api-with-version.raml")
-        .withRequestPath("/api/path/1.0/job/123")
         .withRelativePath("/path/1.0/job/123")
         .withMethod("POST")
         .build()
         .validateRequest();
+  }
+
+
+  @Test
+  public void validRequestTest() throws Exception{
+    testRestRequestValidatorBuilder
+      .withApiLocation("unit/validation/api-resources.raml")
+      .withRelativePath("/test/something")
+      .withMethod("GET")
+      .build()
+      .validateRequest();
+
+    testRestRequestValidatorBuilder
+      .withApiLocation("unit/validation/api-resources.raml")
+      .withRelativePath("/test/something/else")
+      .withMethod("PUT")
+      .build()
+      .validateRequest();
   }
 }

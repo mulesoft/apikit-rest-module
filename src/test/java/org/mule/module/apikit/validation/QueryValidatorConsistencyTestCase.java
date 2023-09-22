@@ -240,7 +240,6 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-consistency/invalid-default.raml")
         .withMethod("GET")
-        .withRequestPath("/api/testQueryString")
         .withRelativePath("/testQueryString")
         .withQueryParams(queryParams)
         .withQueryString(queryString)
@@ -255,7 +254,6 @@ public class QueryValidatorConsistencyTestCase extends AbstractRequestValidatorT
     testRestRequestValidatorBuilder
         .withApiLocation("unit/query-consistency/invalid-default.raml")
         .withMethod("GET")
-        .withRequestPath("/api/testQueryParams")
         .withRelativePath("/testQueryParams")
         .withQueryParams(queryParams)
         .withQueryString(queryString)

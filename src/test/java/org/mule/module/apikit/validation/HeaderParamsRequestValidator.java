@@ -25,7 +25,6 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
     headers.put("Accept", acceptHeaderValue);
     testRestRequestValidatorBuilder
         .withApiLocation("unit/validation/mime-types-api.raml")
-        .withRequestPath("/api/testMimeTypes")
         .withRelativePath("/testMimeTypes")
         .withMethod("POST")
         .withHeaders(headers)

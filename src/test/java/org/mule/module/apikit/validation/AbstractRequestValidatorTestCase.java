@@ -151,11 +151,12 @@ public abstract class AbstractRequestValidatorTestCase {
 
     public TestRestRequestValidator build() {
       validateMandatory();
+      setDefaults();
       HttpRequestAttributes httpRequestAttributes = httpRequestAttributesBuilder
           .method(method)
           .relativePath(relativePath)
           .requestPath(requestPath)
-          .rawRequestPath(isNoneBlank(rawRequestPath) ? rawRequestPath : relativePath)
+          .rawRequestPath(rawRequestPath)
           .build();
       return new TestRestRequestValidator(relativePath, parser, create(apiLocation), charset, body, httpRequestAttributes,
                                           validationConfig);
@@ -163,9 +164,13 @@ public abstract class AbstractRequestValidatorTestCase {
 
     private void validateMandatory() {
       assertNotNull("API location is mandatory for the test to run", apiLocation);
-      assertNotNull("Request path is mandatory for the test to run", requestPath);
       assertNotNull("Relative path is mandatory for the test to run", relativePath);
       assertNotNull("Method is mandatory for the test to run", method);
+    }
+
+    private void setDefaults() {
+      this.requestPath = requestPath != null ? requestPath : "/api" + relativePath;
+      this.rawRequestPath = isNoneBlank(rawRequestPath) ? rawRequestPath : requestPath;
     }
   }
 
