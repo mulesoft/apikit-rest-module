@@ -28,19 +28,19 @@ public class MethodNotAllowedTestCase extends AbstractRequestValidatorTestCase {
 
 
   @Test
-  public void validRequestTest() throws Exception{
+  public void validRequestTest() throws Exception {
     testRestRequestValidatorBuilder
-      .withApiLocation("unit/validation/api-resources.raml")
-      .withRelativePath("/test/something")
-      .withMethod("GET")
-      .build()
-      .validateRequest();
+        .withApiLocation("unit/validation/api-resources.raml")
+        .withRelativePath("/test/something")
+        .withMethod("GET")
+        .build()
+        .validateRequest();
 
     testRestRequestValidatorBuilder
-      .withApiLocation("unit/validation/api-resources.raml")
-      .withRelativePath("/test/something/else")
-      .withMethod("PUT")
-      .build()
-      .validateRequest();
+        .withApiLocation("unit/validation/api-resources.raml")
+        .withRelativePath("/test/something/else")
+        .withMethod("PUT")
+        .build()
+        .validateRequest();
   }
 }
