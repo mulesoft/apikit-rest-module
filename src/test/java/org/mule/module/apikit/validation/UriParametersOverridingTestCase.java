@@ -33,7 +33,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void noUriParamsOverridden() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/noUriParamsOverridden")
         .withRelativePath("/noUriParamsOverridden")
         .withMethod("GET");
     validateAllAPIs();
@@ -42,7 +41,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void noUriParamsOverriddenButRequired() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/noUriParamsButRequired/testValue")
         .withRelativePath("/noUriParamsButRequired/testValue")
         .withMethod("GET");
     validateRAMLAPIs();
@@ -51,7 +49,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void templateUriParamsInResource() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResource/resource")
         .withRelativePath("/templateUriParamsInResource/resource")
         .withMethod("GET");
     validateAllAPIs();
@@ -60,7 +57,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void templateUriParamsInResourceInvalidValue() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResource/invalidValue")
         .withRelativePath("/templateUriParamsInResource/invalidValue")
         .withMethod("GET");
     validateAllAPIsFail();
@@ -69,7 +65,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void validateGetWhenTemplateUriParamsInMethods() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInMethods/method-get")
         .withRelativePath("/templateUriParamsInMethods/method-get")
         .withMethod("GET");
     validateOASAPIs();
@@ -78,7 +73,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void templateUriParamsInMethodsInvalidValue() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInMethods/invalidValue")
         .withRelativePath("/templateUriParamsInMethods/invalidValue")
         .withMethod("GET");
     validateOASAPIsFail();
@@ -89,7 +83,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("Content-Type", "application/json");
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInMethods/method-put")
         .withRelativePath("/templateUriParamsInMethods/method-put")
         .withMethod("PUT")
         .withHeaders(headers)
@@ -100,7 +93,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void templateUriParamsInResourceAndMethods() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResourceAndMethods/method-get")
         .withRelativePath("/templateUriParamsInResourceAndMethods/method-get")
         .withMethod("GET");
     validateOASAPIs();
@@ -109,7 +101,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void templateUriParamsInResourceAndMethodsInvalidValue() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResourceAndMethods/invalidValue")
         .withRelativePath("/templateUriParamsInResourceAndMethods/invalidValue")
         .withMethod("GET");
     validateOASAPIsFail();
@@ -118,7 +109,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void validateGetInTemplateUriParamsInResourceOverriddenInMethodPutOnly() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResourceOverriddenInOneMethod/resource")
         .withRelativePath("/templateUriParamsInResourceOverriddenInOneMethod/resource")
         .withMethod("GET");
     validateOASAPIs();
@@ -127,7 +117,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
   @Test
   public void templateUriParamsInResourceOverriddenInMethodPutOnlyInvalidValue() throws MuleRestException {
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResourceOverriddenInOneMethod/method-get")
         .withRelativePath("/templateUriParamsInResourceOverriddenInOneMethod/method-get")
         .withMethod("GET");
     validateOASAPIsFail();
@@ -138,7 +127,6 @@ public class UriParametersOverridingTestCase extends AbstractRequestValidatorTes
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("Content-Type", "application/json");
     testRestRequestValidatorBuilder
-        .withRequestPath("/api/templateUriParamsInResourceOverriddenInOneMethod/method-put")
         .withRelativePath("/templateUriParamsInResourceOverriddenInOneMethod/method-put")
         .withMethod("PUT")
         .withHeaders(headers)

@@ -99,7 +99,9 @@ public class FlowFinder {
 
   private void flattenResourceTree(Map<String, Resource> resources, String version) {
     for (Resource resource : resources.values()) {
-      flatResourceTree.put(resource.getResolvedUri(version), resource);
+      if (!resource.getActions().isEmpty()) {
+        flatResourceTree.put(resource.getResolvedUri(version), resource);
+      }
       if (resource.getResources() != null) {
         flattenResourceTree(resource.getResources(), version);
       }
