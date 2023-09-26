@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
 package org.mule.module.apikit.validation;
 
 import org.mule.extension.http.api.HttpRequestAttributes;
@@ -29,15 +35,15 @@ public class TestRestRequestValidatorBuilder {
 
   public TestRestRequestValidatorBuilder() {
     httpRequestAttributesBuilder =
-      new HttpRequestAttributesBuilder()
-        .listenerPath("/api/*")
-        .version("1")
-        .scheme("http")
-        .requestUri("/")
-        .rawRequestUri("/")
-        .localAddress("")
-        .queryString("")
-        .remoteAddress("");
+        new HttpRequestAttributesBuilder()
+            .listenerPath("/api/*")
+            .version("1")
+            .scheme("http")
+            .requestUri("/")
+            .rawRequestUri("/")
+            .localAddress("")
+            .queryString("")
+            .remoteAddress("");
   }
 
   public TestRestRequestValidatorBuilder withRelativePath(String relativePath) {
@@ -124,13 +130,13 @@ public class TestRestRequestValidatorBuilder {
     validateMandatory();
     setDefaults();
     HttpRequestAttributes httpRequestAttributes = httpRequestAttributesBuilder
-      .method(method)
-      .relativePath(relativePath)
-      .requestPath(requestPath)
-      .rawRequestPath(rawRequestPath)
-      .build();
+        .method(method)
+        .relativePath(relativePath)
+        .requestPath(requestPath)
+        .rawRequestPath(rawRequestPath)
+        .build();
     return new TestRestRequestValidator(relativePath, parser, create(apiLocation), charset, body, httpRequestAttributes,
-      validationConfig);
+                                        validationConfig);
   }
 
   private void validateMandatory() {
