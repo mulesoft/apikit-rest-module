@@ -35,7 +35,7 @@ public class MultipartFormValidator implements FormValidator<TypedValue> {
   @Override
   public TypedValue validate(TypedValue payload) throws BadRequestException {
     MultipartBuilder multipartBuilder =
-        new MultipartBuilder(payload.getDataType().getMediaType().toString(), getBoundary(payload));
+        new MultipartBuilder(payload.getDataType().getMediaType().toString(), getBoundary(payload), payload.getByteLength());
 
     Object value = payload.getValue();
     if (value instanceof CursorStreamProvider) {

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,12 +46,14 @@ public class MultipartBuilder {
   private static Pattern NAME_PATTERN = compile("(?i)Content-Disposition:\\s*form-data;[^\\n]*\\sname=([^\\n;]*?)[;\\n\\s]");
   private static Pattern FILE_NAME_PATTERN = compile("(?i)filename=\"([^\"]+)\"");
   private static Pattern CONTENT_TYPE_PATTERN = compile("(?i)Content-Type:\\s*([^\\n]+)");
+  private final OptionalLong byteLength;
   private CursorStreamProvider cursorProvider;
   private InputStream inputStream;
   private final long sizeLimit;
 
 
-  public MultipartBuilder(String contentType, String boundary) {
+  public MultipartBuilder(String contentType, String boundary, OptionalLong byteLength) {
+    this.byteLength = byteLength;
     this.boundary = boundary;
     this.contentType = contentType;
     this.sizeLimit = valueOf(getProperty(MULTIPART_SIZE_LIMIT_PROPERTY_NAME, MULTIPART_SIZE_LIMIT_DEFAULT));
@@ -91,7 +94,7 @@ public class MultipartBuilder {
       Set<String> parametersInPayload = new HashSet<>();
       MultipartEntityBuilder multipartEntityBuilder =
           defaultValues.isEmpty() && cursorProvider != null
-              ? new MultipartEntityBuilderWithoutDefaults(contentType, cursorProvider, boundary, sizeLimit)
+              ? new MultipartEntityBuilderWithoutDefaults(contentType, cursorProvider, boundary, sizeLimit, byteLength)
               : new MultipartEntityBuilderWithDefaults(boundary, sizeLimit);
 
       boolean nextPart = multipartStream.readPreamble(multipartEntityBuilder);
