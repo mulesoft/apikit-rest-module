@@ -1,0 +1,33 @@
+#%RAML 1.0 Library
+
+usage: |
+    Sample Types
+
+types:
+  
+  IndexValue:
+    displayName: Sample Index Value
+    type: object
+    xml:
+      name: index
+    properties:
+      name:
+        xml:
+          attribute: true
+        type: string
+      value:
+        xml:
+          attribute: true
+        type: string
+
+  Metadata:
+    displayName: Sample MetaData
+    xml:
+      name: indexes
+      wrapped: true
+    type: array
+    items:
+      type: IndexValue
+    
+
+  

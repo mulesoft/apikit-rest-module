@@ -1,0 +1,41 @@
+#%RAML 1.0
+title: Sample - System API
+description: System API
+baseUri: https://localhost/sample-sys-api/v1  
+
+
+uses:
+  sampleTypes: library/sample-types.raml
+
+/students:
+  /{id}:
+    post:
+      displayName: get student details
+      body:
+        multipart/form-data:
+          properties:
+            Details:
+              description: student details array.
+              type: sampleTypes.Metadata
+              required: true
+              example: [
+                          {
+                            "name": "class",
+                            "value": "8th"
+                          },
+                          {
+                            "name": "section",
+                            "value": "2A"
+                          },
+                          {
+                            "name": "DOB",
+                            "value": "08/28/1970"
+                          }
+                        ]
+      responses:
+        200:
+          body:
+            application/json:
+                example: {
+                    "status": "working"
+                }

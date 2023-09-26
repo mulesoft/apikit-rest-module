@@ -4,6 +4,7 @@ import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.parser.service.ParserMode;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.io.ByteArrayInputStream;
@@ -101,6 +102,11 @@ public class TestRestRequestValidatorBuilder {
 
   public TestRestRequestValidatorBuilder withBody(String body) {
     this.body = new ByteArrayInputStream(body.getBytes());
+    return this;
+  }
+
+  public TestRestRequestValidatorBuilder withBody(TypedValue typedValue) {
+    this.body = typedValue;
     return this;
   }
 
