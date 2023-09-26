@@ -15,7 +15,6 @@ public class MultipartArrayFormParameterTestCase extends AbstractMultipartReques
       .validateRequest();
   }
 
-
   @Test
   public void arrayAsRepeatedFormParamTest() throws MuleRestException {
     multipartTestBuilder
@@ -26,7 +25,5 @@ public class MultipartArrayFormParameterTestCase extends AbstractMultipartReques
       .build()
       .validateRequest();
   }
-
-
 
 }
