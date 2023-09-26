@@ -36,12 +36,12 @@ public class TestRestRequestValidator {
   private ParserMode parser;
   private ApiReference apiReference;
   private String charset;
-  private InputStream body;
+  private Object body;
   private HttpRequestAttributes httpRequestAttributes;
   private ValidationConfig validationConfig;
 
   public TestRestRequestValidator(String relativePath, ParserMode parser, ApiReference apiReference, String charset,
-                                  InputStream body, HttpRequestAttributes httpRequestAttributes,
+                                  Object body, HttpRequestAttributes httpRequestAttributes,
                                   ValidationConfig validationConfig) {
     this.relativePath = relativePath;
     this.parser = parser;

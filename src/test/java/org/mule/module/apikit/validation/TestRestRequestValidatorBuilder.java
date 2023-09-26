@@ -22,7 +22,7 @@ public class TestRestRequestValidatorBuilder {
   private String requestPath;
   private String rawRequestPath;
   private String charset;
-  private InputStream body;
+  private Object body;
   private ValidationConfig validationConfig;
   private ParserMode parser;
 
