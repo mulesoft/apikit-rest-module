@@ -14,8 +14,8 @@ public class MultipartArrayFormParameterTestCase extends AbstractMultipartReques
   @Test
   public void arrayAsJsonTest() throws MuleRestException {
     multipartTestBuilder
-        .withApiLocation("munit/body/form/multipart-form-array/sample-system-api.raml")
-        .withRelativePath("/students/101")
+        .withApiLocation("munit/body/form/multipart-object-array.raml")
+        .withRelativePath("/test")
         .withTextPart("Details",
                       "[{ \"name\": \"class\", \"value\": \"8th\" }, { \"name\": \"section\", \"value\": \"3A\" }, { \"name\": \"DOB\", \"value\": \"08/28/1970\"} ]")
         .build()
@@ -25,8 +25,8 @@ public class MultipartArrayFormParameterTestCase extends AbstractMultipartReques
   @Test
   public void arrayAsRepeatedFormParamTest() throws MuleRestException {
     multipartTestBuilder
-        .withApiLocation("munit/body/form/multipart-form-array/sample-system-api.raml")
-        .withRelativePath("/students/101")
+        .withApiLocation("munit/body/form/multipart-object-array.raml")
+        .withRelativePath("/test")
         .withTextPart("Details", "{ \"name\": \"class\", \"value\": \"8th\" }")
         .withTextPart("Details", "{ \"name\": \"section\", \"value\": \"3A\" }")
         .build()
