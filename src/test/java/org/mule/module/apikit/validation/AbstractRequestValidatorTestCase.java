@@ -17,9 +17,6 @@ import org.mule.parser.service.ParserMode;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mule.apikit.model.api.ApiReference.create;
-
 
 /**
  * Template class for request validation against api specification
