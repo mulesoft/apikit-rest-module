@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.validation.AbstractRequestValidatorTestCase;
-import org.mule.module.apikit.validation.TestRestRequestValidatorBuilder;
 import org.mule.runtime.api.util.MultiMap;
 
 import java.io.ByteArrayInputStream;
