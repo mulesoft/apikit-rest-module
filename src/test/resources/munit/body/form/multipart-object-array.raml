@@ -1,0 +1,36 @@
+#%RAML 1.0
+title: Multipart form object array
+
+types:
+  someObject:
+    type: object
+    properties:
+      name: string
+      value: string
+  someObjectArray:
+    type: array
+    items:
+      type: someObject
+
+/test:
+    post:
+      body:
+        multipart/form-data:
+          properties:
+            Details:
+              type: someObjectArray
+              required: true
+              example: [
+                          {
+                            "name": "class",
+                            "value": "8th"
+                          },
+                          {
+                            "name": "section",
+                            "value": "2A"
+                          },
+                          {
+                            "name": "DOB",
+                            "value": "08/28/1970"
+                          }
+                        ]
