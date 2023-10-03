@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalLong;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -103,8 +104,8 @@ public class MultipartFormValidatorTest {
 
   @Test
   public void validateCursor() throws Exception {
-    validateTypedValue(getTypedValue(getCursorStreamProvider(FULL_MULTIPART)), emptyMap(), FULL_MULTIPART);
-    validateTypedValue(getTypedValue(getCursorStreamProvider(MULTIPART_BODY)), emptyMap(), MULTIPART_BODY);
+    validateTypedValue(getTypedValue(FULL_MULTIPART), emptyMap(), FULL_MULTIPART);
+    validateTypedValue(getTypedValue(MULTIPART_BODY), emptyMap(), MULTIPART_BODY);
   }
 
   @Test
@@ -174,9 +175,22 @@ public class MultipartFormValidatorTest {
   }
 
   private TypedValue getTypedValue(Object value) {
-    DataType dataType = DataType.builder(DataType.INPUT_STREAM)
-        .mediaType(MediaType.parse("multipart/form-data; boundary=\"" + BOUNDARY + "\"")).build();
+    DataType dataType = getDataType();
     return new TypedValue(value, dataType);
+  }
+
+  private TypedValue getTypedValue(String value) {
+    DataType dataType = getDataType();
+    return new TypedValue(getCursorStreamProvider(value), dataType, getOptionalLong(value));
+  }
+
+  private static DataType getDataType() {
+    return DataType.builder(DataType.INPUT_STREAM)
+        .mediaType(MediaType.parse("multipart/form-data; boundary=\"" + BOUNDARY + "\"")).build();
+  }
+
+  private static OptionalLong getOptionalLong(String value) {
+    return OptionalLong.of(Integer.valueOf(value.length()).longValue());
   }
 
   private CursorStreamProvider getCursorStreamProvider(String multipartContent) {
