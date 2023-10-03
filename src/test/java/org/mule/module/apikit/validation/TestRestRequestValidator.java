@@ -13,7 +13,6 @@ import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.config.ValidationConfig;
 import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategies;
-import org.mule.module.apikit.api.exception.BadRequestException;
 import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
@@ -25,9 +24,7 @@ import org.mule.parser.service.ParserService;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
 import javax.xml.validation.Schema;
-import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestRestRequestValidator {
@@ -36,12 +33,12 @@ public class TestRestRequestValidator {
   private ParserMode parser;
   private ApiReference apiReference;
   private String charset;
-  private InputStream body;
+  private Object body;
   private HttpRequestAttributes httpRequestAttributes;
   private ValidationConfig validationConfig;
 
   public TestRestRequestValidator(String relativePath, ParserMode parser, ApiReference apiReference, String charset,
-                                  InputStream body, HttpRequestAttributes httpRequestAttributes,
+                                  Object body, HttpRequestAttributes httpRequestAttributes,
                                   ValidationConfig validationConfig) {
     this.relativePath = relativePath;
     this.parser = parser;

@@ -25,11 +25,10 @@ public class MultipartFormDataTextParameter implements MultipartFormDataParamete
 
   @Override
   public void validate(Parameter expected) throws InvalidFormParameterException {
-    if (expected.isArray()) {
-      if (!expected.validateArray(Collections.singletonList(body))) {
-        throw new InvalidFormParameterException(expected.message(body));
-      }
-    } else if (!expected.validate(body)) {
+    boolean isArray = expected.isArray();
+    boolean isInvalidArray = isArray && !expected.validateArray(Collections.singletonList(body)) && !expected.validate(body);
+    boolean isInvalidNonArray = !isArray && !expected.validate(body);
+    if (isInvalidArray || isInvalidNonArray) {
       throw new InvalidFormParameterException(expected.message(body));
     }
   }
