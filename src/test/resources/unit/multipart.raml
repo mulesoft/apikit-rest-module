@@ -1,0 +1,14 @@
+#%RAML 1.0
+title: multipart-with-binary-part-test
+version: v1
+protocols: [ HTTPS ]
+
+/test:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          zipFile:
+            required: true
+            type: file
+            fileTypes: ['text/plain']

@@ -14,10 +14,15 @@ import org.mule.parser.service.ParserMode;
 import org.mule.runtime.api.metadata.DataType;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.metadata.TypedValue;
+import org.mule.runtime.api.streaming.CursorProvider;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.core.api.streaming.bytes.ByteBufferManager;
+import org.mule.runtime.core.api.streaming.bytes.InMemoryCursorStreamConfig;
+import org.mule.runtime.core.api.streaming.bytes.InMemoryCursorStreamProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.OptionalLong;
 
@@ -66,11 +71,16 @@ public class MultipartTestBuilder {
 
   private static TypedValue getTypedValue(HttpEntity multipart, String contentType) {
     MediaType mediaType = MediaType.parse(contentType);
+
+    CursorProvider cursorProvider = new InMemoryCursorStreamProvider(getContent(multipart),
+                                                                     InMemoryCursorStreamConfig.getDefault(),
+                                                                     new DummyByteBufferManager());
+
     DataType dataType = DataType
-        .builder(DataType.INPUT_STREAM)
+        .builder(DataType.CURSOR_STREAM_PROVIDER)
         .mediaType(mediaType)
         .build();
-    TypedValue typedValue = new TypedValue<>(getContent(multipart), dataType, OptionalLong.of(multipart.getContentLength()));
+    TypedValue typedValue = new TypedValue<>(cursorProvider, dataType, OptionalLong.of(multipart.getContentLength()));
     return typedValue;
   }
 
@@ -82,4 +92,16 @@ public class MultipartTestBuilder {
     }
   }
 
+  private static class DummyByteBufferManager implements ByteBufferManager {
+
+    @Override
+    public ByteBuffer allocate(int capacity) {
+      return ByteBuffer.allocate(capacity);
+    }
+
+    @Override
+    public void deallocate(ByteBuffer byteBuffer) {
+
+    }
+  }
 }

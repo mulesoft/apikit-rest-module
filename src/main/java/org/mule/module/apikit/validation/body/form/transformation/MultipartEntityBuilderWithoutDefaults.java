@@ -13,6 +13,7 @@ import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.streaming.CursorProvider;
 
 import java.io.IOException;
+import java.util.OptionalLong;
 
 import static org.mule.module.apikit.StreamUtils.CRLF;
 
@@ -20,11 +21,15 @@ public class MultipartEntityBuilderWithoutDefaults extends MultipartEntityBuilde
 
   private final String contentType;
   private final CursorProvider content;
+  private final OptionalLong byteLength;
 
-  public MultipartEntityBuilderWithoutDefaults(String contentType, CursorProvider content, String boundary, long sizeLimit) {
+
+  public MultipartEntityBuilderWithoutDefaults(String contentType, CursorProvider content, String boundary, long sizeLimit,
+                                               OptionalLong byteLength) {
     super(boundary, sizeLimit);
     this.contentType = contentType;
     this.content = content;
+    this.byteLength = byteLength;
   }
 
   @Override
@@ -50,7 +55,7 @@ public class MultipartEntityBuilderWithoutDefaults extends MultipartEntityBuilde
 
   @Override
   public Multipart getOutput() {
-    return new MultipartWithoutDefaults(contentType, content, contentLength);
+    return new MultipartWithoutDefaults(contentType, content, byteLength);
   }
 
   @Override
