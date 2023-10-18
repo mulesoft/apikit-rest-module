@@ -17,9 +17,9 @@ public class MultipartWithoutDefaults implements Multipart {
 
   private final String contentType;
   private final CursorProvider content;
-  private final long contentLength;
+  private final OptionalLong contentLength;
 
-  public MultipartWithoutDefaults(String contentType, CursorProvider content, long contentLength) {
+  public MultipartWithoutDefaults(String contentType, CursorProvider content, OptionalLong contentLength) {
     this.contentType = contentType;
     this.content = content;
     this.contentLength = contentLength;
@@ -37,6 +37,6 @@ public class MultipartWithoutDefaults implements Multipart {
 
   @Override
   public OptionalLong getLength() {
-    return OptionalLong.of(contentLength);
+    return contentLength;
   }
 }

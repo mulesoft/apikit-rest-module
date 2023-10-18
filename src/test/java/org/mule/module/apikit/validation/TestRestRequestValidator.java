@@ -21,9 +21,11 @@ import org.mule.module.apikit.api.validation.ApiKitJsonSchema;
 import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.parser.service.ParserMode;
 import org.mule.parser.service.ParserService;
+import org.mule.runtime.api.metadata.TypedValue;
 import org.mule.runtime.core.api.el.ExpressionManager;
 
 import javax.xml.validation.Schema;
+import java.util.OptionalLong;
 
 import static org.junit.Assert.assertTrue;
 
@@ -104,5 +106,9 @@ public class TestRestRequestValidator {
       String actual = exception.getMessage();
       assertTrue(actual.contains(containsMessage));
     }
+  }
+
+  public OptionalLong getRequestBodyLength() {
+    return body instanceof TypedValue ? ((TypedValue) body).getByteLength() : OptionalLong.empty();
   }
 }
