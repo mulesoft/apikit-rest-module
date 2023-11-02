@@ -78,7 +78,7 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="error-mule-message-is-preserved-in-main-flow">
+  <munit:test name="error-mule-message-is-preserved-in-main-flow" >
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="api-errors-main" />
       <munit:enable-flow-source value="get:\errorWithMuleMessageIsBeingPropagated:api-errors-config"/>
