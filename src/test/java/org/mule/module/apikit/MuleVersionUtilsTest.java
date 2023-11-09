@@ -7,98 +7,81 @@
 package org.mule.module.apikit;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mule.module.apikit.utils.MuleVersionUtils;
 import org.mule.runtime.core.api.config.MuleManifest;
 
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mule.module.apikit.MockingUtils.setAccessible;
 
 public class MuleVersionUtilsTest {
 
   @Test
-  public void newerVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.3.0");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void newerVersionIsAtLeastTest() {
+    isAtLeast("4.3.0", "4.2.0");
+    assertTrue(isAtLeast("4.3.0", "4.2.0"));
   }
 
   @Test
-  public void newerSnapshotVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.3.0-SNAPSHOT");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void newerSnapshotVersionIsAtLeastTest() {
+    assertTrue(isAtLeast("4.3.0-SNAPSHOT", "4.2.0"));
   }
 
   @Test
-  public void olderVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.1.0");
-    assertFalse(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void olderVersionIsAtLeastTest() {
+    assertFalse(isAtLeast("4.1.0", "4.2.0"));
   }
 
   @Test
-  public void olderSnapshotVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.1.0-SNAPSHOT");
-    assertFalse(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void olderSnapshotVersionIsAtLeastTest() {
+    assertFalse(isAtLeast("4.1.0-SNAPSHOT", "4.2.0"));
   }
 
   @Test
-  public void sameVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void sameVersionIsAtLeastTest() {
+    assertTrue(isAtLeast("4.2.0", "4.2.0"));
   }
 
   @Test
-  public void snapshotVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0-SNAPSHOT");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void snapshotVersionIsAtLeastTest() {
+    assertTrue(isAtLeast("4.2.0-SNAPSHOT", "4.2.0"));
   }
 
   @Test
-  public void hotFixVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0-hf1");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void hotFixVersionIsAtLeastTest() {
+    assertTrue(isAtLeast("4.2.0-hf1", "4.2.0"));
   }
 
   @Test
-  public void hotFixWithDateSuffixVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0-20200525");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void hotFixWithDateSuffixVersionIsAtLeastTest() {
+    assertTrue(isAtLeast("4.2.0-20200525", "4.2.0"));
   }
 
   @Test
-  public void releaseCandidateVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0-rc1");
-    assertTrue(MuleVersionUtils.isAtLeast("4.2.0"));
+  public void releaseCandidateVersionIsAtLeastTest() {
+    assertTrue(isAtLeast("4.2.0-rc1", "4.2.0"));
   }
 
   @Test
-  public void invalidVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0");
-    assertFalse(MuleVersionUtils.isAtLeast("a.b.3"));
+  public void invalidVersionIsAtLeastTest() {
+    assertFalse(isAtLeast("4.2.0", "a.b.3"));
   }
 
   @Test
-  public void blankVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0");
-    assertFalse(MuleVersionUtils.isAtLeast(" "));
+  public void blankVersionIsAtLeastTest() {
+    assertFalse(isAtLeast("4.2.0", " "));
   }
 
   @Test
-  public void nullVersionIsAtLeastTest() throws Exception {
-    setManifestImplementationVersion("4.2.0");
-    assertFalse(MuleVersionUtils.isAtLeast(null));
+  public void nullVersionIsAtLeastTest() {
+    assertFalse(isAtLeast("4.2.0", null));
   }
 
-  private void setManifestImplementationVersion(String version) throws Exception {
-    Manifest manifestMock = mock(Manifest.class);
-    when(manifestMock.getMainAttributes()).thenReturn(mock(Attributes.class));
-    when(manifestMock.getMainAttributes().getValue(new Attributes.Name("Implementation-Version"))).thenReturn(version);
-    setAccessible(MuleManifest.class.getDeclaredField("manifest"), manifestMock);
+  private Boolean isAtLeast(String productVersion, String version) {
+    try (MockedStatic<MuleManifest> mockedManifest = Mockito.mockStatic(MuleManifest.class)) {
+      mockedManifest.when(MuleManifest::getProductVersion).thenReturn(productVersion);
+      return MuleVersionUtils.isAtLeast(version);
+    }
   }
-
-
 }

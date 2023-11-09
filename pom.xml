@@ -43,16 +43,18 @@
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
-        <munit.extensions.maven.plugin.version>1.1.2</munit.extensions.maven.plugin.version>
-        <munit.version>2.3.0</munit.version>
-        <munit.tools.version>2.3.0</munit.tools.version>
+        <munit.extensions.maven.plugin.version>1.2.0-SNAPSHOT</munit.extensions.maven.plugin.version>
+        <munit.version>3.1.0-SNAPSHOT</munit.version>
+        <munit.tools.version>3.1.0-SNAPSHOT</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.8.0</mockServerVersion>
-        <jacoco.version>0.8.6</jacoco.version>
+        <jacoco.version>0.8.10</jacoco.version>
         <allureJunitVersion>2.13.5</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
         <junit.version>4.13.2</junit.version>
+        <mockito-junit-jupiter.version>4.11.0</mockito-junit-jupiter.version>
+        <mockito-core.version>4.11.0</mockito-core.version>
     </properties>
 
     <dependencies>
@@ -273,6 +275,12 @@
         </dependency>
         <!-- END OF: exclusions due to RP-592, they are limited because of java 7 -->
 
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
         <!-- TEST -->
         <dependency>
             <groupId>asm</groupId>
@@ -367,6 +375,25 @@
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
             <version>1.4.01</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito-junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
