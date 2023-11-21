@@ -6,6 +6,10 @@
  */
 package org.mule.module.apikit;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.mule.extension.http.api.HttpRequestAttributes;
 import org.mule.metadata.api.ClassTypeLoader;
 import org.mule.metadata.api.builder.BaseTypeBuilder;
@@ -79,6 +83,8 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .setNamespace(UNESCAPED_LOCATION_PREFIX + SCHEMA_LOCATION)
         .build();
     ClassTypeLoader typeLoader = ExtensionsTypeLoaderFactory.getDefault().createTypeLoader();
+
+    trySetJavaVersions(extensionDeclarer);
 
     extensionDeclarer.named(EXTENSION_NAME)
         .describedAs(EXTENSION_DESCRIPTION)
@@ -157,5 +163,14 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
 
   private static MetadataType buildConfigRefType() {
     return BaseTypeBuilder.create(JAVA).objectType().id(ConfigurationProvider.class.getName()).build();
+  }
+
+  private void trySetJavaVersions(ExtensionDeclarer extensionDeclarer) {
+    try {
+      Method supportingJavaVersions = extensionDeclarer.getClass().getMethod("supportingJavaVersions", Set.class);
+      supportingJavaVersions.invoke(extensionDeclarer, new LinkedHashSet<>(Arrays.asList("1.8", "11", "17")));
+    } catch (Exception e) {
+
+    }
   }
 }
