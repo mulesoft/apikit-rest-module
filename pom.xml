@@ -513,6 +513,7 @@
                         <version>${jacoco.version}</version>
                         <classifier>runtime</classifier>
                     </dependency>
+<!--                    pending compatible version with java17    -->
 <!--                    <dependency>-->
 <!--                        <groupId>org.mule.modules</groupId>-->
 <!--                        <artifactId>mule-compression-module</artifactId>-->
