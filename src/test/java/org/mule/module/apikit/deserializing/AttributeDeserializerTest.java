@@ -18,7 +18,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mule.module.apikit.MockingUtils.createEnumValue;
 import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.module.apikit.deserializing.DeserializerTestBuilder.when;
 
@@ -50,11 +49,11 @@ public class AttributeDeserializerTest {
   @Parameterized.Parameters(name = "Delimiter = {0} - {1}")
   public static Iterable<Object[]> data() throws Exception {
     ArrayHeaderDelimiter comma = COMMA;
-    ArrayHeaderDelimiter semicolon = createEnumValue(ArrayHeaderDelimiter.class, "SEMICOLON", 2, ";");
     return asList(new Object[][] {
         {comma, new ArrayHeaderAttributeDeserializer(comma)},
-        {comma, new DummyAttributeDeserializer()},
-        {semicolon, new ArrayHeaderAttributeDeserializer(semicolon)}
+        {comma, new DummyAttributeDeserializer()}
+        // {semicolon, new ArrayHeaderAttributeDeserializer(semicolon)} uncomment when semicolon value included in
+        // ArrayHeaderDelimiter
     });
   }
 

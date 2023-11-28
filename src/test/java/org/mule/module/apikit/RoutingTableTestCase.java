@@ -7,7 +7,6 @@
 package org.mule.module.apikit;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mule.module.apikit.api.RamlHandler;
 import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.uri.URIPattern;
@@ -29,7 +29,7 @@ public class RoutingTableTestCase {
 
   @BeforeClass
   public static void beforeAll() throws IOException {
-    muleContext = mock(MuleContext.class);
+    muleContext = Mockito.mock(MuleContext.class);
     when(muleContext.getExecutionClassLoader()).thenReturn(Thread.currentThread().getContextClassLoader());
     ramlHandler = new RamlHandler("unit/routing-table-sample.raml", true, muleContext.getErrorTypeRepository());
   }

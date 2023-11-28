@@ -7,7 +7,7 @@
 package org.mule.module.apikit.validation.body.form;
 
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -139,7 +139,7 @@ public class MultipartFormValidatorTest {
   @Test
   public void validateMissingRequiredParameters() throws Exception {
     expectedException.expect(InvalidFormParameterException.class);
-    expectedException.expectMessage(Matchers.equalTo("Required form parameter part2 not specified"));
+    expectedException.expectMessage(CoreMatchers.equalTo("Required form parameter part2 not specified"));
     Map<String, List<Parameter>> formParameters = mockFormParameters(true, null);
     validateTypedValue(getTypedValue(new RewindableInputStream(new ByteArrayInputStream(FULL_MULTIPART.getBytes()))),
                        formParameters, FULL_MULTIPART);
@@ -159,7 +159,7 @@ public class MultipartFormValidatorTest {
   @Test
   public void sizeLimitExceededTest() throws Exception {
     expectedException.expect(InvalidFormParameterException.class);
-    expectedException.expectMessage(Matchers.equalTo("Multipart content exceeded the maximum size supported"));
+    expectedException.expectMessage(CoreMatchers.equalTo("Multipart content exceeded the maximum size supported"));
     System.setProperty(MULTIPART_SIZE_LIMIT_PROP_NAME, "250");
     validateTypedValue(getTypedValue(getCursorStreamProvider(FULL_MULTIPART)), emptyMap(), FULL_MULTIPART);
   }
