@@ -19,7 +19,6 @@ public class MuleVersionUtilsTest {
 
   @Test
   public void newerVersionIsAtLeastTest() {
-    isAtLeast("4.3.0", "4.2.0");
     assertTrue(isAtLeast("4.3.0", "4.2.0"));
   }
 
