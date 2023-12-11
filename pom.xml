@@ -57,6 +57,20 @@
         <mockito-core.version>4.11.0</mockito-core.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Bump because the version provided by mule-api is too old. -->
+            <!-- This is a cosmetic bump in order to alleviate false positives by static analysis tools.-->
+            <!-- It does not affect the version used during execution (that will be decided -->
+            <!-- by the mule runtime). -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.10.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.projectreactor</groupId>
