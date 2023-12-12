@@ -3,7 +3,7 @@
 
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-apikit-module</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.10.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <packaging>mule-plugin</packaging>
 
@@ -35,7 +35,7 @@
         <commons.io.version>2.8.0</commons.io.version>
 
         <!-- PARSERS -->
-        <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
+        <parser.service.version>2.7.0</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.48</apiconsole.version>
@@ -43,9 +43,9 @@
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
-        <munit.extensions.maven.plugin.version>1.2.0-SNAPSHOT</munit.extensions.maven.plugin.version>
-        <munit.version>3.1.0-SNAPSHOT</munit.version>
-        <munit.tools.version>3.1.0-SNAPSHOT</munit.tools.version>
+        <munit.extensions.maven.plugin.version>1.2.0-rc2</munit.extensions.maven.plugin.version>
+        <munit.version>3.1.0-rc3</munit.version>
+        <munit.tools.version>3.1.0-rc3</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.8.0</mockServerVersion>
         <jacoco.version>0.8.10</jacoco.version>
