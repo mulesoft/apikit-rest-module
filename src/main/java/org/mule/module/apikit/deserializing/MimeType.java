@@ -155,12 +155,12 @@ public class MimeType {
       MimeType mime = new MimeType();
 
       skipWhitespace();
-      mime.type = parseToken();
+      mime.type = nextToken();
       skipWhitespace();
       boolean hasSubtype = tryConsumeChar('/');
       if (hasSubtype) {
         skipWhitespace();
-        mime.subtype = parseToken();
+        mime.subtype = nextToken();
       } else {
         // Java URLConnection sends an `Accept` header that's just an '*'.
         // We have decided to interpret any malformed mimes without
@@ -178,14 +178,14 @@ public class MimeType {
 
     private Parameter nextParameter() throws MimeTypeParseException {
       skipWhitespace();
-      String attribute = parseToken();
+      String attribute = nextToken();
       skipWhitespace();
       consumeChar('=');
       skipWhitespace();
       assertNotAtEnd();
-      String value = input.charAt(i) == '"'
-          ? parseQuotedString()
-          : parseToken();
+      String value = peek() == '"'
+          ? nextQuotedString()
+          : nextToken();
       skipWhitespace();
       return new Parameter(attribute, value);
     }
@@ -198,8 +198,66 @@ public class MimeType {
       return parameter;
     }
 
+    private boolean tryConsumeChar(char expected) {
+      if (atEnd() || peek() != expected) {
+        return false;
+      }
+      advance();
+      return true;
+    }
+
+    private void consumeChar(char expected) throws MimeTypeParseException {
+      assertNotAtEnd();
+      char got = peek();
+      if (got != expected) {
+        throw new MimeTypeParseException("Expected " + expected + " at column " + (i + 1) + " but got `" + got + "`");
+      }
+      advance();
+    }
+
+    private void skipWhitespace() {
+      while (!atEnd() && Character.isSpaceChar(peek())) {
+        advance();
+      }
+    }
+
+    private String nextToken() throws MimeTypeParseException {
+      assertNotAtEnd();
+      int start = i;
+      while (!atEnd() && isTokenChar(peek())) {
+        advance();
+      }
+      if (start == i) {
+        throw new MimeTypeParseException("Expected token at column " + (i + 1) + " but got `" + peek() + "`");
+      }
+      return input.subSequence(start, i).toString();
+    }
+
+    private String nextQuotedString() throws MimeTypeParseException {
+      consumeChar('"');
+      StringBuilder s = new StringBuilder();
+      while (!atEnd() && isValidStringChar(input, i)) {
+        if (peek() == '\\') {
+          advance();
+        }
+        assertNotAtEnd();
+        s.append(peek());
+        advance();
+      }
+      consumeChar('"');
+      return s.toString();
+    }
+
+    private char peek() {
+      return input.charAt(i);
+    }
+
+    private void advance() {
+      i++;
+    }
+
     private boolean atEnd() {
-      return input.length() == i;
+      return input.length() <= i;
     }
 
     private void assertAtEnd() throws MimeTypeParseException {
@@ -214,63 +272,6 @@ public class MimeType {
       }
     }
 
-    private boolean tryConsumeChar(char expected) {
-      if (input.length() <= i) {
-        return false;
-      }
-      char got = input.charAt(i);
-      if (got != expected) {
-        return false;
-      }
-      i++;
-      return true;
-    }
-
-    private void consumeChar(char expected) throws MimeTypeParseException {
-      if (input.length() <= i) {
-        throw new MimeTypeParseException("Expected " + expected + " at column " + (i + 1) + " but got to the end of the input");
-      }
-      char got = input.charAt(i);
-      if (got != expected) {
-        throw new MimeTypeParseException("Expected " + expected + " at column " + (i + 1) + " but got `" + got + "`");
-      }
-      i++;
-    }
-
-    private void skipWhitespace() {
-      while (i < input.length() && Character.isSpaceChar(input.charAt(i))) {
-        i++;
-      }
-    }
-
-    private String parseToken() throws MimeTypeParseException {
-      if (input.length() <= i) {
-        throw new MimeTypeParseException("Expected token at column " + (i + 1) + " but got to the end of the input");
-      }
-      int start = i;
-      while (i < input.length() && isTokenChar(input.charAt(i))) {
-        i++;
-      }
-      if (start == i) {
-        throw new MimeTypeParseException("Expected token at column " + (i + 1) + " but got `" + input.charAt(i) + "`");
-      }
-      return input.subSequence(start, i).toString();
-    }
-
-    private String parseQuotedString() throws MimeTypeParseException {
-      consumeChar('"');
-      StringBuilder s = new StringBuilder();
-      while (i < input.length() && isValidStringChar(input, i)) {
-        if (input.charAt(i) == '\\') {
-          i++;
-        }
-        assertNotAtEnd();
-        s.append(input.charAt(i));
-        i++;
-      }
-      consumeChar('"');
-      return s.toString();
-    }
 
     private static boolean isTokenChar(char c) {
       return c != ' ' && !isCtl(c) && !isTspecial(c);
