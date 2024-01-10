@@ -27,7 +27,7 @@ public class MimeType {
 
   public static List<MimeType> listFrom(String mimeTypeList, char listDelimiter) throws MimeTypeParseException {
     Parser parser = new Parser(mimeTypeList);
-    List<MimeType> mimes = parser.nextMimeTypeList();
+    List<MimeType> mimes = parser.nextMimeTypeList(listDelimiter);
     parser.assertAtEnd();
     return mimes;
   }
@@ -139,11 +139,11 @@ public class MimeType {
       this.input = input;
     }
 
-    private List<MimeType> nextMimeTypeList() throws MimeTypeParseException {
+    private List<MimeType> nextMimeTypeList(char listDelimiter) throws MimeTypeParseException {
       List<MimeType> mimes = new ArrayList<>();
       do {
         mimes.add(nextMimeType());
-      } while (tryConsumeChar(','));
+      } while (tryConsumeChar(listDelimiter));
       return mimes;
     }
 
