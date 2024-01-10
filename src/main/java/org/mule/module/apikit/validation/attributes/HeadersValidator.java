@@ -43,6 +43,7 @@ import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
 public class HeadersValidator {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(HeadersValidator.class);
 
   private static final String PLACEHOLDER_TOKEN = "{?}";
@@ -220,15 +221,15 @@ public class HeadersValidator {
     }
 
     return supportedRepresentations.stream()
-            .flatMap(representation -> {
-              try {
-                return Stream.of(MimeType.from(representation));
-              } catch (MimeType.MimeTypeParseException e) {
-                LOGGER.warn("Failed to parse application-provided MimeType: {}", representation, e);
-                return Stream.empty();
-              }
-            })
-            .anyMatch(supported -> parseResults.stream().anyMatch(expected -> isCompatible(expected, supported)));
+        .flatMap(representation -> {
+          try {
+            return Stream.of(MimeType.from(representation));
+          } catch (MimeType.MimeTypeParseException e) {
+            LOGGER.warn("Failed to parse application-provided MimeType: {}", representation, e);
+            return Stream.empty();
+          }
+        })
+        .anyMatch(supported -> parseResults.stream().anyMatch(expected -> isCompatible(expected, supported)));
   }
 
   private static boolean isCompatible(MimeType expected, MimeType supported) {
