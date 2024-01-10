@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.MapUtils.isEmpty;
 import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
-import static org.mule.module.apikit.deserializing.MimeTypeParser.bestMatchForAcceptHeader;
+import static org.mule.module.apikit.deserializing.MimeMatcher.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
@@ -192,10 +192,8 @@ public class HeadersValidator {
     if (isEmpty(mimeTypes)) {
       return;
     }
-    MediaType bestMatch = bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders));
-    if (bestMatch == null) {
-      throw new NotAcceptableException();
-    }
+    bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders))
+            .orElseThrow(NotAcceptableException::new);
   }
 
   private static List<String> getResponseMimeTypes(Map<String, Response> responses, String successStatusCode) {

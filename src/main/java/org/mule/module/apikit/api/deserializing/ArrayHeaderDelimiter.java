@@ -11,15 +11,19 @@ package org.mule.module.apikit.api.deserializing;
  */
 public enum ArrayHeaderDelimiter {
 
-  COMMA(",");
+  COMMA(',');
 
-  private final String delimiter;
+  private final char delimiter;
 
-  ArrayHeaderDelimiter(String delimiter) {
+  ArrayHeaderDelimiter(char delimiter) {
     this.delimiter = delimiter;
   }
 
   public String getDelimiterValue() {
+    return Character.toString(delimiter);
+  }
+
+  public char getDelimiterChar() {
     return delimiter;
   }
 
