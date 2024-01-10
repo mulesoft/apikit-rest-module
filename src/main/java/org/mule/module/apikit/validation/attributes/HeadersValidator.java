@@ -6,7 +6,6 @@
  */
 package org.mule.module.apikit.validation.attributes;
 
-import com.google.common.net.MediaType;
 import org.mule.apikit.model.Response;
 import org.mule.apikit.model.parameter.Parameter;
 import org.mule.module.apikit.HeaderName;
@@ -14,13 +13,17 @@ import org.mule.module.apikit.api.deserializing.AttributesDeserializingStrategie
 import org.mule.module.apikit.api.exception.InvalidHeaderException;
 import org.mule.module.apikit.deserializing.AttributeDeserializer;
 import org.mule.module.apikit.deserializing.AttributesDeserializerFactory;
+import org.mule.module.apikit.deserializing.MimeType;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.runtime.api.util.MultiMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.google.common.base.Joiner.on;
 import static com.google.common.collect.Sets.difference;
@@ -31,8 +34,8 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.MapUtils.isEmpty;
+import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
-import static org.mule.module.apikit.deserializing.MimeMatcher.bestMatchForAcceptHeader;
 import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
@@ -40,6 +43,7 @@ import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
 
 
 public class HeadersValidator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HeadersValidator.class);
 
   private static final String PLACEHOLDER_TOKEN = "{?}";
 
@@ -192,8 +196,9 @@ public class HeadersValidator {
     if (isEmpty(mimeTypes)) {
       return;
     }
-    bestMatchForAcceptHeader(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders))
-            .orElseThrow(NotAcceptableException::new);
+    if (!someRepresentationIsSupported(mimeTypes, getAcceptedResponseMediaTypes(incomingHeaders))) {
+      throw new NotAcceptableException();
+    }
   }
 
   private static List<String> getResponseMimeTypes(Map<String, Response> responses, String successStatusCode) {
@@ -204,4 +209,33 @@ public class HeadersValidator {
     return new ArrayList<>();
   }
 
+
+  public static boolean someRepresentationIsSupported(List<String> supportedRepresentations, String header) {
+    List<MimeType> parseResults;
+    try {
+      parseResults = MimeType.listFrom(header, COMMA.getDelimiterChar());
+    } catch (MimeType.MimeTypeParseException e) {
+      LOGGER.warn("Failed to parse user-provided MimeType list: {}", header, e);
+      return false;
+    }
+
+    return supportedRepresentations.stream()
+            .flatMap(representation -> {
+              try {
+                return Stream.of(MimeType.from(representation));
+              } catch (MimeType.MimeTypeParseException e) {
+                LOGGER.warn("Failed to parse application-provided MimeType: {}", representation, e);
+                return Stream.empty();
+              }
+            })
+            .anyMatch(supported -> parseResults.stream().anyMatch(expected -> isCompatible(expected, supported)));
+  }
+
+  private static boolean isCompatible(MimeType expected, MimeType supported) {
+    return isCompatible(expected.getType(), supported.getType()) && isCompatible(expected.getType(), supported.getType());
+  }
+
+  private static boolean isCompatible(String expected, String supported) {
+    return expected.equalsIgnoreCase(supported) || "*".equals(expected);
+  }
 }
