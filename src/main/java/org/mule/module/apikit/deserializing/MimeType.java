@@ -147,7 +147,7 @@ public class MimeType {
       List<MimeType> mimes = new ArrayList<>();
       do {
         mimes.add(nextMimeType());
-      } while (tryConsumeChar(listDelimiter));
+      } while (trySkip(listDelimiter));
       return mimes;
     }
 
@@ -157,7 +157,7 @@ public class MimeType {
       skipWhitespace();
       mime.type = nextToken();
       skipWhitespace();
-      boolean hasSubtype = tryConsumeChar('/');
+      boolean hasSubtype = trySkip('/');
       if (hasSubtype) {
         skipWhitespace();
         mime.subtype = nextToken();
@@ -168,7 +168,7 @@ public class MimeType {
         mime.subtype = "*";
       }
       skipWhitespace();
-      if (!atEnd() && tryConsumeChar(';')) {
+      if (!atEnd() && trySkip(';')) {
         mime.parameters.addAll(nextParameterList());
       }
       skipWhitespace();
@@ -180,7 +180,7 @@ public class MimeType {
       skipWhitespace();
       String attribute = nextToken();
       skipWhitespace();
-      consumeChar('=');
+      skip('=');
       skipWhitespace();
       assertNotAtEnd();
       String value = peek() == '"'
@@ -194,38 +194,15 @@ public class MimeType {
       List<Parameter> parameter = new ArrayList<>();
       do {
         parameter.add(nextParameter());
-      } while (!atEnd() && tryConsumeChar(';'));
+      } while (!atEnd() && trySkip(';'));
       return parameter;
-    }
-
-    private boolean tryConsumeChar(char expected) {
-      if (atEnd() || peek() != expected) {
-        return false;
-      }
-      advance();
-      return true;
-    }
-
-    private void consumeChar(char expected) throws MimeTypeParseException {
-      assertNotAtEnd();
-      char got = peek();
-      if (got != expected) {
-        throw new MimeTypeParseException("Expected " + expected + " at column " + (i + 1) + " but got `" + got + "`");
-      }
-      advance();
-    }
-
-    private void skipWhitespace() {
-      while (!atEnd() && Character.isSpaceChar(peek())) {
-        advance();
-      }
     }
 
     private String nextToken() throws MimeTypeParseException {
       assertNotAtEnd();
       int start = i;
       while (!atEnd() && isTokenChar(peek())) {
-        advance();
+        skip();
       }
       if (start == i) {
         throw new MimeTypeParseException("Expected token at column " + (i + 1) + " but got `" + peek() + "`");
@@ -234,26 +211,49 @@ public class MimeType {
     }
 
     private String nextQuotedString() throws MimeTypeParseException {
-      consumeChar('"');
+      skip('"');
       StringBuilder s = new StringBuilder();
       while (!atEnd() && isValidStringChar(input, i)) {
         if (peek() == '\\') {
-          advance();
+          skip();
         }
         assertNotAtEnd();
         s.append(peek());
-        advance();
+        skip();
       }
-      consumeChar('"');
+      skip('"');
       return s.toString();
+    }
+
+    private boolean trySkip(char expected) {
+      if (atEnd() || peek() != expected) {
+        return false;
+      }
+      skip();
+      return true;
+    }
+
+    private void skip(char expected) throws MimeTypeParseException {
+      assertNotAtEnd();
+      char got = peek();
+      if (got != expected) {
+        throw new MimeTypeParseException("Expected " + expected + " at column " + (i + 1) + " but got `" + got + "`");
+      }
+      skip();
+    }
+
+    private void skipWhitespace() {
+      while (!atEnd() && Character.isSpaceChar(peek())) {
+        skip();
+      }
+    }
+
+    private void skip() {
+      i++;
     }
 
     private char peek() {
       return input.charAt(i);
-    }
-
-    private void advance() {
-      i++;
     }
 
     private boolean atEnd() {
@@ -271,7 +271,6 @@ public class MimeType {
         throw new MimeTypeParseException("Unexpected end of input");
       }
     }
-
 
     private static boolean isTokenChar(char c) {
       return c != ' ' && !isCtl(c) && !isTspecial(c);
