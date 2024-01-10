@@ -8,7 +8,6 @@ package org.mule.module.apikit.deserializing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -81,7 +80,7 @@ public class MimeType {
     return type + '/' + subtype + parameterList;
   }
 
-  public static class Parameter implements Entry<String, String> {
+  public static class Parameter {
 
     private final String attribute;
     private final String value;
@@ -95,20 +94,6 @@ public class MimeType {
 
     public String getAttribute() {
       return attribute;
-    }
-
-    @Override
-    public String getKey() {
-      return attribute;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String setValue(String value) {
-      return null;
     }
 
     @Override
