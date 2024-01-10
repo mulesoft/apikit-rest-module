@@ -25,7 +25,7 @@ public class MimeType {
         return mime;
     }
 
-    public static List<MimeType> listFrom(String mimeTypeList) throws MimeTypeParseException {
+    public static List<MimeType> listFrom(String mimeTypeList, char listDelimiter) throws MimeTypeParseException {
         Parser parser = new Parser(mimeTypeList);
         List<MimeType> mimes = parser.nextMimeTypeList();
         parser.assertAtEnd();
@@ -80,7 +80,7 @@ public class MimeType {
         return type + '/' + subtype + parameterList;
     }
 
-    public static class Parameter {
+    public static class Parameter implements Entry<String, String> {
 
         private final String attribute;
         private final String value;
@@ -96,8 +96,18 @@ public class MimeType {
             return attribute;
         }
 
+        @Override
+        public String getKey() {
+            return attribute;
+        }
+
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public String setValue(String value) {
+            return null;
         }
 
         @Override

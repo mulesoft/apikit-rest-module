@@ -106,7 +106,7 @@ public class MimeTypeTest {
                         list(new Parameter("size", "small"),
                                 new Parameter("cute", "yes yes")))
         );
-        assertEquals(mimes, MimeType.listFrom("text/plain, text/colored; lang=es, image/png; size=small; cute=\"yes yes\""));
+        assertEquals(mimes, MimeType.listFrom("text/plain, text/colored; lang=es, image/png; size=small; cute=\"yes yes\"", ','));
     }
 
     @Test
