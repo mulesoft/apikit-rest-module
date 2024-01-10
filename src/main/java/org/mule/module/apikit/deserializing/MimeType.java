@@ -96,6 +96,10 @@ public class MimeType {
       return attribute;
     }
 
+    public String getValue() {
+      return value;
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o)
