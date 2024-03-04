@@ -233,7 +233,7 @@ public class HeadersValidator {
   }
 
   private static boolean isCompatible(MimeType expected, MimeType supported) {
-    return isCompatible(expected.getType(), supported.getType()) && isCompatible(expected.getType(), supported.getType());
+    return isCompatible(expected.getType(), supported.getType()) && isCompatible(expected.getSubtype(), supported.getSubtype());
   }
 
   private static boolean isCompatible(String expected, String supported) {
