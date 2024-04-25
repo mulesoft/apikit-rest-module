@@ -33,6 +33,7 @@
         <jar.plugin.version>3.0.2</jar.plugin.version>
         <commons.codec.version>1.15</commons.codec.version>
         <commons.io.version>2.8.0</commons.io.version>
+        <log4j.version>2.17.1</log4j.version>
 
         <!-- PARSERS -->
         <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
@@ -67,6 +68,30 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>2.10.1</version>
+            </dependency>
+            <!--
+                Upgrade log4j version to fix security vulnerability
+                ref - https://logging.apache.org/log4j/2.x/security.html
+            -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-1.2-api</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
