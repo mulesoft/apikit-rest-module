@@ -223,15 +223,17 @@ public class FlowFinder {
   public Flow getFlow(Resource resource, String method, String contentType) throws UnsupportedMediaTypeException {
     String baseKey = method + ":" + resource.getResolvedUri(apiVersion);
     Map<String, Flow> rawRestFlowMap = getRawRestFlowMap();
-    Flow flow = rawRestFlowMap.get(baseKey + ":" + contentType);
-    if (flow == null) {
+    Flow flow;
+    if (contentType == null) {
       flow = rawRestFlowMap.get(baseKey);
-      if (flow == null) {
-        if (isFlowDeclaredWithDifferentMediaType(rawRestFlowMap, baseKey)) {
-          throw throwErrorType(new UnsupportedMediaTypeException(), errorTypeRepository);
-        } else {
-          throw throwErrorType(new NotImplementedException(), errorTypeRepository);
-        }
+    } else {
+      flow = rawRestFlowMap.get(baseKey + ":" + contentType);
+    }
+    if (flow == null) {
+      if (isFlowDeclaredWithDifferentMediaType(rawRestFlowMap, baseKey)) {
+        throw throwErrorType(new UnsupportedMediaTypeException(), errorTypeRepository);
+      } else {
+        throw throwErrorType(new NotImplementedException(), errorTypeRepository);
       }
     }
     return flow;
