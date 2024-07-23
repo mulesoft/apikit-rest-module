@@ -225,24 +225,13 @@ public class URIResolver {
     }
     URIPattern best = null;
     for (URIPattern p : patterns) {
-      if (p.match(this._uri)) {
-        if (hasTrailingForwardSlash(p)) {
-          if (best == null || p.score() > best.score()) {
-            best = p;
-          }
+      if (p.match(this._uri) && (!this._uri.endsWith("/") || p.toString().endsWith("/"))) {
+        if (best == null || p.score() > best.score()) {
+          best = p;
         }
       }
     }
     return best;
-  }
-
-  private boolean hasTrailingForwardSlash(URIPattern p) {
-
-    if (this._uri.endsWith("/")) {
-      return p.toString().endsWith("/");
-    } else {
-      return true;
-    }
   }
 
 }
