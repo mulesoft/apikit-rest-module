@@ -60,31 +60,38 @@ public class RoutingTableTestCase {
     URIPattern pattern1 = new URIPattern("/api/hello/");
     URIPattern pattern2 = new URIPattern("/");
     URIPattern pattern3 = new URIPattern("/{param}");
+    URIPattern pattern4 = new URIPattern("/api/hello/{param}");
+    URIPattern pattern5 = new URIPattern("/api/hello/{param}/all");
+    URIPattern pattern6 = new URIPattern("/api/hello");
+    URIPattern pattern7 = new URIPattern("/{param}/");
     HashSet<URIPattern> patterns = new HashSet<>();
     patterns.add(pattern1);
     patterns.add(pattern2);
     patterns.add(pattern3);
-    patterns.add(new URIPattern("/api/hello/{param}"));
-    patterns.add(new URIPattern("/api/hello/{param}/all"));
-    patterns.add(new URIPattern("/api/hello"));
+    patterns.add(pattern4);
+    patterns.add(pattern5);
+    patterns.add(pattern6);
+    patterns.add(pattern7);
 
     URIResolver resolver1 = new URIResolver("/api/hello/");
     URIPattern bestPattern1 = resolver1.find(patterns, URIResolver.MatchRule.BEST_MATCH);
-
     Assert.assertEquals(URIResolveResult.Status.RESOLVED, resolver1.resolve(bestPattern1).getStatus());
     Assert.assertEquals(pattern1, bestPattern1);
 
     URIResolver resolver2 = new URIResolver("/");
     URIPattern bestPattern2 = resolver2.find(patterns, URIResolver.MatchRule.BEST_MATCH);
-
     Assert.assertEquals(URIResolveResult.Status.RESOLVED, resolver2.resolve(bestPattern2).getStatus());
     Assert.assertEquals(pattern2, bestPattern2);
 
     URIResolver resolver3 = new URIResolver("/api");
     URIPattern bestPattern3 = resolver3.find(patterns, URIResolver.MatchRule.BEST_MATCH);
-
     Assert.assertEquals(URIResolveResult.Status.RESOLVED, resolver3.resolve(bestPattern3).getStatus());
     Assert.assertEquals(pattern3, bestPattern3);
+
+    URIResolver resolver7 = new URIResolver("/api/");
+    URIPattern bestPattern7 = resolver7.find(patterns, URIResolver.MatchRule.BEST_MATCH);
+    Assert.assertEquals(URIResolveResult.Status.RESOLVED, resolver7.resolve(bestPattern7).getStatus());
+    Assert.assertEquals(pattern7, bestPattern7);
   }
 
   @Test
