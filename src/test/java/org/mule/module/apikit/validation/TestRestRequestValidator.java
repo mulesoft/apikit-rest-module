@@ -111,4 +111,9 @@ public class TestRestRequestValidator {
   public OptionalLong getRequestBodyLength() {
     return body instanceof TypedValue ? ((TypedValue) body).getByteLength() : OptionalLong.empty();
   }
+
+  public RoutingTable getRoutingTable() {
+    return (apiReference != null && parser != null) ?
+            new RoutingTable(new ParserService().parse(apiReference, parser).get()) : null;
+  }
 }
