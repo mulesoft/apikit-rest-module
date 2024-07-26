@@ -100,6 +100,7 @@ public class RoutingTableTestCase {
     patterns.add(new URIPattern("/api/hello/{param}"));
     patterns.add(new URIPattern("/api/hello/{param}/all"));
     patterns.add(new URIPattern("/api/hello"));
+    patterns.add(new URIPattern("/api/"));
 
     URIResolver resolver1 = new URIResolver("/api/hello/");
     Assert.assertNull(resolver1.find(patterns, URIResolver.MatchRule.BEST_MATCH));
