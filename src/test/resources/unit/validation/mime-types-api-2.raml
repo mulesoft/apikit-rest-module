@@ -1,0 +1,12 @@
+#%RAML 1.0
+title: Mime Types Validation Test API
+
+/testMimeTypes:
+    post:
+      body:
+        application/json:
+      responses:
+        200:
+          body:
+            '*/*':
+              example: {response: "Accepted"}

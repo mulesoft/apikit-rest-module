@@ -67,4 +67,23 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   public void successWithValidAcceptHeaderValue() throws MuleRestException {
     validateRequestForAcceptHeader("application/json");
   }
+
+  @Test
+  public void successWithValidAcceptHeaderValue2() throws MuleRestException {
+    validateRequestForAcceptHeader2("application/json");
+  }
+
+  private void validateRequestForAcceptHeader2(String acceptHeaderValue) throws MuleRestException {
+    MultiMap<String, String> headers = new MultiMap<>();
+    headers.put("Content-Type", "application/json");
+    headers.put("Accept", acceptHeaderValue);
+    testRestRequestValidatorBuilder
+            .withApiLocation("unit/validation/mime-types-api-2.raml")
+            .withRelativePath("/testMimeTypes")
+            .withMethod("POST")
+            .withHeaders(headers)
+            .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
+            .build()
+            .validateRequest();
+  }
 }
