@@ -7,7 +7,11 @@
 package org.mule.module.apikit.validation;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.mule.module.apikit.api.exception.MuleRestException;
+import org.mule.module.apikit.api.validation.ValidRequest;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.runtime.api.util.MultiMap;
 
@@ -91,5 +95,32 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   public void nullTypeThrowsNotAcceptableExceptionWithWildcardAccept() throws MuleRestException {
     expectedException.expect(NotAcceptableException.class);
     validateRequestForAcceptHeader("/json", "/testMimeTypesWildcard");
+  }
+
+  @Test
+  public void successWithValidHeaderNameWithCamelCaseNamesInRAML() throws MuleRestException {
+    MultiMap<String, String> headers = new MultiMap<>();
+    headers.put("camelcasearray", "arrayValue");
+    headers.put("camelcasestring", "stringValue");
+    headers.put("smallcasearray", "arrayValue");
+    headers.put("smallcasestring", "stringValue");
+    MultiMap<String, String> validatedHeaders = validateRequestForArrayTypeHeader(headers).getAttributes().getHeaders();
+    assertEquals(validatedHeaders.size(), 4);
+    assertTrue(validatedHeaders.containsKey("camelcasearray"));
+    assertTrue(validatedHeaders.containsKey("camelcasestring"));
+    assertTrue(validatedHeaders.containsKey("smallcasearray"));
+    assertTrue(validatedHeaders.containsKey("smallcasestring"));
+  }
+
+  private ValidRequest validateRequestForArrayTypeHeader(MultiMap<String, String> headers) throws MuleRestException {
+
+    return testRestRequestValidatorBuilder
+        .withApiLocation("unit/validation/header-types-api.raml")
+        .withRelativePath("/headerTypes")
+        .withMethod("GET")
+        .withHeaders(headers)
+        .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
+        .build()
+        .validateRequest();
   }
 }
