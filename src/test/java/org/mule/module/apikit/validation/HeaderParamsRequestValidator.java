@@ -20,17 +20,21 @@ import static org.mule.module.apikit.helpers.PayloadHelper.makePayloadRepeatable
 public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCase {
 
   private void validateRequestForAcceptHeader(String acceptHeaderValue) throws MuleRestException {
+    validateRequestForAcceptHeader(acceptHeaderValue , "/testMimeTypes");
+  }
+
+  private void validateRequestForAcceptHeader(String acceptHeaderValue, String relativePath) throws MuleRestException {
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("Content-Type", "application/json");
     headers.put("Accept", acceptHeaderValue);
     testRestRequestValidatorBuilder
-        .withApiLocation("unit/validation/mime-types-api.raml")
-        .withRelativePath("/testMimeTypes")
-        .withMethod("POST")
-        .withHeaders(headers)
-        .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
-        .build()
-        .validateRequest();
+            .withApiLocation("unit/validation/mime-types-api.raml")
+            .withRelativePath(relativePath)
+            .withMethod("POST")
+            .withHeaders(headers)
+            .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
+            .build()
+            .validateRequest();
   }
 
   @Test
@@ -68,21 +72,7 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
-  public void successWithValidAcceptHeaderValue2() throws MuleRestException {
-    validateRequestForAcceptHeader2("application/json");
-  }
-
-  private void validateRequestForAcceptHeader2(String acceptHeaderValue) throws MuleRestException {
-    MultiMap<String, String> headers = new MultiMap<>();
-    headers.put("Content-Type", "application/json");
-    headers.put("Accept", acceptHeaderValue);
-    testRestRequestValidatorBuilder
-            .withApiLocation("unit/validation/mime-types-api-2.raml")
-            .withRelativePath("/testMimeTypes")
-            .withMethod("POST")
-            .withHeaders(headers)
-            .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
-            .build()
-            .validateRequest();
+  public void successWithValidAcceptHeaderValueWildcardAccept() throws MuleRestException {
+    validateRequestForAcceptHeader("application/json", "/testMimeTypesWildcard");
   }
 }
