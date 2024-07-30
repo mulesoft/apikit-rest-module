@@ -1,0 +1,18 @@
+#%RAML 1.0
+title: Header Types Validation Test API
+
+/headerTypes:
+  get:
+    headers:
+      camelCaseArray:
+        type: array
+        required: false
+      smallcasearray:
+        type: array
+        required: false
+      camelCaseString:
+        type: string
+        required: false
+      smallcasestring:
+        type: string
+        required: false
