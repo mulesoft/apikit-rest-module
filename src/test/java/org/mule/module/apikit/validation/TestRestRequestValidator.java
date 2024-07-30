@@ -113,7 +113,7 @@ public class TestRestRequestValidator {
   }
 
   public RoutingTable getRoutingTable() {
-    return (apiReference != null && parser != null) ?
-            new RoutingTable(new ParserService().parse(apiReference, parser).get()) : null;
+    return (apiReference != null && parser != null) ? new RoutingTable(new ParserService().parse(apiReference, parser).get())
+        : null;
   }
 }
