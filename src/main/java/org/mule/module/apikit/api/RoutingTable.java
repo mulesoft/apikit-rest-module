@@ -26,11 +26,10 @@ public class RoutingTable {
   private void buildRoutingTable(Map<String, Resource> resources, String version) {
 
     for (Resource resource : resources.values()) {
-
-      String uri = resource.getResolvedUri(version);
-
-      routingTable.put(new URIPattern(uri), resource);
-
+      if (!resource.getActions().isEmpty()) {
+        String uri = resource.getResolvedUri(version);
+        routingTable.put(new URIPattern(uri), resource);
+      }
       if (resource.getResources() != null) {
         buildRoutingTable(resource.getResources(), version);
       }

@@ -7,10 +7,15 @@
 package org.mule.module.apikit.validation;
 
 import org.junit.Test;
+import org.mule.module.apikit.api.RoutingTable;
 import org.mule.module.apikit.api.exception.MethodNotAllowedException;
 import org.mule.module.apikit.api.exception.MuleRestException;
+import org.mule.module.apikit.api.uri.URIPattern;
 
+import static org.junit.Assert.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MethodNotAllowedTestCase extends AbstractRequestValidatorTestCase {
 
@@ -42,5 +47,19 @@ public class MethodNotAllowedTestCase extends AbstractRequestValidatorTestCase {
         .withMethod("PUT")
         .build()
         .validateRequest();
+  }
+
+  @Test
+  public void validRoutingTableTest() {
+    RoutingTable routingTable = testRestRequestValidatorBuilder
+        .withApiLocation("unit/validation/api-resources.raml")
+        .withRelativePath("/test/something")
+        .withMethod("GET")
+        .build()
+        .getRoutingTable();
+
+    assertNotNull(routingTable);
+    assertEquals(2, routingTable.keySet().size());
+    assertTrue(routingTable.keySet().contains(new URIPattern("/test/{resourceZ}")));
   }
 }
