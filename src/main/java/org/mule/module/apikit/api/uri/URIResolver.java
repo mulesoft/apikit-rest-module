@@ -225,7 +225,7 @@ public class URIResolver {
     }
     URIPattern best = null;
     for (URIPattern p : patterns) {
-      if (p.match(this._uri)) {
+      if (p.match(this._uri) && (!this._uri.endsWith("/") || p.toString().endsWith("/"))) {
         if (best == null || p.score() > best.score()) {
           best = p;
         }
