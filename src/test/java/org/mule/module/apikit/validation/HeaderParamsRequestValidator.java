@@ -20,7 +20,7 @@ import static org.mule.module.apikit.helpers.PayloadHelper.makePayloadRepeatable
 public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCase {
 
   private void validateRequestForAcceptHeader(String acceptHeaderValue) throws MuleRestException {
-    validateRequestForAcceptHeader(acceptHeaderValue , "/testMimeTypes");
+    validateRequestForAcceptHeader(acceptHeaderValue, "/testMimeTypes");
   }
 
   private void validateRequestForAcceptHeader(String acceptHeaderValue, String relativePath) throws MuleRestException {
@@ -28,13 +28,13 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
     headers.put("Content-Type", "application/json");
     headers.put("Accept", acceptHeaderValue);
     testRestRequestValidatorBuilder
-            .withApiLocation("unit/validation/mime-types-api.raml")
-            .withRelativePath(relativePath)
-            .withMethod("POST")
-            .withHeaders(headers)
-            .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
-            .build()
-            .validateRequest();
+        .withApiLocation("unit/validation/mime-types-api.raml")
+        .withRelativePath(relativePath)
+        .withMethod("POST")
+        .withHeaders(headers)
+        .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
+        .build()
+        .validateRequest();
   }
 
   @Test
