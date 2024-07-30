@@ -44,7 +44,7 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
-  public void nullSubTypeWoSlashThrowsNotAcceptableException() throws MuleRestException {
+  public void successWithNullSubTypeWoSlash() throws MuleRestException {
     validateRequestForAcceptHeader("application");
   }
 
@@ -74,5 +74,22 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   @Test
   public void successWithValidAcceptHeaderValueWildcardAccept() throws MuleRestException {
     validateRequestForAcceptHeader("application/json", "/testMimeTypesWildcard");
+  }
+
+  @Test
+  public void successWithNullSubTypeWoSlashWildcardAccept() throws MuleRestException {
+    validateRequestForAcceptHeader("application", "/testMimeTypesWildcard");
+  }
+
+  @Test
+  public void nullSubTypeThrowsNotAcceptableExceptionWildcardAccept() throws MuleRestException {
+    expectedException.expect(NotAcceptableException.class);
+    validateRequestForAcceptHeader("application/", "/testMimeTypesWildcard");
+  }
+
+  @Test
+  public void nullTypeThrowsNotAcceptableExceptionWithWildcardAccept() throws MuleRestException {
+    expectedException.expect(NotAcceptableException.class);
+    validateRequestForAcceptHeader("/json", "/testMimeTypesWildcard");
   }
 }
