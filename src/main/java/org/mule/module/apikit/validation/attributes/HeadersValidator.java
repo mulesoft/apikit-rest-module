@@ -237,6 +237,6 @@ public class HeadersValidator {
   }
 
   private static boolean isCompatible(String expected, String supported) {
-    return expected.equalsIgnoreCase(supported) || "*".equals(expected);
+    return expected.equalsIgnoreCase(supported) || "*".equals(expected) || "*".equals(supported);
   }
 }

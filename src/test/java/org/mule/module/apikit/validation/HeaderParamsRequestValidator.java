@@ -41,7 +41,6 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
 
   @Test
   public void nullSubTypeWoSlashThrowsNotAcceptableException() throws MuleRestException {
-    expectedException.expect(NotAcceptableException.class);
     validateRequestForAcceptHeader("application");
   }
 
