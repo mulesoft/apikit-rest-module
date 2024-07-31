@@ -81,6 +81,11 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
+  public void successWithValidAcceptWildcardHeaderValueWildcardAccept() throws MuleRestException {
+    validateRequestForAcceptHeader("*/*", "/testMimeTypesWildcard");
+  }
+
+  @Test
   public void successWithNullSubTypeWoSlashWildcardAccept() throws MuleRestException {
     validateRequestForAcceptHeader("application", "/testMimeTypesWildcard");
   }
