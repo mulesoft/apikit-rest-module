@@ -19,7 +19,6 @@ import org.mule.module.apikit.api.exception.MuleRestException;
 import org.mule.module.apikit.api.spi.AbstractRouter;
 import org.mule.module.apikit.api.spi.RouterService;
 import org.mule.module.apikit.api.spi.RouterServiceV2;
-import org.mule.module.apikit.api.uri.ResolvedVariables;
 import org.mule.module.apikit.api.uri.URIPattern;
 import org.mule.module.apikit.api.uri.URIResolver;
 import org.mule.module.apikit.api.validation.ValidRequest;
