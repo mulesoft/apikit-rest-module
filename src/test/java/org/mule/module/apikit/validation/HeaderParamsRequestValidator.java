@@ -24,12 +24,16 @@ import static org.mule.module.apikit.helpers.PayloadHelper.makePayloadRepeatable
 public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCase {
 
   private void validateRequestForAcceptHeader(String acceptHeaderValue) throws MuleRestException {
+    validateRequestForAcceptHeader(acceptHeaderValue, "/testMimeTypes");
+  }
+
+  private void validateRequestForAcceptHeader(String acceptHeaderValue, String relativePath) throws MuleRestException {
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("Content-Type", "application/json");
     headers.put("Accept", acceptHeaderValue);
     testRestRequestValidatorBuilder
         .withApiLocation("unit/validation/mime-types-api.raml")
-        .withRelativePath("/testMimeTypes")
+        .withRelativePath(relativePath)
         .withMethod("POST")
         .withHeaders(headers)
         .withBody((InputStream) makePayloadRepeatable(toInputStream("{\"message\":\"All Ok\"}", Charset.defaultCharset())))
@@ -44,8 +48,7 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
-  public void nullSubTypeWoSlashThrowsNotAcceptableException() throws MuleRestException {
-    expectedException.expect(NotAcceptableException.class);
+  public void successWithNullSubTypeWoSlash() throws MuleRestException {
     validateRequestForAcceptHeader("application");
   }
 
@@ -73,6 +76,21 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
+  public void successWithValidAcceptHeaderValueWildcardAccept() throws MuleRestException {
+    validateRequestForAcceptHeader("application/json", "/testMimeTypesWildcard");
+  }
+
+  @Test
+  public void successWithValidAcceptWildcardHeaderValueWildcardAccept() throws MuleRestException {
+    validateRequestForAcceptHeader("*/*", "/testMimeTypesWildcard");
+  }
+
+  @Test
+  public void successWithNullSubTypeWoSlashWildcardAccept() throws MuleRestException {
+    validateRequestForAcceptHeader("application", "/testMimeTypesWildcard");
+  }
+
+  @Test
   public void successWithValidHeaderNameWithCamelCaseNamesInRAML() throws MuleRestException {
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("camelcasearray", "arrayValue");
@@ -86,7 +104,6 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
     assertTrue(validatedHeaders.containsKey("smallcasearray"));
     assertTrue(validatedHeaders.containsKey("smallcasestring"));
   }
-
 
   private ValidRequest validateRequestForArrayTypeHeader(MultiMap<String, String> headers) throws MuleRestException {
 
