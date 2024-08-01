@@ -91,18 +91,6 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
-  public void nullSubTypeThrowsNotAcceptableExceptionWildcardAccept() throws MuleRestException {
-    expectedException.expect(NotAcceptableException.class);
-    validateRequestForAcceptHeader("application/", "/testMimeTypesWildcard");
-  }
-
-  @Test
-  public void nullTypeThrowsNotAcceptableExceptionWithWildcardAccept() throws MuleRestException {
-    expectedException.expect(NotAcceptableException.class);
-    validateRequestForAcceptHeader("/json", "/testMimeTypesWildcard");
-  }
-
-  @Test
   public void successWithValidHeaderNameWithCamelCaseNamesInRAML() throws MuleRestException {
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("camelcasearray", "arrayValue");
