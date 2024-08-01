@@ -14,3 +14,13 @@ title: Mime Types Validation Test API
                   {
                     "message":"All Ok"
                   }
+
+/testMimeTypesWildcard:
+    post:
+      body:
+        application/json:
+      responses:
+        200:
+          body:
+            '*/*':
+              example: {response: "Accepted"}
