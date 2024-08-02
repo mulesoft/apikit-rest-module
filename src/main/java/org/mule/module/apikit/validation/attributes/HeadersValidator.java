@@ -96,7 +96,7 @@ public class HeadersValidator {
           copyIncomingHeaders.removeAll(headerName.toLowerCase());
           copyIncomingHeaders.removeAll(headerName);
           // Putting back header name with same case as there is in spec (headers are case-insensitive)
-          copyIncomingHeaders.put(headerName, values);
+          copyIncomingHeaders.put(headerName.toLowerCase(), values);
         }
         validateHeader(values, headerName, headerType);
       }
@@ -237,6 +237,6 @@ public class HeadersValidator {
   }
 
   private static boolean isCompatible(String expected, String supported) {
-    return expected.equalsIgnoreCase(supported) || "*".equals(expected);
+    return expected.equalsIgnoreCase(supported) || "*".equals(expected) || "*".equals(supported);
   }
 }
