@@ -1,0 +1,122 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Schema with regex",
+    "description": "This API contains regex validation defined in the schema."
+  },
+  "paths": {
+    "/ordercreate": {
+      "post": {
+        "summary": "Submit Order Create Request",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderCreateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "BadRequest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "InternalServerError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrderCreateRequest": {
+        "type": "object",
+        "properties": {
+          "MagentoSalesOrderCreate": {
+            "type": "object",
+            "properties": {
+              "OrderHeader": {
+                "type": "object",
+                "properties": {
+                  "OrderByName": {
+                    "type": "string",
+                    "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+                  },
+                  "Email": {
+                    "type": "string",
+                    "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+                  },
+                  "ReceiverName": {
+                    "type": "string",
+                    "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HTTPError": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "string",
+            "format": "string"
+          },
+          "status": {
+            "type": "string",
+            "format": "string"
+          },
+          "message": {
+            "type": "string",
+            "format": "string"
+          }
+        },
+        "description": "Status Attributes"
+      },
+      "OrderCreateResponse": {
+        "type": "object",
+        "properties": {
+          "ResponseCode": {
+            "type": "string",
+            "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+          },
+          "OrderNumber": {
+            "type": "string",
+            "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+          }
+        },
+        "example": {
+          "ResponseCode": "200",
+          "OrderNumber": "123456789"
+        }
+      }
+    }
+  }
+}
