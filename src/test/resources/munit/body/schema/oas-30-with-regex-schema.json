@@ -66,15 +66,15 @@
                 "properties": {
                   "OrderByName": {
                     "type": "string",
-                    "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+                    "pattern": "^([a-zA-Z0-9 -_.@&$]*)+$"
                   },
                   "Email": {
                     "type": "string",
-                    "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+                    "pattern": "^([a-zA-Z0-9 -_.@&$]*)+$"
                   },
                   "ReceiverName": {
                     "type": "string",
-                    "pattern": "([a-zA-Z0-9 -_.@&$]*)+$"
+                    "pattern": "^([a-zA-Z0-9 -_.@&$]*)+$"
                   }
                 }
               }
