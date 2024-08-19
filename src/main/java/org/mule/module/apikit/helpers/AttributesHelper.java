@@ -12,6 +12,7 @@ import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.http.api.domain.CaseInsensitiveMultiMap;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -34,6 +35,12 @@ public class AttributesHelper {
 
   public static MultiMap<String, String> copyImmutableMap(MultiMap<String, String> immutableMap) {
     MultiMap<String, String> mapParam = new MultiMap<>();
+    immutableMap.keySet().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
+    return mapParam;
+  }
+
+  public static MultiMap<String, String> copyImmutableCaseInsensitiveMap(MultiMap<String, String> immutableMap) {
+    MultiMap<String, String> mapParam = new CaseInsensitiveMultiMap();
     immutableMap.keySet().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
     return mapParam;
   }

@@ -91,7 +91,7 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
   }
 
   @Test
-  public void successWithValidHeaderNameWithCamelCaseNamesInRAML() throws MuleRestException {
+  public void successWithValidHeaderNameCaseInsensitivity() throws MuleRestException {
     MultiMap<String, String> headers = new MultiMap<>();
     headers.put("camelcasearray", "arrayValue");
     headers.put("camelcasestring", "stringValue");
@@ -99,10 +99,15 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
     headers.put("smallcasestring", "stringValue");
     MultiMap<String, String> validatedHeaders = validateRequestForArrayTypeHeader(headers).getAttributes().getHeaders();
     assertEquals(validatedHeaders.size(), 4);
+    //Case Insensitivity works during header extraction
     assertTrue(validatedHeaders.containsKey("camelcasearray"));
     assertTrue(validatedHeaders.containsKey("camelcasestring"));
     assertTrue(validatedHeaders.containsKey("smallcasearray"));
     assertTrue(validatedHeaders.containsKey("smallcasestring"));
+
+    assertTrue(validatedHeaders.containsKey("camelCaseArray"));
+    assertTrue(validatedHeaders.containsKey("Smallcasestring"));
+    assertTrue(validatedHeaders.containsKey("smallcaseArray"));
   }
 
   private ValidRequest validateRequestForArrayTypeHeader(MultiMap<String, String> headers) throws MuleRestException {
