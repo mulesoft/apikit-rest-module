@@ -99,7 +99,7 @@ public class HeaderParamsRequestValidator extends AbstractRequestValidatorTestCa
     headers.put("smallcasestring", "stringValue");
     MultiMap<String, String> validatedHeaders = validateRequestForArrayTypeHeader(headers).getAttributes().getHeaders();
     assertEquals(validatedHeaders.size(), 4);
-    //Case Insensitivity works during header extraction
+    // Case Insensitivity works during header extraction
     assertTrue(validatedHeaders.containsKey("camelcasearray"));
     assertTrue(validatedHeaders.containsKey("camelcasestring"));
     assertTrue(validatedHeaders.containsKey("smallcasearray"));
