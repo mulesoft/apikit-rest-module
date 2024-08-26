@@ -41,7 +41,7 @@ public class AttributesHelper {
 
   public static MultiMap<String, String> copyImmutableCaseInsensitiveMap(MultiMap<String, String> immutableMap) {
     MultiMap<String, String> mapParam = new CaseInsensitiveMultiMap();
-    immutableMap.keySet().forEach(mapKey -> mapParam.put(mapKey, immutableMap.getAll(mapKey)));
+    mapParam.putAll(immutableMap);
     return mapParam;
   }
 
