@@ -16,6 +16,7 @@ import org.mule.module.apikit.deserializing.AttributesDeserializerFactory;
 import org.mule.module.apikit.deserializing.MimeType;
 import org.mule.module.apikit.exception.NotAcceptableException;
 import org.mule.runtime.api.util.MultiMap;
+import org.mule.runtime.http.api.domain.CaseInsensitiveMultiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,6 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static org.apache.commons.collections.MapUtils.isEmpty;
 import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.module.apikit.deserializing.AttributesDeserializingStrategyIdentifier.ARRAY_HEADER_DESERIALIZING_STRATEGY;
-import static org.mule.module.apikit.helpers.AttributesHelper.copyImmutableMap;
 import static org.mule.module.apikit.helpers.AttributesHelper.getAcceptedResponseMediaTypes;
 import static org.mule.module.apikit.helpers.AttributesHelper.getParamValues;
 import static org.mule.runtime.api.util.MultiMap.emptyMultiMap;
@@ -108,7 +108,9 @@ public class HeadersValidator {
   private static MultiMap<String, String> getMutableCopy(MultiMap<String, String> incomingHeaders,
                                                          MultiMap<String, String> copyIncomingHeaders) {
     if (copyIncomingHeaders.isEmpty()) {
-      return copyImmutableMap(incomingHeaders);
+      MultiMap<String, String> mapParam = new CaseInsensitiveMultiMap();
+      mapParam.putAll(incomingHeaders);
+      return mapParam;
     }
     return copyIncomingHeaders;
   }
