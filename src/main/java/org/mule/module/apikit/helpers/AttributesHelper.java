@@ -39,12 +39,6 @@ public class AttributesHelper {
     return mapParam;
   }
 
-  public static MultiMap<String, String> copyImmutableCaseInsensitiveMap(MultiMap<String, String> immutableMap) {
-    MultiMap<String, String> mapParam = new CaseInsensitiveMultiMap();
-    mapParam.putAll(immutableMap);
-    return mapParam;
-  }
-
   public static String addQueryString(String oldQueryString, String key, String value) {
     String newParam = oldQueryString.length() != 0 ? "&" : "";
     try {
