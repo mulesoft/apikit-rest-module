@@ -600,8 +600,12 @@
                         <project.url>http://www.mulesoft.com</project.url>
                     </properties>
                     <includes>
-                        <include>**/*.java</include>
+                        <include>src/main/java/**/*.java</include>
+                        <include>src/test/java/**/*.java</include>
                     </includes>
+                    <excludes>
+                        <exclude>src/test/java/Fips*.java</exclude>
+                    </excludes>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
                     </mapping>
@@ -639,6 +643,13 @@
                     <executionRoot>true</executionRoot>
                     <encoding>UTF-8</encoding>
                     <lineEnding>LF</lineEnding>
+                    <includes>
+                        <include>src/main/java/**/*.java</include>
+                        <include>src/test/java/**/*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>src/test/java/Fips*.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
