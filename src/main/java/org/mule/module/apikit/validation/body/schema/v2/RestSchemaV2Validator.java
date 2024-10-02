@@ -32,12 +32,12 @@ public class RestSchemaV2Validator implements IRestSchemaValidatorStrategy {
     Future<List<ApiValidationResult>> future = executor.submit(() -> mimeType.validate(payload));
 
     try {
-      final List<ApiValidationResult> validationResults = future.get(2, TimeUnit.SECONDS);
+      final List<ApiValidationResult> validationResults = future.get(10, TimeUnit.SECONDS);
       if (!validationResults.isEmpty()) {
         throw new BadRequestException(buildLogMessage(validationResults));
       }
     } catch (TimeoutException e) {
-      throw new BadRequestException("Validation timed out after 2 seconds");
+      throw new BadRequestException("Validation timed out after 10 seconds");
     } catch (InterruptedException | ExecutionException e) {
       throw new BadRequestException("Error during validation: " + e.getMessage());
     } finally {
