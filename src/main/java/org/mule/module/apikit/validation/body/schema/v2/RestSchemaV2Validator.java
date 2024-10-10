@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.*;
 
 import static java.util.stream.Collectors.joining;
 
@@ -28,20 +27,9 @@ public class RestSchemaV2Validator implements IRestSchemaValidatorStrategy {
   }
 
   public void validate(String payload) throws BadRequestException {
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    Future<List<ApiValidationResult>> future = executor.submit(() -> mimeType.validate(payload));
-
-    try {
-      final List<ApiValidationResult> validationResults = future.get(10, TimeUnit.SECONDS);
-      if (!validationResults.isEmpty()) {
-        throw new BadRequestException(buildLogMessage(validationResults));
-      }
-    } catch (TimeoutException e) {
-      throw new BadRequestException("Validation timed out after 10 seconds");
-    } catch (InterruptedException | ExecutionException e) {
-      throw new BadRequestException("Error during validation: " + e.getMessage());
-    } finally {
-      executor.shutdownNow();
+    final List<ApiValidationResult> validationResults = mimeType.validate(payload);
+    if (!validationResults.isEmpty()) {
+      throw new BadRequestException(buildLogMessage(validationResults));
     }
   }
 
