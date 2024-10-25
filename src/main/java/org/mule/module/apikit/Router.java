@@ -55,9 +55,11 @@ import java.util.Optional;
 
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
+import static org.mule.module.apikit.Configuration.MULE_ENABLE_SANDBOX_PROPERTY;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
 import static org.mule.module.apikit.api.validation.RequestValidator.validate;
 import static org.mule.module.apikit.helpers.AttributesHelper.getContentType;
+import static org.mule.module.apikit.helpers.AttributesHelper.getSandboxId;
 import static org.mule.module.apikit.helpers.ConfigURLMapping.INSTANCE;
 import static org.mule.runtime.core.api.util.StringMessageUtils.getBoilerPlate;
 import static org.mule.runtime.core.privileged.processor.MessageProcessors.flatMap;
@@ -174,6 +176,14 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
     Flow flow = config.getFlowFinder().getFlow(resource,
                                                attributes.getMethod().toLowerCase(),
                                                getContentType(attributes.getHeaders()));
+
+    if ("true".equals(System.getProperty(MULE_ENABLE_SANDBOX_PROPERTY)) && getSandboxId(attributes.getHeaders()) != null) {
+      Flow sandboxFlow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(),
+              getContentType(attributes.getHeaders()), getSandboxId(attributes.getHeaders()));
+      if (sandboxFlow != null) {
+        flow = sandboxFlow;
+      }
+    }
 
     CoreEvent subFlowEvent = buildSubFlowEvent(config.isDisableValidations(),
                                                mainEvent, request,

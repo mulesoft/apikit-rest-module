@@ -22,8 +22,7 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
-import static org.mule.module.apikit.HeaderName.ACCEPT;
-import static org.mule.module.apikit.HeaderName.CONTENT_TYPE;
+import static org.mule.module.apikit.HeaderName.*;
 import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
 import static org.mule.runtime.api.metadata.MediaType.parse;
 
@@ -126,4 +125,21 @@ public class AttributesHelper {
     return Strings.isNullOrEmpty(acceptableResponseMediaTypes) ? ANY_RESPONSE_MEDIA_TYPE : acceptableResponseMediaTypes;
   }
 
+  /**
+   * Returns "X-Sandbox-Id" header param value.
+   *
+   * @param headers Map of parameter's name-value
+   * @return
+   */
+  public static String getSandboxId(MultiMap<String, String> headers) {
+    final List<String> sandboxList = getParamValues(headers, X_SANDBOX_ID.getName());
+    if (isEmpty(sandboxList)) {
+      return null;
+    }
+    String sandbox = sandboxList.get(0);
+    if (sandboxList.size() > 1 || sandbox.contains(COMMA.getDelimiterValue())) {
+      return null;
+    }
+    return Strings.isNullOrEmpty(sandbox) ? null : sandbox;
+  }
 }

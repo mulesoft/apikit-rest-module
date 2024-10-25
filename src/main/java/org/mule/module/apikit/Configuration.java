@@ -60,7 +60,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   private static final int URI_CACHE_SIZE = 1000;
   public static final String MULE_EXTERNAL_ENTITIES_PROPERTY = "mule.xml.expandExternalEntities";
   public static final String MULE_EXPAND_ENTITIES_PROPERTY = "mule.xml.expandInternalEntities";
-
+  public static final String MULE_ENABLE_SANDBOX_PROPERTY = "mule.xml.enableSandboxEntities";
 
   protected static final Logger logger = LoggerFactory.getLogger(Configuration.class);
   protected LoadingCache<String, URIResolver> uriResolverCache;
@@ -394,6 +394,10 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     String internalEntities = System.getProperty(MULE_EXPAND_ENTITIES_PROPERTY, "false");
     System.setProperty("raml.xml.expandInternalEntities", internalEntities);
     System.setProperty("amf.plugins.xml.expandInternalEntities", internalEntities);
+
+    String enableSandbox = System.getProperty(MULE_ENABLE_SANDBOX_PROPERTY, "true");
+    System.setProperty(MULE_ENABLE_SANDBOX_PROPERTY, enableSandbox);
+
   }
 
   private Scheduler getScheduler() {

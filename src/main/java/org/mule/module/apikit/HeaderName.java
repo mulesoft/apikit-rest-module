@@ -82,7 +82,9 @@ public enum HeaderName {
   WEBSOCKET_ORIGIN("WebSocket-Origin"),
   WEBSOCKET_PROTOCOL("WebSocket-Protocol"),
   WWW_AUTHENTICATE("WWW-Authenticate"),
-  X_FORWARDED_FOR("X-Forwarded-For");
+  X_FORWARDED_FOR("X-Forwarded-For"),
+  X_SANDBOX_ID("X-Sandbox-Id"),
+  ;
 
   private String name;
 
