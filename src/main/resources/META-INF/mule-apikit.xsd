@@ -71,6 +71,8 @@
                         </xsd:documentation>
                     </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="enableSandbox" type="mule:substitutableBoolean" default="false"
+                               use="optional"/>
                 <xsd:attribute name="queryParamsStrictValidation" type="mule:substitutableBoolean" default="false"
                                use="optional">
                     <xsd:annotation>

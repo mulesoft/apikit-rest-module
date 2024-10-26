@@ -87,7 +87,7 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
   private FlowFinder flowFinder;
   private RouterService routerService;
   private RouterServiceV2 routerServiceV2;
-
+  private boolean enableSandbox = false;
 
   // DO NOT USE: does nothing just keeping it for Backwards compatibility, the routerService optional does the jobs for this.
   private boolean extensionEnabled;
@@ -252,6 +252,18 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     this.httpStatusVarName = httpStatusVarName;
   }
 
+  public boolean isEnableSandbox() {
+    String enableSandboxStr = System.getProperty(MULE_ENABLE_SANDBOX_PROPERTY);
+    if (enableSandboxStr != null) {
+      return Boolean.parseBoolean(enableSandboxStr);
+    }
+    return enableSandbox;
+  }
+
+  public void setEnableSandbox(boolean enableSandbox) {
+    this.enableSandbox = enableSandbox;
+  }
+
   private void buildResourcePatternCaches() {
     logger.info("Building resource URI cache...");
     uriResolverCache = CacheBuilder.newBuilder()
@@ -394,10 +406,6 @@ public class Configuration implements Disposable, Initialisable, ValidationConfi
     String internalEntities = System.getProperty(MULE_EXPAND_ENTITIES_PROPERTY, "false");
     System.setProperty("raml.xml.expandInternalEntities", internalEntities);
     System.setProperty("amf.plugins.xml.expandInternalEntities", internalEntities);
-
-    String enableSandbox = System.getProperty(MULE_ENABLE_SANDBOX_PROPERTY, "false");
-    System.setProperty(MULE_ENABLE_SANDBOX_PROPERTY, enableSandbox);
-
   }
 
   private Scheduler getScheduler() {

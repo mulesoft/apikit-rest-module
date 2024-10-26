@@ -55,7 +55,6 @@ import java.util.Optional;
 
 import static org.mule.module.apikit.ApikitErrorTypes.errorRepositoryFrom;
 import static org.mule.module.apikit.ApikitErrorTypes.throwErrorType;
-import static org.mule.module.apikit.Configuration.MULE_ENABLE_SANDBOX_PROPERTY;
 import static org.mule.module.apikit.api.FlowUtils.getSourceLocation;
 import static org.mule.module.apikit.api.validation.RequestValidator.validate;
 import static org.mule.module.apikit.helpers.AttributesHelper.getContentType;
@@ -70,6 +69,7 @@ import static reactor.core.publisher.Mono.error;
 public class Router extends AbstractComponent implements Processor, Initialisable, AbstractRouter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
+  private static final String ROOT_CONSOLE_PATH = "/";
 
   @Inject
   private MuleContext muleContext;
@@ -169,32 +169,44 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
     TypedValue<Object> payload = mainEvent.getMessage().getPayload();
 
-    ValidRequest request = validate(config, resource, attributes, resolvedVariables,
-                                    makeInputBodyRepeatable(config.isDisableValidations(), mainEvent, payload),
-                                    errorRepositoryFrom(muleContext));
-
     Flow flow = config.getFlowFinder().getFlow(resource,
                                                attributes.getMethod().toLowerCase(),
                                                getContentType(attributes.getHeaders()));
 
-    if ("true".equals(System.getProperty(MULE_ENABLE_SANDBOX_PROPERTY)) && getSandboxId(attributes.getHeaders()) != null) {
-      Flow sandboxFlow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(),
-              getContentType(attributes.getHeaders()), getSandboxId(attributes.getHeaders()));
-      if (sandboxFlow != null) {
-        flow = sandboxFlow;
+    if (configuration.isEnableSandbox() && getSandboxId(attributes.getHeaders()) != null) {
+      path = ROOT_CONSOLE_PATH + getSandboxId(attributes.getHeaders()) + path;
+      // Get uriPattern, uriResolver, and the resolvedVariables
+      uriPattern = findInCacheNoException(path, config.getUriPatternCache());
+      uriResolver = findInCacheNoException(path, config.getUriResolverCache());
+      if (uriPattern != null && uriResolver != null) {
+        resolvedVariables = uriResolver.resolve(uriPattern);
+
+        if (URIResolveResult.Status.ERROR.equals(resolvedVariables.getStatus())) {
+          throw new InvalidUriParameterException("Unable to resolve valid URI parameter values for the requested URL");
+        }
+
+        resource = config.getFlowFinder().getResource(uriPattern);
+
+        flow = config.getFlowFinder().getFlow(resource, attributes.getMethod().toLowerCase(),
+                getContentType(attributes.getHeaders()));
       }
     }
+
+    ValidRequest request = validate(config, resource, attributes, resolvedVariables,
+              makeInputBodyRepeatable(config.isDisableValidations(), mainEvent, payload),
+              errorRepositoryFrom(muleContext));
 
     CoreEvent subFlowEvent = buildSubFlowEvent(config.isDisableValidations(),
                                                mainEvent, request,
                                                config.getOutboundHeadersMapName());
 
+    Resource finalResource = resource;
     return Mono.from(routingStrategy.route(flow, mainEvent, subFlowEvent))
         .map(result -> {
           if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
             // If status code is missing, a default one is added
             RamlHandler handler = config.getRamlHandler();
-            String successStatusCode = handler.getSuccessStatusCode(resource.getAction(attributes.getMethod().toLowerCase()));
+            String successStatusCode = handler.getSuccessStatusCode(finalResource.getAction(attributes.getMethod().toLowerCase()));
             return CoreEvent.builder(result).addVariable(config.getHttpStatusVarName(), successStatusCode).build();
           }
           return result;
@@ -217,6 +229,14 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
       return cache.get(key);
     } catch (Exception e) {
       throw throwErrorType(new NotFoundException(key), errorRepositoryFrom(muleContext));
+    }
+  }
+
+  private <T> T findInCacheNoException(String key, LoadingCache<String, T> cache) {
+    try {
+      return cache.get(key);
+    } catch (Exception e) {
+      return null;
     }
   }
 

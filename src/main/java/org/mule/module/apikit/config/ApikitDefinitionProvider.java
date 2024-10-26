@@ -53,6 +53,7 @@ public class ApikitDefinitionProvider implements ComponentBuildingDefinitionProv
                                        fromChildConfiguration(List.class).withWrapperIdentifier("flow-mappings").build())
         .withSetterParameterDefinition("attributesDeserializingStrategies",
                                        fromChildConfiguration(AttributesDeserializingStrategies.class).build())
+        .withSetterParameterDefinition("enableSandbox", fromSimpleParameter("enableSandbox").build())
         .build());
 
     definitions.add(baseDefinition.withIdentifier("flow-mapping")

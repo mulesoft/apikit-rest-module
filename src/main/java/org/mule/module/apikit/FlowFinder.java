@@ -237,16 +237,6 @@ public class FlowFinder {
     return flow;
   }
 
-  public Flow getFlow(Resource resource, String method, String contentType, String sandbox) throws UnsupportedMediaTypeException {
-    String baseKey = method + ":/" + sandbox + resource.getResolvedUri(apiVersion);
-    Map<String, Flow> rawRestFlowMap = getRawRestFlowMap();
-    Flow flow = rawRestFlowMap.get(baseKey + ":" + contentType);
-    if (flow == null) {
-      flow = rawRestFlowMap.get(baseKey);
-    }
-    return flow;
-  }
-
   public Resource getResource(URIPattern uriPattern) {
     return routingTable.getResource(uriPattern);
   }

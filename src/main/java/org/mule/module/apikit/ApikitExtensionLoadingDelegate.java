@@ -127,6 +127,7 @@ public class ApikitExtensionLoadingDelegate implements ExtensionLoadingDelegate 
         .withDsl(ParameterDslConfiguration.builder().allowsReferences(false).build())
         .withExpressionSupport(NOT_SUPPORTED)
         .ofType(typeLoader.load(AttributesDeserializingStrategies.class));
+    parameterGroupDeclarer.withOptionalParameter("enableSandbox").defaultingTo(false).ofType(typeLoader.load(String.class));
 
     // router
     OperationDeclarer routerDeclarer = apikitConfig.withOperation("router");
