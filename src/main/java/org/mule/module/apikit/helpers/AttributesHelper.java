@@ -12,7 +12,6 @@ import org.mule.extension.http.api.HttpRequestAttributesBuilder;
 import org.mule.module.apikit.exception.UnsupportedMediaTypeException;
 import org.mule.runtime.api.metadata.MediaType;
 import org.mule.runtime.api.util.MultiMap;
-import org.mule.runtime.http.api.domain.CaseInsensitiveMultiMap;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -21,7 +20,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
-import static org.apache.commons.collections.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.mule.module.apikit.HeaderName.ACCEPT;
 import static org.mule.module.apikit.HeaderName.CONTENT_TYPE;
 import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.COMMA;
