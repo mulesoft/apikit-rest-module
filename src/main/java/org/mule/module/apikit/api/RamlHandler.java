@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.mule.apikit.ApiType.AMF;
 import static org.mule.apikit.ApiType.RAML;
 import static org.mule.apikit.common.ApiSyncUtils.isSyncProtocol;
