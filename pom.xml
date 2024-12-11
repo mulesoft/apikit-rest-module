@@ -32,11 +32,12 @@
         <maven.enforcer.plugin.version>1.4.1</maven.enforcer.plugin.version>
         <jar.plugin.version>3.0.2</jar.plugin.version>
         <commons.codec.version>1.15</commons.codec.version>
-        <commons.io.version>2.14.0</commons.io.version>
+        <commons.io.version>2.15.1</commons.io.version>
+        <commons.collections4.version>4.4</commons.collections4.version>
         <log4j.version>2.17.1</log4j.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.7.8</parser.service.version>
+        <parser.service.version>2.7.9</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.61</apiconsole.version>
@@ -317,6 +318,12 @@
             <version>${commons.io.version}</version>
         </dependency>
         <!-- END OF: exclusions due to RP-592, they are limited because of java 7 -->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons.collections4.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>javax.xml.bind</groupId>
