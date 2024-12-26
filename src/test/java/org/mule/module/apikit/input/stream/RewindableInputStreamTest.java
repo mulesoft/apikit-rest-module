@@ -44,6 +44,8 @@ class RewindableInputStreamTest {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
         byte[] data = new byte[1024];
+        RewindableInputStream.Block block = new RewindableInputStream.Block();
+        block.append(data[0]);
         try {
             while ((nRead = rewindableInputStream.read()) != -1) {
                 buffer.write(data, 0, nRead);
@@ -51,8 +53,16 @@ class RewindableInputStreamTest {
             buffer.flush();
             byte[] byteArray = buffer.toByteArray();
             assertFalse(new String(byteArray, UTF_8).isEmpty());
+            rewindableInputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void testRewindableStreamFailure() {
+        assertThrows(NullPointerException.class, () -> {
+            RewindableInputStream rewindableInputStream = new RewindableInputStream(null);
+        });
     }
 }
