@@ -63,6 +63,7 @@ public class RewindableInputStream extends InputStream implements Rewindable {
     this.in = in;
   }
 
+  @Override
   public void close() throws IOException {
     if (saving) {
       curBlockAvail = 0;
