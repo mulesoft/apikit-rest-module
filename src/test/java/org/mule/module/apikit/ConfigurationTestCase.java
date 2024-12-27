@@ -10,7 +10,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mule.apikit.ApiType;
+import org.mule.module.apikit.exception.NotAcceptableException;
 
 public class ConfigurationTestCase {
 
@@ -19,5 +21,11 @@ public class ConfigurationTestCase {
     Configuration configuration = new Configuration();
 
     assertThat(configuration.getType(), equalTo(ApiType.AMF));
+  }
+
+  @Test
+  public void testNotAcceptableException() {
+    NotAcceptableException notAcceptableException = new NotAcceptableException();
+    Assertions.assertEquals(notAcceptableException.getStringRepresentation(), NotAcceptableException.STRING_REPRESENTATION);
   }
 }
