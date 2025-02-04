@@ -37,7 +37,7 @@
         <log4j.version>2.17.1</log4j.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.7.9</parser.service.version>
+        <parser.service.version>2.7.10</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.73</apiconsole.version>
