@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.mule.module.apikit.api.deserializing.ArrayHeaderDelimiter.SEMICOLON;
+
 public class MimeType {
 
   private String type;
@@ -228,9 +230,13 @@ public class MimeType {
     private boolean trySkip(char expected) {
       if (atEnd() || peek() != expected) {
         return false;
+      } else if ((peek() == SEMICOLON.getDelimiterChar() && i + 1 == input.length())) {
+        i++;
+        return false;
+      } else {
+        skip();
+        return true;
       }
-      skip();
-      return true;
     }
 
     private void skip(char expected) throws MimeTypeParseException {
