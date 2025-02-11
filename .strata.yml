@@ -1,0 +1,21 @@
+global:
+  # change to your team/user email
+  email-reply-to: aby.philip@salesforce.com
+  # default: false, set to true to have only the committer emailed on a dev branch
+  email-only-last-committer-on-dev-branch: false
+  # default: master, omit if master is the appropriate branch for your repo
+  production-branches:
+    - main
+    - ^support/\d+\.\d+\.\d+$
+stages:
+  build:
+    # this user-defined step provides build/utest coverage for the repo
+    - step:
+        name: mvn-compile-test
+        # a list of available and approved images can be found here:
+        # https://confluence.internal.salesforce.com/display/ZEN/Docker+Images
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_centos7_java8_build:64
+        commands:
+          - java -version
+          - mvn -version
+          - mvn clean install -DskipTests
