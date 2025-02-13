@@ -17,4 +17,6 @@ stages:
         commands:
           - java -version
           - mvn -version
-          - mvn clean install -DskipTests
+          - mvn test
+  publish:
+    - maven-publish
