@@ -72,6 +72,14 @@ public class MimeTypeTest {
   }
 
   @Test
+  public void supportsEndSemiColon() throws MimeTypeParseException {
+    MimeType expected = new MimeType("text", "plain",
+            list(new Parameter("param", "value1"),
+                    new Parameter("param", "value2")));
+    assertEquals(expected, MimeType.from("text/plain; param=value1; param=value2;"));
+  }
+
+  @Test
   public void ignoresEscapedQuotesInsideQuotes() throws MimeTypeParseException {
     MimeType expected = new MimeType("text", "plain",
                                      list(new Parameter("param", "value \"1\"")));
@@ -91,10 +99,8 @@ public class MimeTypeTest {
   @Test
   public void failsIfTextIsMissing() {
     assertThrows(MimeTypeParseException.class, () -> MimeType.from("text/"));
-    assertThrows(MimeTypeParseException.class, () -> MimeType.from("text/plain;"));
     assertThrows(MimeTypeParseException.class, () -> MimeType.from("text/plain; param"));
     assertThrows(MimeTypeParseException.class, () -> MimeType.from("text/plain; param="));
-    assertThrows(MimeTypeParseException.class, () -> MimeType.from("text/plain; param=value;"));
   }
 
   @Test

@@ -11,7 +11,8 @@ package org.mule.module.apikit.api.deserializing;
  */
 public enum ArrayHeaderDelimiter {
 
-  COMMA(',');
+  COMMA(','),
+  SEMICOLON(';');
 
   private final char delimiter;
 
