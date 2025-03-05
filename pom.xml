@@ -51,7 +51,7 @@
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
         <mockServerVersion>5.8.0</mockServerVersion>
         <jacoco.version>0.8.10</jacoco.version>
-        <allureJunitVersion>2.13.5</allureJunitVersion>
+        <allureJunitVersion>2.29.1</allureJunitVersion>
         <allureReportVersion>2.3.4</allureReportVersion>
         <allure.maven.plugin.version>2.10.0</allure.maven.plugin.version>
         <junit.version>4.13.2</junit.version>
