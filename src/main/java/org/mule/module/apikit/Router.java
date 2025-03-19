@@ -130,6 +130,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
   private Publisher<CoreEvent> processWithExtension(CoreEvent event) {
     try {
+      LOGGER.debug("Processing event within APIKit extension");
       Optional<RouterServiceV2> extensionV2 = configuration.getExtensionV2();
       if (extensionV2.isPresent()) {
         return extensionV2.get().process(event, this);
@@ -137,14 +138,17 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
       Optional<RouterService> extension = configuration.getExtension();
       return extension.isPresent() ? extension.get().process(event, this) : processEvent(event);
     } catch (MuleRestException e) {
+      LOGGER.error("MuleRestException within REST router " + e.getMessage());
       return error(throwErrorType(e, errorRepositoryFrom(muleContext)));
     } catch (MuleException e) {
+      LOGGER.error("MuleException within REST router " + e.getMessage());
       return error(e);
     }
   }
 
   @Override
   public Publisher<CoreEvent> processEvent(CoreEvent event) throws MuleRestException {
+    LOGGER.debug("Processing event at APIKit router");
     Configuration config = registry.getConfiguration(getConfiguration().getName());
     HttpRequestAttributes attributes = ((HttpRequestAttributes) event.getMessage().getAttributes().getValue());
     return doRoute(event, config, attributes);
@@ -181,6 +185,7 @@ public class Router extends AbstractComponent implements Processor, Initialisabl
 
     return Mono.from(routingStrategy.route(flow, mainEvent, subFlowEvent))
         .map(result -> {
+          LOGGER.debug("Received response from runtime");
           if (result.getVariables().get(config.getHttpStatusVarName()) == null) {
             // If status code is missing, a default one is added
             RamlHandler handler = config.getRamlHandler();

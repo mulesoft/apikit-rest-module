@@ -21,6 +21,8 @@ import org.mule.runtime.core.api.event.CoreEvent;
 import java.util.concurrent.CompletableFuture;
 
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link FlowRoutingStrategy}, uses the Mule {@link ExecutableComponent} API to perform flow routing.
@@ -28,6 +30,7 @@ import org.reactivestreams.Publisher;
 public class DefaultFlowRoutingStrategy implements FlowRoutingStrategy {
 
   private final RouterExceptionHandler exceptionHandler;
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultFlowRoutingStrategy.class);
 
   public DefaultFlowRoutingStrategy() {
     // In MULE 4.2.0 and 4.2.1 there is not way to propagate an event to the main flow when an error occur, for that
@@ -38,6 +41,7 @@ public class DefaultFlowRoutingStrategy implements FlowRoutingStrategy {
   }
 
   public Publisher<CoreEvent> route(Flow flow, CoreEvent mainEvent, CoreEvent subFlowEvent) {
+    LOGGER.debug("Routing subFlowEvent to runtime for execution");
     CompletableFuture<Event> execution = flow.execute(subFlowEvent);
     return ((Publisher) fromFuture(execution)
         .onErrorMap(ComponentExecutionException.class,
