@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -91,7 +92,7 @@ public class MultipartBuilder {
       APIKitMultipartStream multipartStream =
           new APIKitMultipartStream(inputStream, boundary.getBytes(MIME.UTF8_CHARSET), BUFFER_SIZE, sizeLimit);
 
-      Set<String> parametersInPayload = new HashSet<>();
+      Map<String, Integer> parametersInPayloadToCount = new HashMap<>();
       MultipartEntityBuilder multipartEntityBuilder =
           defaultValues.isEmpty() && cursorProvider != null
               ? new MultipartEntityBuilderWithoutDefaults(contentType, cursorProvider, boundary, sizeLimit, byteLength)
@@ -106,16 +107,16 @@ public class MultipartBuilder {
         String fileName = getFileName(headers);
         String contentType = getContentType(headers);
 
-        parametersInPayload.add(name);
+        parametersInPayloadToCount.put(name, parametersInPayloadToCount.getOrDefault(name, 0) + 1);
 
         multipartEntityBuilder.handlePart(multipartStream, formParameters.get(name), name, contentType, fileName, headers);
 
-        nextPart = multipartStream.readBoundary();
+        nextPart = multipartStream.readBoundary(); //Checking the next part items here
         multipartEntityBuilder.handleBoundary(false);
       }
 
       for (Entry<String, String> defaultValue : defaultValues.entrySet()) {
-        if (!parametersInPayload.contains(defaultValue.getKey())) {
+        if (!parametersInPayloadToCount.containsKey(defaultValue.getKey())) {
           multipartEntityBuilder.addDefault(defaultValue.getKey(), defaultValue.getValue());
           multipartEntityBuilder.handleBoundary(false);
         }
@@ -125,9 +126,18 @@ public class MultipartBuilder {
       multipartStream.readEpilogue(multipartEntityBuilder);
 
       for (Entry<String, Parameter> formParameter : formParameters.entrySet()) {
-        if (!parametersInPayload.contains(formParameter.getKey()) && formParameter.getValue().isRequired()
+        if (!parametersInPayloadToCount.containsKey(formParameter.getKey()) && formParameter.getValue().isRequired()
             && formParameter.getValue().getDefaultValues().isEmpty()) {
-          throw new InvalidFormParameterException("Required form parameter " + formParameter.getKey() + " not specified");
+          throw new InvalidFormParameterException("Required form parameter " + formParameter.getKey() + " not specified");//We can also validate the minItems and maxItem count here
+        } else if (parametersInPayloadToCount.containsKey(formParameter.getKey()) && formParameter.getValue().isRequired()) {
+          Optional<Integer> minItemsCount = formParameter.getValue().getMinItems();
+          if (minItemsCount.isPresent() && (minItemsCount.get() > parametersInPayloadToCount.get(formParameter.getKey()))) {
+            throw new InvalidFormParameterException("parameter does not comply with minItems for " + formParameter.getKey());
+          }
+          Optional<Integer> maxItemsCount = formParameter.getValue().getMaxItems();
+          if (maxItemsCount.isPresent() && parametersInPayloadToCount.get(formParameter.getKey()) > maxItemsCount.get()) {
+            throw new InvalidFormParameterException("parameter does not comply with maxItems for " + formParameter.getKey());
+          }
         }
       }
 
