@@ -131,11 +131,12 @@ public class MultipartBuilder {
           throw new InvalidFormParameterException("Required form parameter " + formParameter.getKey() + " not specified");//We can also validate the minItems and maxItem count here
         } else if (parametersInPayloadToCount.containsKey(formParameter.getKey()) && formParameter.getValue().isRequired()) {
           Optional<Integer> minItemsCount = formParameter.getValue().getMinItems();
+          if (minItemsCount.isPresent() && (minItemsCount.get() > parametersInPayloadToCount.get(formParameter.getKey()))) {
+            throw new InvalidFormParameterException("parameter does not comply with minItems for " + formParameter.getKey());
+          }
           Optional<Integer> maxItemsCount = formParameter.getValue().getMaxItems();
-          if (minItemsCount.isPresent() && maxItemsCount.isPresent()
-                  && (minItemsCount.get() > parametersInPayloadToCount.get(formParameter.getKey())
-                  || parametersInPayloadToCount.get(formParameter.getKey()) > maxItemsCount.get())) {
-            throw new InvalidFormParameterException("parameter does not comply with minItems and maxItems for " + formParameter.getKey());
+          if (maxItemsCount.isPresent() && parametersInPayloadToCount.get(formParameter.getKey()) > maxItemsCount.get()) {
+            throw new InvalidFormParameterException("parameter does not comply with maxItems for " + formParameter.getKey());
           }
         }
       }
