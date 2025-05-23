@@ -38,7 +38,7 @@
         <sdk-api.version>0.7.5</sdk-api.version>
 
         <!-- PARSERS -->
-        <parser.service.version>2.7.10</parser.service.version>
+        <parser.service.version>3.0.0-SNAPSHOT</parser.service.version>
 
         <!-- API Console -->
         <apiconsole.version>6.6.73</apiconsole.version>
