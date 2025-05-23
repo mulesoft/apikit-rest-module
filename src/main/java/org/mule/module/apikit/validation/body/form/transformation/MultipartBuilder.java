@@ -130,18 +130,14 @@ public class MultipartBuilder {
             && formParameter.getValue().getDefaultValues().isEmpty()) {
           throw new InvalidFormParameterException("Required form parameter " + formParameter.getKey() + " not specified");//We can also validate the minItems and maxItem count here
         } else if (parametersInPayloadToCount.containsKey(formParameter.getKey()) && formParameter.getValue().isRequired()) {
-          int count = parametersInPayloadToCount.get(formParameter.getKey());
-          Parameter param = formParameter.getValue();
-
-          param.getMinItems().filter(min -> min > count)
-              .ifPresent(min -> {
-                    throw new RuntimeException(new InvalidFormParameterException("parameter does not comply with minItems for " + formParameter.getKey()));
-              });
-
-          param.getMaxItems().filter(max -> count > max)
-              .ifPresent(max -> {
-                    throw new RuntimeException(new InvalidFormParameterException("parameter does not comply with maxItems for " + formParameter.getKey()));
-              });
+          Optional<Integer> minItemsCount = formParameter.getValue().getMinItems();
+          if (minItemsCount.isPresent() && (minItemsCount.get() > parametersInPayloadToCount.get(formParameter.getKey()))) {
+            throw new InvalidFormParameterException("parameter does not comply with minItems for " + formParameter.getKey());
+          }
+          Optional<Integer> maxItemsCount = formParameter.getValue().getMaxItems();
+          if (maxItemsCount.isPresent() && parametersInPayloadToCount.get(formParameter.getKey()) > maxItemsCount.get()) {
+            throw new InvalidFormParameterException("parameter does not comply with maxItems for " + formParameter.getKey());
+          }
         }
       }
 
@@ -150,11 +146,6 @@ public class MultipartBuilder {
       throw new InvalidFormParameterException(e);
     } catch (IndexOutOfBoundsException e) {
       throw new InvalidFormParameterException(e.getMessage());
-    } catch (RuntimeException ex) {
-      if (ex.getCause() instanceof InvalidFormParameterException) {
-        throw (InvalidFormParameterException) ex.getCause();
-      }
-      throw ex;
     }
   }
 
