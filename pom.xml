@@ -46,7 +46,7 @@
         <!-- TESTING -->
         <munit.input.directory>src/test/munit</munit.input.directory>
         <munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
-        <munit.extensions.maven.plugin.version>1.4.0</munit.extensions.maven.plugin.version>
+        <munit.extensions.maven.plugin.version>1.5.0</munit.extensions.maven.plugin.version>
         <munit.version>3.3.2</munit.version>
         <munit.tools.version>3.3.2</munit.tools.version>
         <mavenResourcesVersion>3.0.2</mavenResourcesVersion>
