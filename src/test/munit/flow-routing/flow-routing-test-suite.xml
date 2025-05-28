@@ -207,7 +207,7 @@
       </http:request>
     </munit:execution>
     <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(404)]"/>
+      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(400)]"/>
     </munit:validation>
   </munit:test>
 
