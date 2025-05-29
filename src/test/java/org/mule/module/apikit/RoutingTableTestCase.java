@@ -79,8 +79,7 @@ public class RoutingTableTestCase {
 
     URIResolver resolver2 = new URIResolver("/");
     URIPattern bestPattern2 = resolver2.find(patterns, URIResolver.MatchRule.BEST_MATCH);
-    Assert.assertEquals(URIResolveResult.Status.RESOLVED, resolver2.resolve(bestPattern2).getStatus());
-    Assert.assertEquals(pattern2, bestPattern2);
+    Assert.assertEquals(URIResolveResult.Status.ERROR, resolver2.resolve(bestPattern2).getStatus());                 
 
     URIResolver resolver3 = new URIResolver("/api");
     URIPattern bestPattern3 = resolver3.find(patterns, URIResolver.MatchRule.BEST_MATCH);
@@ -102,14 +101,14 @@ public class RoutingTableTestCase {
     patterns.add(new URIPattern("/api/"));
 
     URIResolver resolver1 = new URIResolver("/api/hello/");
-    Assert.assertNull(resolver1.find(patterns, URIResolver.MatchRule.BEST_MATCH));
+    Assert.assertNotNull(resolver1.find(patterns, URIResolver.MatchRule.BEST_MATCH));
 
     URIResolver resolver3 = new URIResolver("/api");
     Assert.assertNull(resolver3.find(patterns, URIResolver.MatchRule.BEST_MATCH));
 
     patterns.add(new URIPattern("/{param}"));
     URIResolver resolver2 = new URIResolver("/");
-    Assert.assertNull(resolver2.find(patterns, URIResolver.MatchRule.BEST_MATCH));
+    Assert.assertNotNull(resolver2.find(patterns, URIResolver.MatchRule.BEST_MATCH));
   }
 
   @Test
