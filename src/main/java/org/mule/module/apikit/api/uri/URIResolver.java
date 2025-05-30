@@ -225,13 +225,24 @@ public class URIResolver {
     }
     URIPattern best = null;
     for (URIPattern p : patterns) {
-      if (p.match(this._uri) && (!this._uri.endsWith("/") || p.toString().endsWith("/"))) {
+      if (p.match(this._uri) && (!this._uri.endsWith("/") || p.toString().endsWith("/")))
         if (best == null || p.score() > best.score()) {
           best = p;
         }
-      }
+    }
+    if (best == null) {
+      best = findBestMethodWithEmptyParams(patterns);
     }
     return best;
   }
 
+  private URIPattern findBestMethodWithEmptyParams(Set<URIPattern> patterns) {
+    URIPattern currentBest = null; 
+    for (URIPattern p : patterns) {
+      if (p.match(this._uri) && (currentBest == null || p.score() > currentBest.score())) {
+        currentBest = p;
+      }
+    }
+    return currentBest;
+  }
 }
