@@ -79,7 +79,8 @@ public class RoutingTableTestCase {
 
     URIResolver resolver2 = new URIResolver("/");
     URIPattern bestPattern2 = resolver2.find(patterns, URIResolver.MatchRule.BEST_MATCH);
-    Assert.assertEquals(URIResolveResult.Status.ERROR, resolver2.resolve(bestPattern2).getStatus());                 
+    Assert.assertEquals(URIResolveResult.Status.RESOLVED, resolver2.resolve(bestPattern2).getStatus());
+    Assert.assertEquals(pattern2, bestPattern2);
 
     URIResolver resolver3 = new URIResolver("/api");
     URIPattern bestPattern3 = resolver3.find(patterns, URIResolver.MatchRule.BEST_MATCH);
