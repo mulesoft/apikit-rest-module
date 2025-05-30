@@ -241,7 +241,7 @@ public class URIResolver {
     for (URIPattern p : patterns) {
       if (p.match(this._uri) && (currentBest == null || p.score() > currentBest.score())) {
         currentBest = p;
-        }
+      }
     }
     return currentBest;
   }
