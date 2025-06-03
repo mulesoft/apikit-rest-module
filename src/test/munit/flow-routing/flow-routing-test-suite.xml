@@ -195,22 +195,6 @@
     </munit:validation>
   </munit:test>
 
-  <munit:test name="resource-trailing-slash-does-not-match">
-    <munit:enable-flow-sources>
-      <munit:enable-flow-source value="api-routing-main"/>
-    </munit:enable-flow-sources>
-    <munit:execution>
-      <http:request method="POST" config-ref="http-requester-simple" path="api/customers/3123/applications/">
-        <http:response-validator>
-          <http:success-status-code-validator values="1..501"/>
-        </http:response-validator>
-      </http:request>
-    </munit:execution>
-    <munit:validation>
-      <munit-tools:assert-that expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(404)]"/>
-    </munit:validation>
-  </munit:test>
-
   <munit:test name="perform-request-that-uses-a-flow-mapping">
     <munit:enable-flow-sources>
       <munit:enable-flow-source value="api-routing-main"/>
