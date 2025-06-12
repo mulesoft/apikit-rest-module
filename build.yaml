@@ -4,13 +4,13 @@ projectType: extension
 additionalTestConfigs:
   jdk17-4.9.x:
     testJdkTool: OPEN-JDK17
-    mavenAdditionalArgs: -DruntimeVersion=4.9.1 -DruntimeProduct=MULE_EE
+    mavenAdditionalArgs: -DruntimeVersion=4.9.6 -DruntimeProduct=MULE_EE
   jdk17-4.8.x:
     testJdkTool: OPEN-JDK17
-    mavenAdditionalArgs: -DruntimeVersion=4.8.5 -DruntimeProduct=MULE_EE
+    mavenAdditionalArgs: -DruntimeVersion=4.8.6 -DruntimeProduct=MULE_EE
   jdk17-4.7.x:
     testJdkTool: OPEN-JDK17
     mavenAdditionalArgs: -DruntimeVersion=4.7.4 -DruntimeProduct=MULE_EE
   jdk17-4.6.x:
     testJdkTool: OPEN-JDK17
-    mavenAdditionalArgs: -DruntimeVersion=4.6.13 -DruntimeProduct=MULE_EE
+    mavenAdditionalArgs: -DruntimeVersion=4.6.19 -DruntimeProduct=MULE_EE
