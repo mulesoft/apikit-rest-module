@@ -12,4 +12,6 @@ apikit-tools/apikit-studio-plugin/org.mule.tooling.apikit.deps/lib/
 apikit-tools/apikit-studio-plugin/org.mule.tooling.apikit/examples/
 build.log
 .mule
+.codegenie
+.vscode/
 mule-apikit-module/logs/
