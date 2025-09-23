@@ -1,0 +1,48 @@
+#%RAML 1.0
+title: Multipart Form with File Array and JSON Array
+version: v1
+
+mediaType: multipart/form-data
+
+types:
+  Attachment:
+    type: file
+    fileTypes: ['application/pdf', 'image/jpeg', 'image/png', 'text/plain']
+    maxLength: 5242880  # 5 MB
+  zipFile:
+    type: file
+    fileTypes: ['image/jpeg', 'image/png', 'text/plain']
+    maxLength: 5242880  # 5 MB
+
+/test:
+  post:
+    body:
+      multipart/form-data:
+        properties:
+          zipFiles:
+            required: true
+            type: zipFile[]
+            maxItems: 2
+            minItems: 1
+/multipart-upload:
+  post:
+    description: Upload an array of files and a JSON array as multipart/form-data
+    body:
+      multipart/form-data:
+        properties:
+          Attachments:
+            description: Array of files
+            type: Attachment[]
+            required: true
+            minItems: 2
+            maxItems: 3
+          zipFiles:
+            description: Array of files
+            type: zipFile[]
+            minItems: 2
+
+    responses:
+      200:
+        body:
+          application/json:
+            example: { status: "success", message: "Files and payload received." }
