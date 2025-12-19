@@ -34,7 +34,7 @@
         <commons.codec.version>1.15</commons.codec.version>
         <commons.io.version>2.15.1</commons.io.version>
         <commons.collections4.version>4.4</commons.collections4.version>
-        <log4j.version>2.17.1</log4j.version>
+        <log4j.version>2.25.3</log4j.version>
         <sdk-api.version>0.7.5</sdk-api.version>
 
         <!-- PARSERS -->
